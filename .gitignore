@@ -27,7 +27,6 @@ Thumbs.db # Windows
 .vscode/
 .idea/
 .idea_modules/
-out/
 *.iml
 *.ipr
 *.iws
