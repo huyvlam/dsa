@@ -1,0 +1,110 @@
+package mylinked.singly;
+
+import org.junit.jupiter.api.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+import mymodel.Person;
+
+class LinkedListTest {
+    private LinkedList<Person> list;
+
+    @BeforeEach
+    void setUp() {
+        // Initialize with an age-based comparator
+        list = new LinkedList<>((p1, p2) -> Integer.compare(p1.age, p2.age));
+    }
+
+    @Test
+    @DisplayName("Should add at both ends and maintain head/tail")
+    void testAddFirstLast() {
+        list.addFirst(new Person("Bob", 30));   // [30]
+        list.addLast(new Person("Charlie", 40)); // [30, 40]
+        list.addFirst(new Person("Alice", 20));  // [20, 30, 40]
+
+        assertEquals(3, list.size());
+        assertEquals(20, list.peekFirst().age);
+        assertEquals(40, list.peekLast().age);
+    }
+
+    @Test
+    @DisplayName("Should handle pollFirst and pollLast on single element")
+    void testPollSingleElement() {
+        list.addFirst(new Person("Olly", 10));
+        list.addLast(new Person("Atlas", 12));
+
+        assertEquals(10, list.pollFirst().age);
+        assertEquals(12, list.pollLast().age);
+        assertEquals(0, list.size());
+        assertNull(list.peekFirst());
+        assertNull(list.peekLast()); // Ensures tail was reset!
+    }
+
+    @Test
+    @DisplayName("Should reverse the list and swap head/tail pointers")
+    void testReverse() {
+        list.addLast(new Person("A", 10));
+        list.addLast(new Person("B", 20));
+        list.addLast(new Person("C", 30));
+
+        list.reverse();
+
+        assertEquals(30, list.peekFirst().age); // New Head
+        assertEquals(10, list.peekLast().age);  // New Tail
+        assertEquals(20, list.get(1).age);      // Middle stayed
+    }
+
+    @Test
+    @DisplayName("Should add data by the given index")
+    void testAddByIndex() {
+        list.add(0, new Person("Ciro", 21));
+        list.add(1, new Person("Ono", 34));
+
+        assertEquals(0, list.indexOf(new Person("A", 21)));
+        assertTrue(list.contains(new Person("B", 34)));
+    }
+
+    @Test
+    @DisplayName("Should remove by data using the comparator")
+    void testRemoveByData() {
+        list.addLast(new Person("Target", 25));
+        list.addLast(new Person("Other", 50));
+
+        // Match only by age per comparator
+        boolean removed = list.remove(new Person("Ghost", 25));
+
+        assertTrue(removed);
+        assertEquals(1, list.size());
+        assertEquals(50, list.peekFirst().age);
+    }
+
+    @Test
+    @DisplayName("Should throw exception for out of bounds access")
+    void testBounds() {
+        list.addFirst(new Person("Alice", 20));
+
+        assertThrows(IndexOutOfBoundsException.class, () -> list.get(5));
+        assertThrows(IndexOutOfBoundsException.class, () -> list.set(-1, null));
+    }
+
+    @Test
+    @DisplayName("Should set data by the given index")
+    void testSetByIndex() {
+        list.addFirst(new Person("Alice", 20));
+
+        assertEquals(20, list.get(0).age);
+
+        list.set(0, new Person("Target", 25));
+
+        assertEquals(25, list.get(0).age);
+    }
+
+    @Test
+    @DisplayName("Should use custom printer in toString")
+    void testToStringCustomPrinter() {
+        list.addFirst(new Person("Alice", 20));
+        String result = list.toString(p -> "Age:" + p.age);
+
+        assertTrue(result.contains("Age:20"));
+        assertTrue(result.contains("-> null"));
+    }
+}
