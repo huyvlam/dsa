@@ -1,0 +1,55 @@
+# Exclude files
+*.class
+*.log
+*.tmp
+*.jar
+*.war
+*.ear
+*.nar
+*.zip
+*.tar.gz
+*.rar
+
+# Exclude directories
+build/
+dist/
+out/
+lib/
+core/
+node_modules/
+
+# Exclude system generated files
+.DS_Store # macOS
+.directory # Mac
+Thumbs.db # Windows
+
+# Exclude editor configuration files
+.vscode/
+.idea/
+.idea_modules/
+out/
+*.iml
+*.ipr
+*.iws
+
+# Exclude environment variable files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+config.json
+
+# Exclude specific files within a particular folder
+logs/*.log
+
+# Exclude Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Exclude virtual machine crash logs
+hs_err_pid*
+replay_pid*
+
+# Negation: Re-include a specific file that would otherwise be ignored
+# (Note: parent directory must also not be ignored)
+!/dist/important.file

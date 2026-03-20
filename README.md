@@ -1,2 +1,2 @@
 # dsa
-Reviews of data structures, algorithms, coding practices, system design, etc.
+Reviews of data structures, algorithms, system designs, best practices, etc.
