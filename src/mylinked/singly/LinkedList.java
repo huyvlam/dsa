@@ -79,7 +79,7 @@ public class LinkedList<E> {
         E data = head.data;
         head = head.next;
 
-        // Important: when list becomes empty, tail MUST be null
+        // Important: when list becomes empty, tail MUST be null to avoid "ghost node"
         if (head == null) tail = null;
 
         count--;
@@ -107,14 +107,14 @@ public class LinkedList<E> {
 
     public void add(int i, E data) {
         if (data == null) throw new IllegalArgumentException("Data cannot be null");
-        if (i < 0 || i > size()) throw new IndexOutOfBoundsException("Index cannot be out of bound");
+        if (i < 0 || i > count) throw new IndexOutOfBoundsException("Index cannot be out of bound");
 
-        if (i == 0 || size() == 0) {
+        if (i == 0 || count == 0) {
             addFirst(data);
             return;
         }
 
-        if (i == size()) {
+        if (i == count) {
             addLast(data);
             return;
         }
@@ -131,7 +131,7 @@ public class LinkedList<E> {
     }
 
     public boolean remove(E data) {
-        if (data == null || size() == 0) return false;
+        if (data == null || count == 0) return false;
 
         if (comparator.compare(head.data, data) == 0)
             return pollFirst() != null;
@@ -157,7 +157,7 @@ public class LinkedList<E> {
     }
 
     public E set(int i, E data) {
-        if (i < 0 || i >= size()) throw new IndexOutOfBoundsException("Index cannot be out of bound");
+        if (i < 0 || i >= count) throw new IndexOutOfBoundsException("Index cannot be out of bound");
         if (data == null) throw new IllegalArgumentException("Data cannot be null");
 
         SinglyNode<E> cur = head;
@@ -172,11 +172,11 @@ public class LinkedList<E> {
     }
 
     public E get(int i) {
-        if (i < 0 || i >= size()) throw new IndexOutOfBoundsException("Index cannot be out of bound");
+        if (i < 0 || i >= count) throw new IndexOutOfBoundsException("Index cannot be out of bound");
 
         if (i == 0) return peekFirst();
 
-        if (i == size() - 1) return peekLast();
+        if (i == count - 1) return peekLast();
 
         SinglyNode<E> cur = head;
         for (int count = 0; count < i; count++)
