@@ -79,6 +79,7 @@ public class LinkedList<E> {
         E data = head.data;
         head = head.next;
 
+        // Important: when list becomes empty, tail MUST be null
         if (head == null) tail = null;
 
         count--;
@@ -135,6 +136,9 @@ public class LinkedList<E> {
         if (comparator.compare(head.data, data) == 0)
             return pollFirst() != null;
 
+        if (comparator.compare(tail.data, data) == 0)
+            return pollLast() != null;
+
         SinglyNode<E> prev = head;
         SinglyNode<E> cur = head.next;
 
@@ -157,13 +161,14 @@ public class LinkedList<E> {
         if (data == null) throw new IllegalArgumentException("Data cannot be null");
 
         SinglyNode<E> cur = head;
+
         for (int index = 0; index < i; index++)
             cur = cur.next;
 
-        E former = cur.data;
+        E replaced = cur.data;
         cur.data = data;
 
-        return former;
+        return replaced;
     }
 
     public E get(int i) {
@@ -254,8 +259,8 @@ public class LinkedList<E> {
         list.add(1, new Person("thu", 16));
         list.addLast(new Person("dong", 17));
         list.addFirst(new Person("xuan", 15));
+        list.remove(new Person("tet", 17));
 
-        IO.println(list.toString());
         IO.println(list.toString((Person p) -> "Name: " + p.name + " Age: " + p.age));
     }
 }
