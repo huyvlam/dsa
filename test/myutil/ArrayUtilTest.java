@@ -1,4 +1,4 @@
-package myhelper;
+package myutil;
 
 import myinterface.Printer;
 import mymodel.Person;
@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ArrayHelperTest {
+class ArrayUtilTest {
     private final Person[] persons = {new Person("Herra", 23), new Person("Rambo", 54)};
     private final Integer[] nums = new Integer[5];
     private Printer<Person> printer;
@@ -23,7 +23,7 @@ class ArrayHelperTest {
     void testFillRandomNumbers() {
         assertNull(nums[0]);
 
-        ArrayHelper.fillRandomNumbers(nums, 20);
+        ArrayUtil.fillRandomNumbers(nums, 20);
 
         assertNotNull(nums[0]);
     }
@@ -31,7 +31,7 @@ class ArrayHelperTest {
     @Test
     @DisplayName("Should return string value from the given array using custom printer")
     void testToString() {
-        String res = ArrayHelper.toString(persons, printer);
+        String res = ArrayUtil.toString(persons, printer);
 
         assertTrue(res.contains("Herra is 23"));
     }
