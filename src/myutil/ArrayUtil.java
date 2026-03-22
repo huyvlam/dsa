@@ -1,10 +1,10 @@
-package myhelper;
+package myutil;
 
 import myinterface.Printer;
 
 import java.util.Random;
 
-public class ArrayHelper {
+public class ArrayUtil {
     // Fill the array w/ random numbers from 0 to the given bound
     public static void fillRandomNumbers(Integer[] arr, int bound) {
         Random rand = new Random();
