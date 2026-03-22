@@ -130,6 +130,27 @@ public class LinkedList<E> {
         count++;
     }
 
+    public E remove(int i) {
+        if (i < 0 || i >= count) throw new IndexOutOfBoundsException("Index cannot be out of bound");
+
+        if (i == 0) return pollFirst();
+        if (i == count - 1) return pollLast();
+
+        SinglyNode<E> prev = head;
+        SinglyNode<E> cur = head.next;
+
+        for (int index = 0; index < i - 1; index++) {
+            prev = cur;
+            cur = cur.next;
+        }
+
+        E data = cur.data;
+        prev.next = cur.next;
+
+        count--;
+        return data;
+    }
+
     public boolean remove(E data) {
         if (data == null || count == 0) return false;
 
@@ -186,15 +207,13 @@ public class LinkedList<E> {
     }
 
     public int indexOf(E data) {
-        if (head == null || data == null) return -1;
+        if (data == null) return -1;
 
-        int index = 0;
         SinglyNode<E> cur = head;
 
-        while (cur != null) {
+        for (int index = 0; index < count; index++) {
             if (comparator.compare(cur.data, data) == 0) return index;
             cur = cur.next;
-            index++;
         }
 
         return -1;
