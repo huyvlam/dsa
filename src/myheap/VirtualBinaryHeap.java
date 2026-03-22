@@ -34,7 +34,7 @@ public class VirtualBinaryHeap {
      * @param a array of elements
      * @param b array of elements
      * @param sortOrder [ASC, DESC]
-     * @param comparator customer comparator
+     * @param comparator custom comparator
      * @param <E> element type
      */
     public static <E> void sort(E[] a, E[] b, SortOrder sortOrder, Comparator<? super E> comparator) {
