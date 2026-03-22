@@ -54,13 +54,17 @@ class LinkedListTest {
     }
 
     @Test
-    @DisplayName("Should add data by the given index")
-    void testAddByIndex() {
-        list.add(0, new Person("Ciro", 21));
-        list.add(1, new Person("Ono", 34));
+    @DisplayName("Should add/remove data by the given index")
+    void testAddRemoveByIndex() {
+        list.add(0, new Person("Abby", 20));
+        list.add(1, new Person("Bona", 22));
+        list.add(1, new Person("Ciro", 24));
+        list.remove(2);
 
-        assertEquals(0, list.indexOf(new Person("A", 21)));
-        assertTrue(list.contains(new Person("B", 34)));
+        assertEquals(0, list.indexOf(new Person("A", 20)));
+        assertEquals(1, list.indexOf(new Person("B", 24)));
+        assertEquals(2, list.size());
+        assertFalse(list.contains(new Person("Ciro", 22)));
     }
 
     @Test
@@ -78,24 +82,22 @@ class LinkedListTest {
     }
 
     @Test
+    @DisplayName("Should replace data at the given index")
+    void testSetByIndex() {
+        list.addFirst(new Person("Alice", 20));
+        list.set(0, new Person("Target", 25));
+
+        assertEquals(25, list.get(0).age);
+        assertFalse(list.contains(new Person("Alice", 20)));
+    }
+
+    @Test
     @DisplayName("Should throw exception for out of bounds access")
     void testBounds() {
         list.addFirst(new Person("Alice", 20));
 
         assertThrows(IndexOutOfBoundsException.class, () -> list.get(5));
         assertThrows(IndexOutOfBoundsException.class, () -> list.set(-1, null));
-    }
-
-    @Test
-    @DisplayName("Should set data by the given index")
-    void testSetByIndex() {
-        list.addFirst(new Person("Alice", 20));
-
-        assertEquals(20, list.get(0).age);
-
-        list.set(0, new Person("Target", 25));
-
-        assertEquals(25, list.get(0).age);
     }
 
     @Test
