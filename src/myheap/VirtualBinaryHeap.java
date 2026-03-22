@@ -24,6 +24,7 @@ public class VirtualBinaryHeap {
         Comparator<? super E> comparator = (E x, E y) -> {
             if (x instanceof Comparable && y instanceof Comparable)
                 return ((Comparable) x).compareTo(y);
+
             return x.equals(y) ? 0 : -1;
         };
         sort(a, b, SortOrder.ASC, comparator);
@@ -43,7 +44,6 @@ public class VirtualBinaryHeap {
         }
 
         int n = a.length + b.length;
-
         if (n <= 1) return;
 
         HeapOrder heapOrder = (sortOrder == SortOrder.ASC) ? HeapOrder.MAX : HeapOrder.MIN;
