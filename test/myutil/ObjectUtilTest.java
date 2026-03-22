@@ -19,9 +19,7 @@ class ObjectUtilTest {
     @Test
     @DisplayName("Should compare the given object w/ target element")
     void testCompatible() {
-        Object obj = new Object();
-
         assertTrue(ObjectUtil.isCompatible(p1, p2));
-        assertFalse(ObjectUtil.isCompatible(obj, p2));
+        assertFalse(ObjectUtil.isCompatible(new Object(), p2));
     }
 }
