@@ -174,6 +174,34 @@ public class CircularLinkedList<E> {
         return false;
     }
 
+    public E set(int i, E data) {
+        if (i < 0 || i >= count) throw new IndexOutOfBoundsException("Index cannot be out of bound");
+        if (data == null) throw new IllegalArgumentException("Data cannot be null");
+
+        SinglyNode<E> cur = head;
+
+        for (int index = 0; index < i; index++)
+            cur = cur.next;
+
+        E replaced = cur.data;
+        cur.data = data;
+
+        return replaced;
+    }
+
+    public E get(int i) {
+        if (i < 0 || i >= count) throw new IndexOutOfBoundsException("Index cannot be out of bound");
+
+        if (i == count - 1) return peekLast();
+
+        SinglyNode<E> cur = head;
+
+        for (int index = 0; index < i; index++)
+            cur = cur.next;
+
+        return cur.data;
+    }
+
     public int indexOf(E data) {
         if (data == null) return -1;
 
@@ -181,7 +209,6 @@ public class CircularLinkedList<E> {
 
         for (int index = 0; index < count; index++) {
             if (comparator.compare(cur.data, data) == 0) return index;
-
             cur = cur.next;
         }
 
