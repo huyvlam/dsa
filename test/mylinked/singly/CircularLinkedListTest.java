@@ -49,4 +49,18 @@ class CircularLinkedListTest {
         assertEquals("Peach", list.remove(0));
         assertEquals(1, list.size());
     }
+
+    @Test
+    @DisplayName("Should remove by the given data")
+    void testRemoveByData() {
+        list.addFirst("Lychee");
+        list.addLast("Longan");
+        list.add(1, "Rambutan");
+
+        assertFalse(list.remove("Apple"));
+        assertTrue(list.remove("Rambutan"));
+        assertTrue(list.remove("Lychee"));
+        assertTrue(list.remove("Longan"));
+        assertEquals(0, list.size());
+    }
 }
