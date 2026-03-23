@@ -1,11 +1,15 @@
-package myutil;
+package myarray;
 
 import myinterface.Printer;
 
 import java.util.Random;
 
 public class ArrayUtil {
-    // Fill the array w/ random numbers from 0 to the given bound
+    /**
+     * Fill the given array w/ random numbers ranged from 0 to the given bound
+     * @param arr array to be filled
+     * @param bound upper limit (number generated does not exceed this)
+     */
     public static void fillRandomNumbers(Integer[] arr, int bound) {
         Random rand = new Random();
 
@@ -13,7 +17,13 @@ public class ArrayUtil {
             arr[i] = rand.nextInt(bound);
     }
 
-    // Flexible toString with custom print of data
+    /**
+     * Flexible toString w/ custom print of data
+     * @param arr array of elements
+     * @param printer custom way to print element
+     * @return string value of every element in the given array
+     * @param <E> type of element
+     */
     public static <E> String toString(E[] arr, Printer<E> printer) {
         int n = arr.length;
         if (n == 0) return "[ empty ]";
