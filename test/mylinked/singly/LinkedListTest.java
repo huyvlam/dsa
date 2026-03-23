@@ -45,12 +45,14 @@ class LinkedListTest {
         list.addLast(new Person("A", 10));
         list.addLast(new Person("B", 20));
         list.addLast(new Person("C", 30));
+        list.addLast(new Person("D", 40));
 
         list.reverse();
 
-        assertEquals(30, list.peekFirst().age); // New Head
-        assertEquals(10, list.peekLast().age);  // New Tail
-        assertEquals(20, list.get(1).age);      // Middle stayed
+        assertEquals(40, list.peekFirst().age); // New Head
+        assertEquals(30, list.get(1).age);  // New Tail
+        assertEquals(20, list.get(2).age);      // Middle stayed
+        assertEquals(10, list.peekLast().age);      // Middle stayed
     }
 
     @Test
