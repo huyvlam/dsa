@@ -104,6 +104,49 @@ public class CircularLinkedList<E> {
         return data;
     }
 
+    public void add(int i, E data) {
+        if (data == null) throw new IllegalArgumentException("Data cannot be null");
+        if (i < 0 || i > count) throw new IndexOutOfBoundsException("Index cannot be out of bound");
+
+        if (i == 0) {
+            addFirst(data);
+            return;
+        }
+        if (i == count) {
+            addLast(data);
+            return;
+        }
+
+        SinglyNode<E> node = new SinglyNode<>(data);
+        SinglyNode<E> prev = head;
+
+        for (int index = 0; index < i - 1; index++)
+            prev = prev.next;
+
+        node.next = prev.next;
+        prev.next = node;
+        count++;
+    }
+
+    public E remove(int i) {
+        if (i < 0 || i >= count) throw new IndexOutOfBoundsException("Index cannot be out of bound");
+
+        if (i == 0) return pollFirst();
+        if (i == count - 1) return pollLast();
+
+        SinglyNode<E> prev = head;
+
+        for (int index = 0; index < i - 1; index++)
+            prev = prev.next;
+
+        SinglyNode<E> removed = prev.next;
+        E data = removed.data;
+        prev.next = removed.next;
+
+        count--;
+        return data;
+    }
+
     static void main() {
         CircularLinkedList<String> list = new CircularLinkedList<>(null);
     }
