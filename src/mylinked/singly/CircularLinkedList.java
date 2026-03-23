@@ -37,6 +37,37 @@ public class CircularLinkedList<E> {
         return tail == null ? null : tail.data;
     }
 
+    public void addFirst(E data) {
+        if (data == null) throw new IllegalArgumentException("Data cannot be null");
+
+        SinglyNode<E> node = new SinglyNode<>(data);
+
+        if (head == null) {
+            head = node;
+            tail = node;
+            node.next = head;
+        } else {
+            node.next = head;
+            head = node;
+            tail.next = head;
+        }
+        count++;
+    }
+
+    public void addLast(E data) {
+        if (data == null) throw new IllegalArgumentException("Data cannot be null");
+
+        if (head == null) {
+            addFirst(data);
+            return;
+        }
+
+        SinglyNode<E> node = new SinglyNode<>(data);
+        tail.next = node;
+        node.next = head;
+        tail = node;
+        count++;
+    }
 
     static void main() {
         CircularLinkedList<String> list = new CircularLinkedList<>(null);
