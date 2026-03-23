@@ -1,5 +1,6 @@
 package mylinked.singly;
 
+import mymodel.Person;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -62,5 +63,29 @@ class CircularLinkedListTest {
         assertTrue(list.remove("Lychee"));
         assertTrue(list.remove("Longan"));
         assertEquals(0, list.size());
+    }
+
+    @Test
+    @DisplayName("Should get/replace data by the specified index")
+    void testSetGetByIndex() {
+        list.addFirst("Strawberry");
+        list.addLast("Pluot");
+        list.add(1, "Plum");
+
+        assertEquals("Strawberry", list.get(0));
+        assertEquals("Plum", list.get(1));
+        assertEquals("Pluot", list.get(2));
+
+        list.set(2, "Pear");
+        assertEquals("Pear", list.get(2));
+    }
+
+    @Test
+    @DisplayName("Should throw exception for out of bounds access")
+    void testBounds() {
+        list.addFirst("Dragon fruit");
+
+        assertThrows(IndexOutOfBoundsException.class, () -> list.get(5));
+        assertThrows(IndexOutOfBoundsException.class, () -> list.set(-1, null));
     }
 }
