@@ -10,15 +10,27 @@ import mymodel.Person;
 import java.util.Comparator;
 
 class VirtualBinaryHeapTest {
-    private final Person[] personsA = { new Person("Zizi", 23), new Person("Yan", 31) };
-    private final Person[] personsB = { new Person("Herra", 14), new Person("Tin", 54) };
-    private final String[] strA = {"Xuan", "Ha"};
-    private final String[] strB = {"Thu", "Dong"};
+    private Person[] personsA;
+    private Person[] personsB;
+    private String[] strA;
+    private String[] strB;
     private Comparator<Person> comparator;
 
     @BeforeEach
     void setUp() {
         comparator = (p1, p2) -> Integer.compare(p1.age, p2.age);
+        personsA = new Person[2];
+        personsA[0] = new Person("Zizi", 23);
+        personsA[1] = new Person("Yan", 31);
+        personsB = new Person[2];
+        personsB[0] = new Person("Herra", 14);
+        personsB[1] = new Person("Tin", 54);
+        strA = new String[2];
+        strA[0] = "Xuan";
+        strA[1] = "Ha";
+        strB = new String[2];
+        strB[0] = "Thu";
+        strB[1] = "Dong";
     }
 
     @Test
