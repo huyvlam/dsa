@@ -147,6 +147,33 @@ public class CircularLinkedList<E> {
         return data;
     }
 
+    public boolean remove(E data) {
+        if (data == null || count == 0) return false;
+
+        if (comparator.compare(head.data, data) == 0) {
+            pollFirst();
+            return true;
+        }
+        if (comparator.compare(tail.data, data) == 0) {
+            pollLast();
+            return true;
+        }
+
+        SinglyNode<E> prev = head;
+
+        while (prev.next != tail) {
+            SinglyNode<E> cur = prev.next;
+            if (comparator.compare(cur.data, data) == 0) {
+                prev.next = cur.next;
+                count--;
+
+                return true;
+            }
+            prev = prev.next;
+        }
+        return false;
+    }
+
     public int indexOf(E data) {
         if (data == null) return -1;
 
