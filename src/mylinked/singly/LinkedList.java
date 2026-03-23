@@ -45,12 +45,14 @@ public class LinkedList<E> {
 
         SinglyNode<E> node = new SinglyNode<>(data);
 
-        node.next = head;
-        head = node;
+        if (head == null) {
+            head = node;
+            tail = node;
+        } else {
+            node.next = head;
+            head = node;
+        }
         count++;
-
-        if (tail != null) return;
-        tail = head;
     }
 
     public void addLast(E data) {
