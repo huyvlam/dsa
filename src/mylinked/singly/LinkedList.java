@@ -148,24 +148,26 @@ public class LinkedList<E> {
     public boolean remove(E data) {
         if (data == null || count == 0) return false;
 
-        if (comparator.compare(head.data, data) == 0)
-            return pollFirst() != null;
-
-        if (comparator.compare(tail.data, data) == 0)
-            return pollLast() != null;
+        if (comparator.compare(head.data, data) == 0) {
+            pollFirst();
+            return true;
+        }
+        if (comparator.compare(tail.data, data) == 0) {
+            pollLast();
+            return true;
+        }
 
         SinglyNode<E> prev = head;
-        SinglyNode<E> cur = head.next;
 
-        while (cur != null) {
+        while (prev.next != tail) {
+            SinglyNode<E> cur = prev.next;
             if (comparator.compare(cur.data, data) == 0) {
                 prev.next = cur.next;
-                if (cur == tail) tail = prev;
                 count--;
+
                 return true;
             }
-            prev = cur;
-            cur = cur.next;
+            prev = prev.next;
         }
 
         return false;
