@@ -191,6 +191,9 @@ public class LinkedList<E> {
     public E get(int i) {
         if (i < 0 || i >= count) throw new IndexOutOfBoundsException("Index cannot be out of bound");
 
+        // use tail pointer for O(1) search
+        if (i == count - 1) return peekLast();
+
         SinglyNode<E> cur = head;
 
         for (int count = 0; count < i; count++)
