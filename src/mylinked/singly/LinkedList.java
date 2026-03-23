@@ -2,7 +2,6 @@ package mylinked.singly;
 
 import java.util.Comparator;
 
-import mymodel.Person;
 import myinterface.Printer;
 
 public class LinkedList<E> {
@@ -240,27 +239,10 @@ public class LinkedList<E> {
 
     @Override
     public String toString() {
-        return toString(Object::toString);
+        return toString(null);
     }
 
     public String toString(Printer<E> printer) {
-        if (head == null) return "List: [ empty ]";
-
-        Printer<E> safePrinter = (printer == null) ? (Object::toString) : printer;
-
-        StringBuilder sb = new StringBuilder();
-        sb.append("List (size ").append(count).append("): ");
-
-        SinglyNode<E> cur = head;
-        while (cur != null) {
-            sb.append("[").append(safePrinter.print(cur.data)).append("]");
-
-            if (cur.next != null) sb.append(" -> ");
-            else sb.append(" -> null");
-
-            cur = cur.next;
-        }
-
-        return sb.toString();
+        return SinglyUtil.toString(head, count, printer);
     }
 }
