@@ -17,7 +17,7 @@ class LinearSearchTest {
 
     @BeforeEach
     void setUp() {
-        comparator = (Person p1, Person p2) -> Integer.compare(p1.age, p2.age);
+        comparator = Comparator.comparingInt((Person p) -> p.age);
         arrI = new Integer[20];
         ArrayUtil.fillRandomNumbers(arrI, 100);
         arrI[5] = -5;
