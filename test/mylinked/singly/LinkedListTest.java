@@ -59,10 +59,10 @@ class LinkedListTest {
         list.add(0, new Person("Abby", 20));
         list.add(1, new Person("Bona", 22));
         list.add(1, new Person("Ciro", 24));
-        list.remove(2);
 
         assertEquals(0, list.indexOf(new Person("A", 20)));
         assertEquals(1, list.indexOf(new Person("B", 24)));
+        assertEquals("Bona", list.remove(2).name);
         assertEquals(2, list.size());
         assertFalse(list.contains(new Person("Ciro", 22)));
     }
@@ -73,10 +73,7 @@ class LinkedListTest {
         list.addLast(new Person("Target", 25));
         list.addLast(new Person("Other", 50));
 
-        // Match only by age per comparator
-        boolean removed = list.remove(new Person("Ghost", 25));
-
-        assertTrue(removed);
+        assertTrue(list.remove(new Person("Ghost", 25))); // match by age
         assertEquals(1, list.size());
         assertEquals(50, list.peekFirst().age);
     }
