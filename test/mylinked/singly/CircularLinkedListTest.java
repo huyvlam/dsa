@@ -25,4 +25,15 @@ class CircularLinkedListTest {
         assertEquals("Passionfruit", list.peekLast());
         assertEquals(3, list.size());
     }
+
+    @Test
+    @DisplayName("Should handle pollFirst, pollLast on single element")
+    void testPollSingleElement() {
+        list.addFirst("Apple");
+        list.addLast("Cherry");
+
+        assertEquals("Apple", list.pollFirst());
+        assertEquals("Cherry", list.pollLast());
+        assertEquals(0, list.size());
+    }
 }
