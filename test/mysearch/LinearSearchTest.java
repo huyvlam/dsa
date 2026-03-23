@@ -11,37 +11,37 @@ import java.util.Comparator;
 
 
 class LinearSearchTest {
-    private Integer[] arrI;
-    private Person[] arrP;
+    private Integer[] listI;
+    private Person[] listP;
     private Comparator<Person> comparator;
 
     @BeforeEach
     void setUp() {
         comparator = Comparator.comparingInt((Person p) -> p.age);
-        arrI = new Integer[20];
-        ArrayUtil.fillRandomNumbers(arrI, 100);
-        arrI[5] = -5;
-        arrI[15] = 200;
-        arrP = new Person[4];
-        arrP[0] = new Person("Herra", 23);
-        arrP[1] = new Person("Rumi", 54);
-        arrP[2] = new Person("Oro", 40);
-        arrP[3] = new Person("Niko", 19);
+        listI = new Integer[20];
+        ArrayUtil.fillRandomNumbers(listI, 100);
+        listI[5] = -5;
+        listI[15] = 200;
+        listP = new Person[4];
+        listP[0] = new Person("Herra", 23);
+        listP[1] = new Person("Rumi", 54);
+        listP[2] = new Person("Oro", 40);
+        listP[3] = new Person("Niko", 19);
     }
 
     @Test
-    @DisplayName("Should find the smallest/largest element in the given array")
-    void testFindMinMax() {
-        Object[] res = LinearSearch.findMinMax(arrI);
+    @DisplayName("Should find min/max elements in the given array using default comparator")
+    void testMinMaxDefaultComparator() {
+        Object[] res = LinearSearch.findMinMax(listI);
 
         assertEquals(-5, res[0]);
         assertEquals(200, res[1]);
     }
 
     @Test
-    @DisplayName("Should find the smallest/largest element in the given array using custom comparator")
-    void testFindMinMaxWithComparator() {
-        Object[] res = LinearSearch.findMinMax(arrP, comparator);
+    @DisplayName("Should find min/max elements in the given array using custom comparator")
+    void testMinMaxCustomComparator() {
+        Object[] res = LinearSearch.findMinMax(listP, comparator);
 
         assertNotNull(res);
         assertEquals(19, ((Person) res[0]).age);
