@@ -22,6 +22,7 @@ public class LinkedList<E> {
             // type check data to avoid ClassCastException
             if (a instanceof Comparable && b instanceof Comparable)
                 return ((Comparable) a).compareTo(b);
+
             return a.equals(b) ? 0 : -1; // fallback for comparables
         });
     }
@@ -268,18 +269,5 @@ public class LinkedList<E> {
         }
 
         return sb.toString();
-    }
-
-    static void main() {
-        Comparator<Person> comp = (p1, p2) -> Integer.compare(p1.age, p2.age);
-        LinkedList<Person> list = new LinkedList<>(comp);
-
-        list.add(0, new Person("ha", 18));
-        list.add(1, new Person("thu", 16));
-        list.addLast(new Person("dong", 17));
-        list.addFirst(new Person("xuan", 15));
-        list.remove(new Person("tet", 17));
-
-        IO.println(list.toString((Person p) -> "Name: " + p.name + " Age: " + p.age));
     }
 }
