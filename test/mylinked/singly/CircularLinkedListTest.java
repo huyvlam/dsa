@@ -1,6 +1,5 @@
 package mylinked.singly;
 
-import mymodel.Person;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -87,5 +86,17 @@ class CircularLinkedListTest {
 
         assertThrows(IndexOutOfBoundsException.class, () -> list.get(5));
         assertThrows(IndexOutOfBoundsException.class, () -> list.set(-1, null));
+    }
+
+    @Test
+    @DisplayName("Should use custom/default printer in toString")
+    void testToString() {
+        list.addFirst("Soursop");
+        String result = list.toString(null);
+        String customResult = list.toString(p -> ("I like " + p));
+
+        assertTrue(result.contains("[Soursop]"));
+        assertTrue(result.contains("-> (head)"));
+        assertTrue(customResult.contains("I like Soursop"));
     }
 }
