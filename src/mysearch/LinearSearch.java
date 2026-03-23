@@ -24,8 +24,7 @@ public class LinearSearch {
         int n = arr.length;
         if (n == 0) return null;
 
-        E min = null;
-        E max = null;
+        E min, max;
         int i;
 
         // initialize min/max
