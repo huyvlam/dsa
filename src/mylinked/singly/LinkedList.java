@@ -243,6 +243,24 @@ public class LinkedList<E> {
     }
 
     public String toString(Printer<E> printer) {
-        return SinglyUtil.toString(head, count, printer);
+        if (head == null) return "List: [ empty ]";
+
+        Printer<E> safePrinter = (printer == null) ? (Object::toString) : printer;
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("LinkedList (size ").append(count).append("): ");
+
+        SinglyNode<E> cur = head;
+        while (cur != null) {
+            IO.println(cur.data);
+            sb.append("[").append(safePrinter.print(cur.data)).append("]");
+
+            if (cur.next != null) sb.append(" -> ");
+            else sb.append(" -> null");
+
+            cur = cur.next;
+        }
+
+        return sb.toString();
     }
 }
