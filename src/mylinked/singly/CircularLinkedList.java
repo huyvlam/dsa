@@ -69,6 +69,41 @@ public class CircularLinkedList<E> {
         count++;
     }
 
+    public E pollFirst() {
+        if (head == null) return null;
+
+        E data = head.data;
+
+        if (head == tail) {
+            head = null;
+            tail = null;
+        } else {
+            head = head.next;
+            tail.next = head;
+        }
+        count--;
+
+        return data;
+    }
+
+    public E pollLast() {
+        if (tail == null) return null;
+
+        if (head == tail) return pollFirst();
+
+        E data = tail.data;
+        SinglyNode<E> prev = head;
+
+        while (prev.next != tail)
+            prev = prev.next;
+
+        prev.next = head;
+        tail = prev;
+        count--;
+
+        return data;
+    }
+
     static void main() {
         CircularLinkedList<String> list = new CircularLinkedList<>(null);
     }
