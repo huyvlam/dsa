@@ -36,4 +36,17 @@ class CircularLinkedListTest {
         assertEquals("Cherry", list.pollLast());
         assertEquals(0, list.size());
     }
+
+    @Test
+    @DisplayName("Should add/remove element by the given index")
+    void testAddRemoveByIndex() {
+        list.addFirst("Peach");
+        list.addLast("Apricot");
+        list.add(1, "Nectarine");
+
+        assertEquals(1, list.indexOf("Nectarine"));
+        assertEquals("Apricot", list.remove(2));
+        assertEquals("Peach", list.remove(0));
+        assertEquals(1, list.size());
+    }
 }
