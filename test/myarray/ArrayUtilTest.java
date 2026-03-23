@@ -1,4 +1,4 @@
-package myutil;
+package myarray;
 
 import myinterface.Printer;
 import mymodel.Person;
