@@ -89,6 +89,22 @@ class CircularLinkedListTest {
     }
 
     @Test
+    @DisplayName("Should reverse the list and swap head/tail pointers")
+    void testReverse() {
+        list.addFirst("Tangerine");
+        list.addFirst("Orange");
+        list.addFirst("Kiwi");
+        list.addFirst("Mango");
+
+        list.reverse();
+
+        assertEquals("Tangerine", list.peekFirst());
+        assertEquals("Orange", list.get(1));
+        assertEquals("Kiwi", list.get(2));
+        assertEquals("Mango", list.peekLast());
+    }
+
+    @Test
     @DisplayName("Should use custom/default printer in toString")
     void testToString() {
         list.addFirst("Soursop");
