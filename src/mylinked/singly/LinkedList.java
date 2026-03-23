@@ -209,7 +209,6 @@ public class LinkedList<E> {
 
         for (int index = 0; index < count; index++) {
             if (comparator.compare(cur.data, data) == 0) return index;
-
             cur = cur.next;
         }
 
