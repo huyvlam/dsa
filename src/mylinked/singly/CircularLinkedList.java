@@ -221,6 +221,24 @@ public class CircularLinkedList<E> {
         return indexOf(data) != -1;
     }
 
+    public void reverse() {
+        if (head == null || head.next == null) return;
+
+        SinglyNode<E> prev = tail;
+        SinglyNode<E> cur = head;
+        SinglyNode<E> next = null;
+
+        for (int i = 0; i < count; i++) {
+            next = cur.next;
+            cur.next = prev;
+            prev = cur;
+            cur = next;
+        }
+
+        tail = head;
+        head = prev;
+    }
+
     @Override
     public String toString() {
         return toString(null);
