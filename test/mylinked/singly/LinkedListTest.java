@@ -75,6 +75,7 @@ class LinkedListTest {
         list.add(1, new Person("Mid", 15));
 
         assertTrue(list.remove(new Person("Ghost", 15))); // match by age
+        assertFalse(list.remove(new Person("Ghost", 15))); // match by age
         assertTrue(list.remove(new Person("Ghost", 25))); // match by age
         assertTrue(list.remove(new Person("Ghost", 50))); // match by age
         assertEquals(0, list.size());
