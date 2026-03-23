@@ -147,6 +147,24 @@ public class CircularLinkedList<E> {
         return data;
     }
 
+    public int indexOf(E data) {
+        if (data == null) return -1;
+
+        SinglyNode<E> cur = head;
+
+        for (int index = 0; index < count; index++) {
+            if (comparator.compare(cur.data, data) == 0) return index;
+
+            cur = cur.next;
+        }
+
+        return -1;
+    }
+
+    public boolean contains(E data) {
+        return indexOf(data) != -1;
+    }
+
     static void main() {
         CircularLinkedList<String> list = new CircularLinkedList<>(null);
     }
