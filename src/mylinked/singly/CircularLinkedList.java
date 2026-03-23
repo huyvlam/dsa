@@ -1,5 +1,7 @@
 package mylinked.singly;
 
+import myinterface.Printer;
+
 import java.util.Comparator;
 
 public class CircularLinkedList<E> {
@@ -219,7 +221,29 @@ public class CircularLinkedList<E> {
         return indexOf(data) != -1;
     }
 
-    static void main() {
-        CircularLinkedList<String> list = new CircularLinkedList<>(null);
+    @Override
+    public String toString() {
+        return toString(null);
+    }
+
+    public String toString(Printer<E> printer) {
+        if (head == null) return "List: [ empty ]";
+
+        Printer<E> safePrinter = (printer == null) ? (Object::toString) : printer;
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("CircularLinkedList (size ").append(count).append("): ");
+
+        SinglyNode<E> cur = head;
+        do {
+            sb.append("[").append(safePrinter.print(cur.data)).append("]");
+
+            if (cur.next != head) sb.append(" -> ");
+            else sb.append(" -> (head)");
+
+            cur = cur.next;
+        } while (cur != head);
+
+        return sb.toString();
     }
 }
