@@ -1,9 +1,8 @@
-package mylinked;
+package mylinked.singly;
 
 import myinterface.Printer;
-import mylinked.singly.SinglyNode;
 
-public class LinkedListUtil {
+public class SinglyUtil {
     public static <E> String toString(SinglyNode<E> head, int size, Printer<E> printer) {
         if (head == null) return "List: [ empty ]";
 
