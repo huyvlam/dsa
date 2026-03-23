@@ -133,15 +133,13 @@ public class LinkedList<E> {
         if (i == count - 1) return pollLast();
 
         SinglyNode<E> prev = head;
-        SinglyNode<E> cur = head.next;
 
-        for (int index = 0; index < i - 1; index++) {
-            prev = cur;
-            cur = cur.next;
-        }
+        for (int index = 0; index < i - 1; index++)
+            prev = prev.next;
 
-        E data = cur.data;
-        prev.next = cur.next;
+        SinglyNode<E> removed = prev.next;
+        E data = removed.data;
+        prev.next = removed.next;
 
         count--;
         return data;
