@@ -76,11 +76,10 @@ public class LinkedList<E> {
         E data = head.data;
         head = head.next;
 
-        // Important: when list becomes empty, tail MUST be null to avoid "ghost node"
+        // * When list becomes empty, tail MUST be set to null (i.e ghost node)
         if (head == null) tail = null;
 
         count--;
-
         return data;
     }
 
@@ -106,7 +105,7 @@ public class LinkedList<E> {
         if (data == null) throw new IllegalArgumentException("Data cannot be null");
         if (i < 0 || i > count) throw new IndexOutOfBoundsException("Index cannot be out of bound");
 
-        if (i == 0 || count == 0) {
+        if (i == 0) {
             addFirst(data);
             return;
         }
@@ -210,6 +209,7 @@ public class LinkedList<E> {
 
         for (int index = 0; index < count; index++) {
             if (comparator.compare(cur.data, data) == 0) return index;
+
             cur = cur.next;
         }
 
@@ -256,11 +256,9 @@ public class LinkedList<E> {
         while (cur != null) {
             sb.append("[").append(safePrinter.print(cur.data)).append("]");
 
-            if (cur.next != null) {
-                sb.append(" -> ");
-            } else {
-                sb.append(" -> null");
-            }
+            if (cur.next != null) sb.append(" -> ");
+            else sb.append(" -> null");
+
             cur = cur.next;
         }
 
