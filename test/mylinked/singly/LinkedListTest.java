@@ -70,12 +70,14 @@ class LinkedListTest {
     @Test
     @DisplayName("Should remove by data using the comparator")
     void testRemoveByData() {
-        list.addLast(new Person("Target", 25));
-        list.addLast(new Person("Other", 50));
+        list.addFirst(new Person("Head", 50));
+        list.addLast(new Person("Tail", 25));
+        list.add(1, new Person("Mid", 15));
 
+        assertTrue(list.remove(new Person("Ghost", 15))); // match by age
         assertTrue(list.remove(new Person("Ghost", 25))); // match by age
-        assertEquals(1, list.size());
-        assertEquals(50, list.peekFirst().age);
+        assertTrue(list.remove(new Person("Ghost", 50))); // match by age
+        assertEquals(0, list.size());
     }
 
     @Test
