@@ -9,23 +9,27 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ArrayUtilTest {
-    private final Person[] persons = {new Person("Herra", 23), new Person("Rambo", 54)};
-    private final Integer[] nums = new Integer[5];
+    private Person[] persons;
+    private Integer[] numbers;
     private Printer<Person> printer;
 
     @BeforeEach
     void setUp() {
         printer = (p) -> p.name + " is " + p.age;
+        numbers = new Integer[5];
+        persons = new Person[2];
+        persons[0] = new Person("Herra", 23);
+        persons[1] = new Person("Rambo", 54);
     }
 
     @Test
     @DisplayName("Should fill the array with random numbers")
     void testFillRandomNumbers() {
-        assertNull(nums[0]);
+        assertNull(numbers[0]);
 
-        ArrayUtil.fillRandomNumbers(nums, 20);
+        ArrayUtil.fillRandomNumbers(numbers, 20);
 
-        assertNotNull(nums[0]);
+        assertNotNull(numbers[0]);
     }
 
     @Test
