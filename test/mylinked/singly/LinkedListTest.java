@@ -106,9 +106,9 @@ class LinkedListTest {
     @DisplayName("Should use custom printer in toString")
     void testToStringCustomPrinter() {
         list.addFirst(new Person("Alice", 20));
-        String result = list.toString(p -> "Age:" + p.age);
+        String result = list.toString(p -> p.name + " is " + p.age);
 
-        assertTrue(result.contains("Age:20"));
+        assertTrue(result.contains("Alice is 20"));
         assertTrue(result.contains("-> null"));
     }
 }
