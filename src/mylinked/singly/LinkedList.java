@@ -11,20 +11,15 @@ public class LinkedList<E> {
     private final Comparator<? super E> comparator;
 
     public LinkedList(Comparator<? super E> comparator) {
-        this.comparator = comparator;
         head = null;
         tail = null;
         count = 0;
-    }
-
-    public LinkedList() {
-        this((a, b) -> {
-            // type check data to avoid ClassCastException
+        this.comparator = (comparator != null) ? comparator : (E a, E b) -> {
             if (a instanceof Comparable && b instanceof Comparable)
                 return ((Comparable) a).compareTo(b);
 
-            return a.equals(b) ? 0 : -1; // fallback for comparables
-        });
+            return a.equals(b) ? 0 : -1;
+        };
     }
 
     public void clear() {
@@ -55,7 +50,6 @@ public class LinkedList<E> {
         count++;
 
         if (tail != null) return;
-
         tail = head;
     }
 
