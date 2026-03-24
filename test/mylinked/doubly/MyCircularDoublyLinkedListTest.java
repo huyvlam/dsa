@@ -76,4 +76,17 @@ class MyCircularDoublyLinkedListTest {
         assertTrue(list.remove((Integer) 21));
         assertFalse(list.remove((Integer) 22));
     }
+
+    @Test
+    @DisplayName("Should replace/get data by the given index")
+    void testGetSetByIndex() {
+        list.addLast(68);
+        list.addLast(49);
+        list.addLast(52);
+
+        assertEquals(49, list.set(1, 37));
+        assertEquals(37, list.get(1));
+        assertEquals(52, list.set(2, 13));
+        assertEquals(13, list.get(2));
+    }
 }
