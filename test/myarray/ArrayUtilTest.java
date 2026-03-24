@@ -11,11 +11,9 @@ import static org.junit.jupiter.api.Assertions.*;
 class ArrayUtilTest {
     private Person[] persons;
     private Integer[] numbers;
-    private Printer<Person> printer;
 
     @BeforeEach
     void setUp() {
-        printer = (p) -> p.name + " is " + p.age;
         numbers = new Integer[5];
         persons = new Person[2];
         persons[0] = new Person("Herra", 23);
@@ -33,10 +31,13 @@ class ArrayUtilTest {
     }
 
     @Test
-    @DisplayName("Should return string value from the given array using custom printer")
+    @DisplayName("Should return string value from the given array")
     void testToString() {
-        String res = ArrayUtil.toString(persons, printer);
+        ArrayUtil.fillRandomNumbers(numbers, 20);
+        String standard = ArrayUtil.toString(numbers);
+        String custom = ArrayUtil.toString(persons, (p) -> p.name + " is " + p.age);
 
-        assertTrue(res.contains("Herra is 23"));
+        assertTrue(standard.contains(numbers[2].toString()));
+        assertTrue(custom.contains("Herra is 23"));
     }
 }
