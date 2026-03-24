@@ -191,4 +191,47 @@ public class MyCircularDoublyLinkedList<E> {
 
         return false;
     }
+
+    public E set(int i, E data) {
+        if (i < 0 || i >= count) throw new IndexOutOfBoundsException("Index cannot be out of bound");
+        if (data == null) throw new IllegalArgumentException("Data cannot be null");
+
+        DoublyNode<E> cur;
+
+        if (i < count / 2) {
+            cur = sentinel.next;
+            for (int index = 0; index < i; index++)
+                cur = cur.next;
+        } else {
+            cur = sentinel.prev;
+            for (int index = count - 1; index > i; index--)
+                cur = cur.prev;
+        }
+
+        E replaced = cur.data;
+        cur.data = data;
+
+        return replaced;
+    }
+
+    public E get(int i) {
+        if (i < 0 || i >= count) throw new IndexOutOfBoundsException("Index cannot be out of bound");
+
+        if (i == 0) return peekFirst();
+        if (i == count - 1) return peekLast();
+
+        DoublyNode<E> cur;
+
+        if (i < count / 2) {
+            cur = sentinel.next;
+            for (int index = 0; index < i; index++)
+                cur = cur.next;
+        } else {
+            cur = sentinel.prev;
+            for (int index = count - 1; index > i; index--)
+                cur = cur.prev;
+        }
+
+        return cur.data;
+    }
 }
