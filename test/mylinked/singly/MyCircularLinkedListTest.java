@@ -76,7 +76,7 @@ class MyCircularLinkedListTest {
         assertEquals("Plum", list.get(1));
         assertEquals("Pluot", list.get(2));
 
-        list.set(2, "Pear");
+        assertEquals("Pluot", list.set(2, "Pear"));
         assertEquals("Pear", list.get(2));
     }
 
