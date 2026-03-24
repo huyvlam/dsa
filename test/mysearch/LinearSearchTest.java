@@ -11,40 +11,38 @@ import java.util.Comparator;
 
 
 class LinearSearchTest {
-    private Integer[] listI;
-    private Person[] listP;
-    private Comparator<Person> comparator;
+    private Integer[] arrI;
+    private Person[] arrP;
 
     @BeforeEach
     void setUp() {
-        comparator = Comparator.comparingInt((Person p) -> p.age);
-        listI = new Integer[20];
-        ArrayUtil.fillRandomNumbers(listI, 100);
-        listI[5] = -5;
-        listI[15] = 200;
-        listP = new Person[4];
-        listP[0] = new Person("Herra", 23);
-        listP[1] = new Person("Rumi", 54);
-        listP[2] = new Person("Oro", 40);
-        listP[3] = new Person("Niko", 19);
+        arrI = new Integer[20];
+        ArrayUtil.fillRandomNumbers(arrI, 100);
+        arrI[5] = -5;
+        arrI[15] = 200;
+        arrP = new Person[4];
+        arrP[0] = new Person("Herra", 23);
+        arrP[1] = new Person("Rumi", 54);
+        arrP[2] = new Person("Oro", 40);
+        arrP[3] = new Person("Niko", 19);
     }
 
     @Test
-    @DisplayName("Should find min/max elements in the given array using default comparator")
-    void testMinMaxDefaultComparator() {
-        Object[] res = LinearSearch.findMinMax(listI);
+    @DisplayName("Should find min/max elements in the given array using natural order")
+    void testMinMaxNaturalOrder() {
+        Pair<Integer> res = LinearSearch.findMinMax(arrI, Comparator.naturalOrder());
 
-        assertEquals(-5, res[0]);
-        assertEquals(200, res[1]);
+        assertEquals(-5, res.min);
+        assertEquals(200, res.max);
     }
 
     @Test
     @DisplayName("Should find min/max elements in the given array using custom comparator")
     void testMinMaxCustomComparator() {
-        Object[] res = LinearSearch.findMinMax(listP, comparator);
+        Pair<Person> res = LinearSearch.findMinMax(arrP, Comparator.comparingInt((Person p) -> p.age));
 
         assertNotNull(res);
-        assertEquals(19, ((Person) res[0]).age);
-        assertEquals(54, ((Person) res[1]).age);
+        assertEquals(19, res.min.age);
+        assertEquals(54, res.max.age);
     }
 }
