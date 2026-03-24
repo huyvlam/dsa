@@ -164,4 +164,31 @@ public class MyCircularDoublyLinkedList<E> {
         count--;
         return data;
     }
+
+    public boolean remove(E data) {
+        if (data == null) throw new IllegalArgumentException("Data cannot be null");
+
+        if (count > 0 && comparator.compare(sentinel.prev.data, data) == 0) {
+            pollLast();
+            return true;
+        }
+
+        DoublyNode<E> cur = sentinel.next;
+
+        while (cur != sentinel.prev) {
+            if (comparator.compare(cur.data, data) == 0) {
+                cur.next.prev = cur.prev;
+                cur.prev.next = cur.next;
+
+                cur.prev = null;
+                cur.next = null;
+
+                count--;
+                return true;
+            }
+            cur = cur.next;
+        }
+
+        return false;
+    }
 }
