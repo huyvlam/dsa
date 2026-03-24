@@ -3,7 +3,7 @@ package mylinked.doubly;
 import java.util.Comparator;
 
 public class CircularDoublyLinkedList<E> {
-    private DoublyNode<E> sentinel;
+    private final DoublyNode<E> sentinel;
     private int count;
     private final Comparator<? super E> comparator;
 
