@@ -86,10 +86,9 @@ class MyDoublyLinkedListTest {
     @DisplayName("Should replace data at the given index")
     void testSetByIndex() {
         list.addLast("Abby");
-        list.set(0, "Ciro");
 
+        assertEquals("Abby", list.set(0, "Ciro"));
         assertEquals("Ciro", list.get(0));
-        assertFalse(list.contains("Abby"));
     }
 
     @Test
