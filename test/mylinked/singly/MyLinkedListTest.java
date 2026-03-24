@@ -87,11 +87,10 @@ class MyLinkedListTest {
     @DisplayName("Should replace/get data by the specified index")
     void testSetGetByIndex() {
         list.addFirst(new Person("Alice", 20));
+        Person replaced = list.set(0, new Person("Target", 25));
 
-        assertTrue(list.contains(new Person("Alice", 20)));
-
-        list.set(0, new Person("Target", 25));
-
+        assertNotNull(replaced);
+        assertEquals("Alice", replaced.name);
         assertEquals(25, list.get(0).age);
     }
 
