@@ -5,7 +5,7 @@ import myinterface.Printer;
 import java.util.Comparator;
 
 public class CircularLinkedList<E> {
-    public SinglyNode<E> head, tail;
+    private SinglyNode<E> head, tail;
     private int count;
     private final Comparator<? super E> comparator;
 
