@@ -226,7 +226,7 @@ public class CircularLinkedList<E> {
 
         SinglyNode<E> prev = tail;
         SinglyNode<E> cur = head;
-        SinglyNode<E> next = null;
+        SinglyNode<E> next;
 
         for (int i = 0; i < count; i++) {
             next = cur.next;
