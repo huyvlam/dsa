@@ -5,24 +5,20 @@ import myinterface.Printer;
 import java.util.Comparator;
 
 public class DoublyLinkedList<E> {
-    public DoublyNode<E> head, tail;
+    private DoublyNode<E> head, tail;
     private int count;
     private final Comparator<? super E> comparator;
 
     public DoublyLinkedList(Comparator<? super E> comparator) {
-        this.comparator = comparator;
         head = null;
         tail = null;
         count = 0;
-    }
-
-    public DoublyLinkedList() {
-        this((a, b) -> {
-            // type check data
+        this.comparator = (comparator != null) ? comparator : (a, b) -> {
             if (a instanceof Comparable && b instanceof Comparable)
                 return ((Comparable) a).compareTo(b);
-            return a.equals(b) ? 0 : -1; // fallback
-        });
+
+            return a.equals(b) ? 0 : -1;
+        };
     }
 
     public void clear() {
