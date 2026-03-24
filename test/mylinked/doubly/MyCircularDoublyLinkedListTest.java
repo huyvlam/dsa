@@ -48,4 +48,21 @@ class MyCircularDoublyLinkedListTest {
         assertNull(list.peekFirst());
         assertEquals(0, list.size());
     }
+
+    @Test
+    @DisplayName("Should add/remove data by the given index")
+    void testAddRemoveByIndex() {
+        list.add(0, 13);
+        list.add(1, 45);
+        list.add(2, 87);
+        list.add(1, 69);
+
+        assertEquals(13, list.peekFirst());
+        assertEquals(87, list.peekLast());
+
+        assertEquals(45, list.remove(2));
+        assertEquals(69, list.remove(1));
+
+        assertEquals(2, list.size());
+    }
 }
