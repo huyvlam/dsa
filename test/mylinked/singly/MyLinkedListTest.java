@@ -5,13 +5,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import mymodel.Person;
 
-class LinkedListTest {
-    private LinkedList<Person> list;
+class MyLinkedListTest {
+    private MyLinkedList<Person> list;
 
     @BeforeEach
     void setUp() {
         // Initialize with an age-based comparator
-        list = new LinkedList<>((p1, p2) -> Integer.compare(p1.age, p2.age));
+        list = new MyLinkedList<>((p1, p2) -> Integer.compare(p1.age, p2.age));
     }
 
     @Test
