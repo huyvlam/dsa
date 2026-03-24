@@ -69,4 +69,36 @@ public class MyCircularDoublyLinkedList<E> {
 
         count++;
     }
+
+    public E pollFirst() {
+        if (count == 0) return null;
+
+        DoublyNode<E> first = sentinel.next;
+        E data = first.data;
+
+        sentinel.next = first.next;
+        first.next.prev = sentinel;
+
+        first.prev = null;
+        first.next = null;
+
+        count--;
+        return data;
+    }
+
+    public E pollLast() {
+        if (count == 0) return null;
+
+        DoublyNode<E> last = sentinel.prev;
+        E data = last.data;
+
+        sentinel.prev = last.prev;
+        last.prev.next = sentinel;
+
+        last.prev = null;
+        last.next = null;
+
+        count--;
+        return data;
+    }
 }
