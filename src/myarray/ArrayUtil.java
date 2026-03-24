@@ -2,6 +2,7 @@ package myarray;
 
 import myinterface.Printer;
 
+import java.util.Arrays;
 import java.util.Random;
 
 public class ArrayUtil {
@@ -15,6 +16,16 @@ public class ArrayUtil {
 
         for (int i = 0; i < arr.length; i++)
             arr[i] = rand.nextInt(bound);
+    }
+
+    /**
+     * Standard toString
+     * @param arr array of elements
+     * @return string value
+     * @param <E> element type
+     */
+    public static <E> String toString(E[] arr) {
+        return toString(arr, null);
     }
 
     /**
