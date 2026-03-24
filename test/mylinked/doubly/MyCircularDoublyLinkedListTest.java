@@ -32,4 +32,20 @@ class MyCircularDoublyLinkedListTest {
         assertNull(list.peekFirst());
         assertNull(list.peekLast());
     }
+
+    @Test
+    @DisplayName("Should poll single element at either end")
+    void testPollFirstLast() {
+        list.addFirst(34);
+        list.addFirst(65);
+        list.addLast(17);
+        list.addLast(9);
+
+        assertEquals(65, list.pollFirst());
+        assertEquals(9, list.pollLast());
+        assertEquals(34, list.pollFirst());
+        assertEquals(17, list.pollLast());
+        assertNull(list.peekFirst());
+        assertEquals(0, list.size());
+    }
 }
