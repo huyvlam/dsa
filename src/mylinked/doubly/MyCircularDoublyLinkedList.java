@@ -101,4 +101,67 @@ public class MyCircularDoublyLinkedList<E> {
         count--;
         return data;
     }
+
+    public void add(int i, E data) {
+        if (i < 0 || i > count) throw new IndexOutOfBoundsException("Index cannot be out of bound");
+        if (data == null) throw new IllegalArgumentException("Data cannot be null");
+
+        if (i == 0) {
+            addFirst(data);
+            return;
+        }
+        if (i == count) {
+            addLast(data);
+            return;
+        }
+
+        DoublyNode<E> cur;
+
+        if (i < count / 2) {
+            cur = sentinel.next;
+            for (int index = 0; index < i; index++)
+                cur = cur.next;
+        } else {
+            cur = sentinel.prev;
+            for (int index = count - 1; index > i; index--)
+                cur = cur.prev;
+        }
+
+        DoublyNode<E> node = new DoublyNode<>(data);
+        node.next = cur;
+        node.prev = cur.prev;
+        cur.prev.next = node;
+        cur.prev = node;
+
+        count++;
+    }
+
+    public E remove(int i) {
+        if (i < 0 || i >= count) throw new IndexOutOfBoundsException("Index cannot be out of bound");
+
+        if (i == 0) return pollFirst();
+        if (i == count - 1) return pollLast();
+
+        DoublyNode<E> cur;
+
+        if (i < count / 2) {
+            cur = sentinel.next;
+            for (int index = 0; index < i; index++)
+                cur = cur.next;
+        } else {
+            cur = sentinel.prev;
+            for (int index = count - 1; index > i; index--)
+                cur = cur.prev;
+        }
+
+        E data = cur.data;
+        cur.next.prev = cur.prev;
+        cur.prev.next = cur.next;
+
+        cur.prev = null;
+        cur.next = null;
+
+        count--;
+        return data;
+    }
 }
