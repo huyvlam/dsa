@@ -4,21 +4,25 @@ import myinterface.Printer;
 
 import java.util.Comparator;
 
-public class DoublyLinkedList<E> {
+public class MyDoublyLinkedList<E> {
     private DoublyNode<E> head, tail;
     private int count;
     private final Comparator<? super E> comparator;
 
-    public DoublyLinkedList(Comparator<? super E> comparator) {
+    public MyDoublyLinkedList(Comparator<? super E> comparator) {
         head = null;
         tail = null;
         count = 0;
-        this.comparator = (comparator != null) ? comparator : (a, b) -> {
+        this.comparator = comparator;
+    }
+
+    public MyDoublyLinkedList() {
+        this((a, b) -> {
             if (a instanceof Comparable && b instanceof Comparable)
                 return ((Comparable) a).compareTo(b);
 
             return a.equals(b) ? 0 : -1;
-        };
+        });
     }
 
     public void clear() {
