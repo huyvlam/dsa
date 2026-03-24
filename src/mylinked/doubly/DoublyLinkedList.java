@@ -101,7 +101,7 @@ public class DoublyLinkedList<E> {
         if (data == null) throw new IllegalArgumentException("Data cannot be null");
         if (i < 0 || i > count) throw new IndexOutOfBoundsException("Index cannot be out of bound");
 
-        if (i == 0 || count == 0) {
+        if (i == 0) {
             addFirst(data);
             return;
         }
