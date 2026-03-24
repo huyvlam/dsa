@@ -223,7 +223,7 @@ public class LinkedList<E> {
 
         SinglyNode<E> prev = null;
         SinglyNode<E> cur = head;
-        SinglyNode<E> next = null;
+        SinglyNode<E> next;
 
         while (cur != null) {
             next = cur.next;
