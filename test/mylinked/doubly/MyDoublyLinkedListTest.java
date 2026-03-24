@@ -3,12 +3,12 @@ package mylinked.doubly;
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-class DoublyLinkedListTest {
-    private DoublyLinkedList<String> list;
+class MyDoublyLinkedListTest {
+    private MyDoublyLinkedList<String> list;
 
     @BeforeEach
     void setUp() {
-        list = new DoublyLinkedList<>(null);
+        list = new MyDoublyLinkedList<>();
     }
 
     @Test
