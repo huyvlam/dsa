@@ -8,7 +8,7 @@ class DoublyLinkedListTest {
 
     @BeforeEach
     void setUp() {
-        list = new DoublyLinkedList<>();
+        list = new DoublyLinkedList<>(null);
     }
 
     @Test
