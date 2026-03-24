@@ -32,6 +32,7 @@ class LinearSearchTest {
     void testMinMaxNaturalOrder() {
         Pair<Integer> res = LinearSearch.findMinMax(arrI, Comparator.naturalOrder());
 
+        assertNotNull(res);
         assertEquals(-5, res.min);
         assertEquals(200, res.max);
     }
