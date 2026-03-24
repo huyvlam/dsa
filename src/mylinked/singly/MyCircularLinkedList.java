@@ -4,21 +4,25 @@ import myinterface.Printer;
 
 import java.util.Comparator;
 
-public class CircularLinkedList<E> {
+public class MyCircularLinkedList<E> {
     private SinglyNode<E> head, tail;
     private int count;
     private final Comparator<? super E> comparator;
 
-    public CircularLinkedList(Comparator<? super E> comparator) {
+    public MyCircularLinkedList(Comparator<? super E> comparator) {
         head = null;
         tail = null;
         count = 0;
-        this.comparator = (comparator != null) ? comparator : (E a, E b) -> {
+        this.comparator = comparator;
+    }
+
+    public MyCircularLinkedList() {
+        this((E a, E b) -> {
             if (a instanceof Comparable && b instanceof Comparable)
                 return ((Comparable) a).compareTo(b);
 
             return a.equals(b) ? 0 : -1;
-        };
+        });
     }
 
     public void clear() {
