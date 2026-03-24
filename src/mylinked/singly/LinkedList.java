@@ -5,7 +5,7 @@ import java.util.Comparator;
 import myinterface.Printer;
 
 public class LinkedList<E> {
-    public SinglyNode<E> head, tail;
+    private SinglyNode<E> head, tail;
     private int count;
     private final Comparator<? super E> comparator;
 
