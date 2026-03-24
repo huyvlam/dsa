@@ -4,21 +4,25 @@ import java.util.Comparator;
 
 import myinterface.Printer;
 
-public class LinkedList<E> {
+public class MyLinkedList<E> {
     private SinglyNode<E> head, tail;
     private int count;
     private final Comparator<? super E> comparator;
 
-    public LinkedList(Comparator<? super E> comparator) {
+    public MyLinkedList(Comparator<? super E> comparator) {
         head = null;
         tail = null;
         count = 0;
-        this.comparator = (comparator != null) ? comparator : (E a, E b) -> {
+        this.comparator = comparator;
+    }
+
+    public MyLinkedList() {
+        this((E a, E b) -> {
             if (a instanceof Comparable && b instanceof Comparable)
                 return ((Comparable) a).compareTo(b);
 
             return a.equals(b) ? 0 : -1;
-        };
+        });
     }
 
     public void clear() {
