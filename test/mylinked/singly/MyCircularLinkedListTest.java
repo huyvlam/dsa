@@ -1,17 +1,18 @@
 package mylinked.singly;
 
+import java.util.Comparator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class CircularLinkedListTest {
-    private CircularLinkedList<String> list;
+class MyCircularLinkedListTest {
+    private MyCircularLinkedList<String> list;
 
     @BeforeEach
     void setUp() {
-        list = new CircularLinkedList<>(null);
+        list = new MyCircularLinkedList<>(Comparator.naturalOrder());
     }
 
     @Test
