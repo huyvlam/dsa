@@ -65,4 +65,15 @@ class MyCircularDoublyLinkedListTest {
 
         assertEquals(2, list.size());
     }
+
+    @Test
+    @DisplayName("Should remove by data and return true for success")
+    void testRemoveByData() {
+        list.addLast(75);
+        list.addFirst(21);
+        list.addFirst(64);
+
+        assertTrue(list.remove((Integer) 21));
+        assertFalse(list.remove((Integer) 22));
+    }
 }
