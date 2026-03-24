@@ -1,27 +1,16 @@
 package mylinked.doubly;
 
-import java.util.Comparator;
+import java.util.Objects;
 
 public class MyCircularDoublyLinkedList<E> {
     private final DoublyNode<E> sentinel;
     private int count;
-    private final Comparator<? super E> comparator;
 
-    public MyCircularDoublyLinkedList(Comparator<? super E> comparator) {
+    public MyCircularDoublyLinkedList() {
         sentinel = new DoublyNode<>(null);
         sentinel.prev = sentinel;
         sentinel.next = sentinel;
         count = 0;
-        this.comparator = comparator;
-    }
-
-    public MyCircularDoublyLinkedList() {
-        this((a, b) -> {
-            if (a instanceof Comparable && b instanceof Comparable)
-                return ((Comparable) a).compareTo(b);
-
-            return a.equals(b) ? 0 : -1;
-        });
     }
 
     public void clear() {
@@ -168,7 +157,7 @@ public class MyCircularDoublyLinkedList<E> {
     public boolean remove(E data) {
         if (data == null) throw new IllegalArgumentException("Data cannot be null");
 
-        if (count > 0 && comparator.compare(sentinel.prev.data, data) == 0) {
+        if (count > 0 && Objects.equals(sentinel.prev.data, data)) {
             pollLast();
             return true;
         }
@@ -176,7 +165,7 @@ public class MyCircularDoublyLinkedList<E> {
         DoublyNode<E> cur = sentinel.next;
 
         while (cur != sentinel.prev) {
-            if (comparator.compare(cur.data, data) == 0) {
+            if (Objects.equals(cur.data, data)) {
                 cur.next.prev = cur.prev;
                 cur.prev.next = cur.next;
 
