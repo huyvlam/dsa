@@ -2,7 +2,6 @@ package myarray;
 
 import myinterface.Printer;
 
-import java.util.Arrays;
 import java.util.Random;
 
 public class ArrayUtil {
