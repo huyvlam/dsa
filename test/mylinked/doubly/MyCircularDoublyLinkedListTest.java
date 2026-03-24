@@ -6,14 +6,12 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.Comparator;
-
 class MyCircularDoublyLinkedListTest {
     private MyCircularDoublyLinkedList<Integer> list;
 
     @BeforeEach
     void setUp() {
-        list = new MyCircularDoublyLinkedList<>(Comparator.naturalOrder());
+        list = new MyCircularDoublyLinkedList<>();
     }
 
     @Test
