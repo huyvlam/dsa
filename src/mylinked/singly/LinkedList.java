@@ -252,7 +252,6 @@ public class LinkedList<E> {
 
         SinglyNode<E> cur = head;
         while (cur != null) {
-            IO.println(cur.data);
             sb.append("[").append(safePrinter.print(cur.data)).append("]");
 
             if (cur.next != null) sb.append(" -> ");
