@@ -248,7 +248,7 @@ public class DoublyLinkedList<E> {
         if (head == null || head.next == null) return;
 
         DoublyNode<E> cur = head;
-        DoublyNode<E> temp = null;
+        DoublyNode<E> temp;
 
         while (cur != null) {
             temp = cur.prev;
@@ -265,20 +265,20 @@ public class DoublyLinkedList<E> {
 
     @Override
     public String toString() {
-        return toString((E e) -> e.toString());
+        return toString(null);
     }
 
     public String toString(Printer<E> printer) {
         if (head == null) return "List: [ empty ]";
 
-        Printer<E> safePrinter = (printer == null) ? (e -> e.toString()) : printer;
+        Printer<E> safePrinter = (printer == null) ? (Object::toString) : printer;
 
         StringBuilder sb = new StringBuilder();
         sb.append("List (size ").append(count).append("): ");
 
         DoublyNode<E> cur = head;
         while (cur != null) {
-            sb.append("[").append(printer.print(cur.data)).append("]");
+            sb.append("[").append(safePrinter.print(cur.data)).append("]");
 
             if (cur.next != null) {
                 sb.append(" -> ");
