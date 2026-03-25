@@ -107,12 +107,13 @@ class MyCircularDoublyLinkedListTest {
     }
 
     @Test
-    @DisplayName("Should throw exception for out of bound access")
-    void testOutOfBounds() {
+    @DisplayName("Should throw exception for out of bound access and invalid argument")
+    void testExceptions() {
         listI.addLast(68);
 
         assertThrows(IndexOutOfBoundsException.class, () -> listI.set(-1, 37));
         assertThrows(IndexOutOfBoundsException.class, () -> listI.get(2));
+        assertThrows(IllegalArgumentException.class, () -> listI.indexOf(68, null));
     }
 
     @Test
