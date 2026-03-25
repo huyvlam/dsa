@@ -1,6 +1,5 @@
 package mylinked.singly;
 
-import java.util.Comparator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,7 +11,7 @@ class MyCircularLinkedListTest {
 
     @BeforeEach
     void setUp() {
-        list = new MyCircularLinkedList<>(Comparator.naturalOrder());
+        list = new MyCircularLinkedList<>();
     }
 
     @Test
@@ -46,6 +45,7 @@ class MyCircularLinkedListTest {
         list.add(1, "Nectarine");
 
         assertEquals(1, list.indexOf("Nectarine"));
+
         assertEquals("Apricot", list.remove(2));
         assertEquals("Peach", list.remove(0));
         assertEquals(1, list.size());
@@ -58,10 +58,10 @@ class MyCircularLinkedListTest {
         list.addLast("Longan");
         list.add(1, "Rambutan");
 
-        assertFalse(list.remove("Apple"));
         assertTrue(list.remove("Rambutan"));
         assertTrue(list.remove("Lychee"));
         assertTrue(list.remove("Longan"));
+        assertFalse(list.remove("Apple"));
         assertEquals(0, list.size());
     }
 
@@ -81,12 +81,13 @@ class MyCircularLinkedListTest {
     }
 
     @Test
-    @DisplayName("Should throw exception for out of bounds access")
-    void testBounds() {
+    @DisplayName("Should throw exception for out of bounds access and invalid argument")
+    void testExceptions() {
         list.addFirst("Dragon fruit");
 
         assertThrows(IndexOutOfBoundsException.class, () -> list.get(5));
         assertThrows(IndexOutOfBoundsException.class, () -> list.set(-1, null));
+        assertThrows(IllegalArgumentException.class, () -> list.indexOf("Lime", null));
     }
 
     @Test
@@ -109,10 +110,10 @@ class MyCircularLinkedListTest {
     @DisplayName("Should use custom/default printer in toString")
     void testToString() {
         list.addFirst("Soursop");
-        String result = list.toString(null);
-        String customResult = list.toString(p -> ("I like " + p));
+        String standard = list.toString();
+        String custom = list.toString(p -> ("I like " + p));
 
-        assertTrue(result.contains("[Soursop] -> (head)"));
-        assertTrue(customResult.contains("I like Soursop"));
+        assertTrue(standard.contains("[Soursop] -> (head)"));
+        assertTrue(custom.contains("I like Soursop"));
     }
 }
