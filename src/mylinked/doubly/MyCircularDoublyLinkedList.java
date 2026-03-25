@@ -1,10 +1,11 @@
 package mylinked.doubly;
 
 import myhelper.Checker;
+import myinterface.Printer;
 
+import java.util.NoSuchElementException;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 
 public class MyCircularDoublyLinkedList<E> {
@@ -197,10 +198,6 @@ public class MyCircularDoublyLinkedList<E> {
         return -1;
     }
 
-    public boolean contains(E data) {
-        return indexOf(data) >= 0;
-    }
-
     public Iterator<E> iterator() {
         return new Iterator<>() {
             private DoublyNode<E> next = sentinel.next;
@@ -220,6 +217,32 @@ public class MyCircularDoublyLinkedList<E> {
                 throw new UnsupportedOperationException("The operation is not suppoerted");
             }
         };
+    }
+
+    @Override
+    public String toString() {
+        return toString(null);
+    }
+
+    public String toString(Printer<E> printer) {
+        if (sentinel.next == sentinel) return "CircularDoublyLinkedList: [ empty ]";
+
+        Printer<E> safePrinter = (printer == null) ? (Object::toString) : printer;
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("CircularDoublyLinkedList (size").append(count).append("): ");
+
+        DoublyNode<E> cur = sentinel.next;
+        while (cur != sentinel) {
+            sb.append("[").append(safePrinter.print(cur.data)).append("]");
+
+            if(cur.next == sentinel) sb.append(" -> (sentinel)");
+            else sb.append(" -> ");
+
+            cur = cur.next;
+        }
+
+        return sb.toString();
     }
 
     private DoublyNode<E> getNode(int i) {
