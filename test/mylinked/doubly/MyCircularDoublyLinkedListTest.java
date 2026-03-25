@@ -125,7 +125,16 @@ class MyCircularDoublyLinkedListTest {
         Iterator<Integer> it = listI.iterator();
 
         assertTrue(it.hasNext());
+        // remove() can only be called after next() method
+        assertThrows(IllegalStateException.class, it::remove);
         assertEquals(79, it.next());
+
+        assertEquals(79, listI.peekFirst());
+        it.remove();
+        assertNotEquals(79, listI.peekFirst());
+        // remove() can only be called once
+        assertThrows(IllegalStateException.class, it::remove);
+
         assertTrue(it.hasNext());
         assertEquals(89, it.next());
         assertFalse(it.hasNext());
