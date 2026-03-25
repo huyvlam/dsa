@@ -28,7 +28,7 @@ class CheckerTest {
     @Test
     @DisplayName("Should throw exception for out of bound access")
     void testCheckOutOfBoundAccess() {
-        assertThrows(IndexOutOfBoundsException.class, () -> Checker.checkBound(-1, size));
-        assertThrows(IndexOutOfBoundsException.class, () -> Checker.checkBound(size, size));
+        assertThrows(IndexOutOfBoundsException.class, () -> Checker.checkBounds(-1, size));
+        assertThrows(IndexOutOfBoundsException.class, () -> Checker.checkBounds(size, size));
     }
 }

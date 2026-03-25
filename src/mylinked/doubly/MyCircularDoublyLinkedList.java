@@ -119,7 +119,7 @@ public class MyCircularDoublyLinkedList<E> {
     }
 
     public E remove(int i) {
-        Checker.checkBound(i, count);
+        Checker.checkBounds(i, count);
 
         DoublyNode<E> node = getNode(i);
         E data = node.data;
@@ -166,7 +166,7 @@ public class MyCircularDoublyLinkedList<E> {
     }
 
     public E set(int i, E data) {
-        Checker.checkBound(i, count);
+        Checker.checkBounds(i, count);
         Checker.checkNullArgument(data);
 
         DoublyNode<E> node = getNode(i);
@@ -177,7 +177,7 @@ public class MyCircularDoublyLinkedList<E> {
     }
 
     public E get(int i) {
-        Checker.checkBound(i, count);
+        Checker.checkBounds(i, count);
         return getNode(i).data;
     }
 

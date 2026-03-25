@@ -10,7 +10,7 @@ public class Checker {
             throw new IllegalArgumentException(name + " cannot be null");
     }
 
-    public static void checkBound(int i, int n) {
+    public static void checkBounds(int i, int n) {
         if (i < 0 || i >= n)
             throw new IndexOutOfBoundsException("Index cannot be out of bound");
     }
