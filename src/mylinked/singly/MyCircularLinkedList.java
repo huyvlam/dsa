@@ -249,7 +249,7 @@ public class MyCircularLinkedList<E> {
     }
 
     public String toString(Printer<E> printer) {
-        if (head == null) return "List: [ empty ]";
+        if (head == null) return "CircularLinkedList: [ empty ]";
 
         Printer<E> safePrinter = (printer == null) ? (Object::toString) : printer;
 
