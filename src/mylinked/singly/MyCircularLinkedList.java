@@ -165,20 +165,20 @@ public class MyCircularLinkedList<E> {
         return false;
     }
 
-//    public E set(int i, E data) {
-//        if (i < 0 || i >= count) throw new IndexOutOfBoundsException("Index cannot be out of bound");
-//        if (data == null) throw new IllegalArgumentException("Data cannot be null");
-//
-//        SinglyNode<E> cur = head;
-//
-//        for (int index = 0; index < i; index++)
-//            cur = cur.next;
-//
-//        E replaced = cur.data;
-//        cur.data = data;
-//
-//        return replaced;
-//    }
+    public E set(int i, E data) {
+        Checker.checkBounds(i, count);
+        Checker.checkNullArgument(data);
+
+        SinglyNode<E> cur = tail.next;
+
+        for (int index = 0; index < i; index++)
+            cur = cur.next;
+
+        E target = cur.data;
+        cur.data = data;
+
+        return target;
+    }
 
     public E get(int i) {
         Checker.checkBounds(i, count);
@@ -193,24 +193,24 @@ public class MyCircularLinkedList<E> {
         return cur.data;
     }
 
-//    public int indexOf(E data) {
-//        return indexOf(data, comparator);
-//    }
-//
-//    public int indexOf(E data, Comparator<? super E> comp) {
-//        Checker.checkNullArgument(comp, "Comparator");
-//        if (data == null) return -1;
-//
-//        SinglyNode<E> cur = head;
-//
-//        for (int index = 0; index < count; index++) {
-//            if (comp.compare(cur.data, data) == 0) return index;
-//            cur = cur.next;
-//        }
-//
-//        return -1;
-//    }
-//
+    public int indexOf(E data) {
+        return indexOf(data, comparator);
+    }
+
+    public int indexOf(E data, Comparator<? super E> comp) {
+        Checker.checkNullArgument(comp, "Comparator");
+        if (data == null) return -1;
+
+        SinglyNode<E> cur = tail.next;
+
+        for (int index = 0; index < count; index++) {
+            if (comp.compare(cur.data, data) == 0) return index;
+            cur = cur.next;
+        }
+
+        return -1;
+    }
+
 //    public void reverse() {
 //        if (head == null || head.next == null) return;
 //
