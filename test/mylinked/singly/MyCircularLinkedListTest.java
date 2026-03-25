@@ -102,22 +102,22 @@ class MyCircularLinkedListTest {
         assertThrows(IllegalArgumentException.class, () -> listS.indexOf("Lime", null));
     }
 
-//    @Test
-//    @DisplayName("Should reverse the list and swap head/tail pointers")
-//    void testReverse() {
-//        listS.addFirst("Tangerine");
-//        listS.addFirst("Orange");
-//        listS.addFirst("Kiwi");
-//        listS.addFirst("Mango");
-//
-//        listS.reverse();
-//
-//        assertEquals("Tangerine", listS.peekFirst());
-//        assertEquals("Orange", listS.get(1));
-//        assertEquals("Kiwi", listS.get(2));
-//        assertEquals("Mango", listS.peekLast());
-//    }
-//
+    @Test
+    @DisplayName("Should reverse the list and swap head/tail pointers")
+    void testReverse() {
+        listS.addFirst("Tangerine");
+        listS.addFirst("Orange");
+        listS.addFirst("Kiwi");
+        listS.addFirst("Mango");
+
+        listS.reverse();
+
+        assertEquals("Tangerine", listS.peekFirst());
+        assertEquals("Orange", listS.get(1));
+        assertEquals("Kiwi", listS.get(2));
+        assertEquals("Mango", listS.peekLast());
+    }
+
 //    @Test
 //    @DisplayName("Should use custom/default printer in toString")
 //    void testToString() {
