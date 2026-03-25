@@ -135,15 +135,13 @@ public class MyCircularDoublyLinkedList<E> {
     }
 
     public boolean remove(E data) {
-        return remove(data, null);
+        return remove(data, comparator);
     }
 
     public boolean remove(E data, Comparator<? super E> comp) {
-        Checker.checkNullArgument(data);
+        if (data == null || comparator == null) throw new IllegalArgumentException("Data, Comparator cannot be null");
 
-        Comparator<? super E> safeComp = (comp == null) ? comparator : comp;
-
-        if (count > 0 && safeComp.compare(sentinel.prev.data, data) == 0) {
+        if (count > 0 && comp.compare(sentinel.prev.data, data) == 0) {
             pollLast();
             return true;
         }
@@ -151,7 +149,7 @@ public class MyCircularDoublyLinkedList<E> {
         DoublyNode<E> cur = sentinel.next;
 
         while (cur != sentinel.prev) {
-            if (safeComp.compare(cur.data, data) == 0) {
+            if (comp.compare(cur.data, data) == 0) {
                 cur.next.prev = cur.prev;
                 cur.prev.next = cur.next;
 
@@ -184,17 +182,17 @@ public class MyCircularDoublyLinkedList<E> {
     }
 
     public int indexOf(E data) {
-        return indexOf(data, null);
+        return indexOf(data, comparator);
     }
 
     public int indexOf(E data, Comparator<? super E> comp) {
+        Checker.checkNullArgument(comp, "Comparator");
         if (data == null) return -1;
 
-        Comparator<? super E> safeComp = (comp == null) ? comparator : comp;
         DoublyNode<E> cur = sentinel.next;
 
         for (int index = 0; index < count; index++) {
-            if (safeComp.compare(cur.data, data) == 0) return index;
+            if (comp.compare(cur.data, data) == 0) return index;
             cur = cur.next;
         }
 
