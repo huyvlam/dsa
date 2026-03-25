@@ -64,20 +64,19 @@ class MyCircularLinkedListTest {
         assertEquals(0, listS.size());
     }
 
-//    @Test
-//    @DisplayName("Should remove by the given data")
-//    void testRemoveByData() {
-//        list.addFirst("Lychee");
-//        list.addLast("Longan");
-//        list.add(1, "Rambutan");
-//
-//        assertTrue(list.remove("Rambutan"));
-//        assertTrue(list.remove("Lychee"));
-//        assertTrue(list.remove("Longan"));
-//        assertFalse(list.remove("Apple"));
-//        assertEquals(0, list.size());
-//    }
-//
+    @Test
+    @DisplayName("Should remove by the given data")
+    void testRemoveByData() {
+        listS.addFirst("Lychee");
+        listS.addLast("Longan");
+        listS.add(1, "Rambutan");
+
+        assertFalse(listS.remove("Apple"));
+        assertTrue(listS.remove("Rambutan"));
+        assertTrue(listS.remove("Lychee"));
+        assertEquals(1, listS.size());
+    }
+
 //    @Test
 //    @DisplayName("Should get/replace data by the specified index")
 //    void testSetGetByIndex() {
