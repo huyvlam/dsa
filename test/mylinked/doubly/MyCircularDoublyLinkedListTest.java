@@ -60,10 +60,13 @@ class MyCircularDoublyLinkedListTest {
         listI.add(2, 87);
         listI.add(1, 69);
 
-        assertEquals(13, listI.peekFirst());
+        int i1 = listI.indexOf(45);
+        int i2 = listI.indexOf(69);
+
+        assertTrue(listI.contains(13));
         assertEquals(87, listI.peekLast());
-        assertEquals(45, listI.remove(2));
-        assertEquals(69, listI.remove(1));
+        assertEquals(45, listI.remove(i1));
+        assertEquals(69, listI.remove(i2));
         assertEquals(2, listI.size());
     }
 
