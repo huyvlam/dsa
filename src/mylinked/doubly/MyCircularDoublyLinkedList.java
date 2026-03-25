@@ -202,7 +202,7 @@ public class MyCircularDoublyLinkedList<E> {
     }
 
     public Iterator<E> iterator() {
-        return new Iterator<E>() {
+        return new Iterator<>() {
             private DoublyNode<E> next = sentinel.next;
 
             public boolean hasNext() {
@@ -236,17 +236,5 @@ public class MyCircularDoublyLinkedList<E> {
         }
 
         return cur;
-    }
-
-    static void main() {
-        MyCircularDoublyLinkedList<Integer> list = new MyCircularDoublyLinkedList<Integer>();
-        list.addFirst(10);
-        list.addFirst(20);
-        list.addFirst(30);
-        list.addFirst(40);
-        Iterator<Integer> it = list.iterator();
-        while (it.hasNext()) {
-            IO.println(it.next());
-        }
     }
 }
