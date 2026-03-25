@@ -39,7 +39,7 @@ public class MyCircularDoublyLinkedList<E> {
     }
 
     public void addFirst(E data) {
-        Checker.checkNotNull(data);
+        Checker.checkNullArgument(data);
 
         DoublyNode<E> node = new DoublyNode<>(data);
 
@@ -53,7 +53,7 @@ public class MyCircularDoublyLinkedList<E> {
     }
 
     public void addLast(E data) {
-        Checker.checkNotNull(data);
+        Checker.checkNullArgument(data);
 
         DoublyNode<E> node = new DoublyNode<>(data);
 
@@ -100,7 +100,7 @@ public class MyCircularDoublyLinkedList<E> {
 
     public void add(int i, E data) {
         if (i < 0 || i > count) throw new IndexOutOfBoundsException("Index cannot be out of bound");
-        Checker.checkNotNull(data);
+        Checker.checkNullArgument(data);
 
         if (i == count) {
             addLast(data);
@@ -119,7 +119,7 @@ public class MyCircularDoublyLinkedList<E> {
     }
 
     public E remove(int i) {
-        Checker.checkIndex(i, count);
+        Checker.checkBound(i, count);
 
         DoublyNode<E> node = getNode(i);
         E data = node.data;
@@ -166,8 +166,8 @@ public class MyCircularDoublyLinkedList<E> {
     }
 
     public E set(int i, E data) {
-        Checker.checkIndex(i, count);
-        Checker.checkNotNull(data);
+        Checker.checkBound(i, count);
+        Checker.checkNullArgument(data);
 
         DoublyNode<E> node = getNode(i);
         E replaced = node.data;
@@ -177,7 +177,7 @@ public class MyCircularDoublyLinkedList<E> {
     }
 
     public E get(int i) {
-        Checker.checkIndex(i, count);
+        Checker.checkBound(i, count);
         return getNode(i).data;
     }
 
