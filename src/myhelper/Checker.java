@@ -1,11 +1,11 @@
 package myhelper;
 
 public class Checker {
-    public static <E> void checkData(E data) {
-        checkData(data, "Data");
+    public static <E> void checkNotNull(E data) {
+        checkNotNull(data, "Data");
     }
 
-    public static <E> void checkData(E data, String name) {
+    public static <E> void checkNotNull(E data, String name) {
         if (data == null)
             throw new IllegalArgumentException(name + " cannot be null");
     }
