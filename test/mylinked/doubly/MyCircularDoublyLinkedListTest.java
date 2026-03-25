@@ -22,6 +22,15 @@ class MyCircularDoublyLinkedListTest {
     }
 
     @Test
+    @DisplayName("Should check the invariants of Circular Doubly Linked List")
+    void testCheckInvariants() {
+        listI.addLast(90);
+        listI.addLast(34);
+        listI.addLast(16);
+        listI.checkInvariants();
+    }
+
+    @Test
     @DisplayName("Should add at both ends and update head/tail pointer")
     void testAddFirstLast() {
         listI.addLast(23);
