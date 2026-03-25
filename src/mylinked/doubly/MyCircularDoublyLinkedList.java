@@ -306,7 +306,7 @@ public class MyCircularDoublyLinkedList<E> {
             actual++;
             cur = cur.next;
 
-            // Safety: prevent infinite loop if corrupted
+            // prevent infinite loop if corrupted
             assert actual <= count;
         }
 
