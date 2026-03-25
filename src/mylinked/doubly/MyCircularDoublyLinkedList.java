@@ -271,4 +271,46 @@ public class MyCircularDoublyLinkedList<E> {
 
         return cur;
     }
+
+    void checkInvariants() {
+        // 1. Sentinel must not be null
+        assert sentinel != null;
+
+        // 2. Sentinel links must not be null
+        assert sentinel.next != null;
+        assert sentinel.prev != null;
+
+        // 3. Empty list invariant
+        if (count == 0) {
+            assert sentinel.next == sentinel;
+            assert sentinel.prev == sentinel;
+            return;
+        }
+
+        //4. Non-empty boundary invariant
+        assert sentinel.next.prev == sentinel;
+        assert sentinel.prev.next == sentinel;
+
+        int actual = 0;
+        DoublyNode<E> cur = sentinel.next;
+
+        while (cur != sentinel) {
+            // 5. No null pointers
+            assert cur.next != null;
+            assert cur.prev != null;
+
+            // 6. Bidirectional consistency
+            assert cur.next.prev == cur;
+            assert cur.prev.next == cur;
+
+            actual++;
+            cur = cur.next;
+
+            // Safety: prevent infinite loop if corrupted
+            assert actual <= count;
+        }
+
+        // 7. Count must match the actual number of nodes
+        assert actual == count;
+    }
 }
