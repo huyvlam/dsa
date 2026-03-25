@@ -65,7 +65,7 @@ class MyCircularDoublyLinkedListTest {
         int i1 = listI.indexOf(45);
         int i2 = listI.indexOf(69);
 
-        assertTrue(listI.contains(13));
+        assertEquals(13, listI.get(0));
         assertEquals(87, listI.peekLast());
         assertEquals(45, listI.remove(i1));
         assertEquals(69, listI.remove(i2));
@@ -129,5 +129,17 @@ class MyCircularDoublyLinkedListTest {
         assertEquals(89, it.next());
         assertFalse(it.hasNext());
         assertThrows(NoSuchElementException.class, it::next);
+    }
+
+    @Test
+    @DisplayName("Should print all elements in the list")
+    void testToString() {
+        listI.addLast(90);
+        listI.addLast(34);
+        listI.addLast(16);
+        String res = listI.toString();
+
+        assertTrue(res.contains("[90] -> [34] -> [16]"));
+        assertTrue(res.contains(" -> (sentinel)"));
     }
 }
