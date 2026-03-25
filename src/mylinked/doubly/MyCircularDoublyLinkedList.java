@@ -8,6 +8,7 @@ import java.util.Objects;
 public class MyCircularDoublyLinkedList<E> {
     private final DoublyNode<E> sentinel;
     private int count;
+    private final Comparator<? super E> comparator = (a, b) -> Objects.equals(a, b) ? 0 : -1;
 
     public MyCircularDoublyLinkedList() {
         sentinel = new DoublyNode<>(null);
@@ -131,7 +132,7 @@ public class MyCircularDoublyLinkedList<E> {
     }
 
     public boolean remove(E data) {
-        return remove(data, (a, b) -> Objects.equals(a, b) ? 0 : -1);
+        return remove(data, comparator);
     }
 
     public boolean remove(E data, Comparator<? super E> comp) {
@@ -175,6 +176,27 @@ public class MyCircularDoublyLinkedList<E> {
     public E get(int i) {
         Checker.checkIndex(i, count);
         return getNode(i).data;
+    }
+
+    public int indexOf(E data) {
+        return indexOf(data, comparator);
+    }
+
+    public int indexOf(E data, Comparator<? super E> comp) {
+        if (data == null) return -1;
+
+        DoublyNode<E> cur = sentinel.next;
+
+        for (int index = 0; index < count; index++) {
+            if (comp.compare(cur.data, data) == 0) return index;
+            cur = cur.next;
+        }
+
+        return -1;
+    }
+
+    public boolean contains(E data) {
+        return indexOf(data) >= 0;
     }
 
     private DoublyNode<E> getNode(int i) {
