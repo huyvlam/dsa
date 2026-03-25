@@ -7,18 +7,16 @@ import java.util.Comparator;
 import java.util.Objects;
 
 public class MyCircularLinkedList<E> {
-    private SinglyNode<E> head, tail;
+    private SinglyNode<E> tail;
     private int count;
     private final Comparator<? super E> comparator = (a, b) -> Objects.equals(a, b) ? 0 : -1;
 
     public MyCircularLinkedList() {
-        head = null;
         tail = null;
         count = 0;
     }
 
     public void clear() {
-        head = null;
         tail = null;
         count = 0;
     }
@@ -28,27 +26,26 @@ public class MyCircularLinkedList<E> {
     }
 
     public E peekFirst() {
-        return head == null ? null : head.data;
+        return (count == 0) ? null : tail.next.data;
     }
 
     public E peekLast() {
-        return tail == null ? null : tail.data;
+        return (count == 0) ? null : tail.data;
     }
 
     public void addFirst(E data) {
-        if (data == null) throw new IllegalArgumentException("Data cannot be null");
+        Checker.checkNullArgument(data);
 
         SinglyNode<E> node = new SinglyNode<>(data);
 
-        if (head == null) {
-            head = node;
+        if (tail == null) {
             tail = node;
-            node.next = head;
+            tail.next = node;
         } else {
-            node.next = head;
-            head = node;
-            tail.next = head;
+            node.next = tail.next;
+            tail.next = node;
         }
+
         count++;
     }
 
