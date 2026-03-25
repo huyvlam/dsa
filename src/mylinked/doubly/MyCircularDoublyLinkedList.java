@@ -1,5 +1,7 @@
 package mylinked.doubly;
 
+import myhelper.Checker;
+
 import java.util.Comparator;
 import java.util.Objects;
 
@@ -33,7 +35,7 @@ public class MyCircularDoublyLinkedList<E> {
     }
 
     public void addFirst(E data) {
-        if (data == null) throw new IllegalArgumentException("Data cannot be null");
+        Checker.checkNotNull(data);
 
         DoublyNode<E> node = new DoublyNode<>(data);
 
@@ -47,7 +49,7 @@ public class MyCircularDoublyLinkedList<E> {
     }
 
     public void addLast(E data) {
-        if (data == null) throw new IllegalArgumentException("Data cannot be null");
+        Checker.checkNotNull(data);
 
         DoublyNode<E> node = new DoublyNode<>(data);
 
@@ -94,62 +96,35 @@ public class MyCircularDoublyLinkedList<E> {
 
     public void add(int i, E data) {
         if (i < 0 || i > count) throw new IndexOutOfBoundsException("Index cannot be out of bound");
-        if (data == null) throw new IllegalArgumentException("Data cannot be null");
+        Checker.checkNotNull(data);
 
-        if (i == 0) {
-            addFirst(data);
-            return;
-        }
         if (i == count) {
             addLast(data);
             return;
         }
 
-        DoublyNode<E> cur;
+        DoublyNode<E> curNode = getNode(i);
+        DoublyNode<E> newNode = new DoublyNode<>(data);
 
-        if (i < count / 2) {
-            cur = sentinel.next;
-            for (int index = 0; index < i; index++)
-                cur = cur.next;
-        } else {
-            cur = sentinel.prev;
-            for (int index = count - 1; index > i; index--)
-                cur = cur.prev;
-        }
-
-        DoublyNode<E> node = new DoublyNode<>(data);
-        node.next = cur;
-        node.prev = cur.prev;
-        cur.prev.next = node;
-        cur.prev = node;
+        newNode.next = curNode;
+        newNode.prev = curNode.prev;
+        curNode.prev.next = newNode;
+        curNode.prev = newNode;
 
         count++;
     }
 
     public E remove(int i) {
-        if (i < 0 || i >= count) throw new IndexOutOfBoundsException("Index cannot be out of bound");
+        Checker.checkIndex(i, count);
 
-        if (i == 0) return pollFirst();
-        if (i == count - 1) return pollLast();
+        DoublyNode<E> node = getNode(i);
+        E data = node.data;
 
-        DoublyNode<E> cur;
+        node.next.prev = node.prev;
+        node.prev.next = node.next;
 
-        if (i < count / 2) {
-            cur = sentinel.next;
-            for (int index = 0; index < i; index++)
-                cur = cur.next;
-        } else {
-            cur = sentinel.prev;
-            for (int index = count - 1; index > i; index--)
-                cur = cur.prev;
-        }
-
-        E data = cur.data;
-        cur.next.prev = cur.prev;
-        cur.prev.next = cur.next;
-
-        cur.prev = null;
-        cur.next = null;
+        node.prev = null;
+        node.next = null;
 
         count--;
         return data;
@@ -187,33 +162,22 @@ public class MyCircularDoublyLinkedList<E> {
     }
 
     public E set(int i, E data) {
-        if (i < 0 || i >= count) throw new IndexOutOfBoundsException("Index cannot be out of bound");
-        if (data == null) throw new IllegalArgumentException("Data cannot be null");
+        Checker.checkIndex(i, count);
+        Checker.checkNotNull(data);
 
-        DoublyNode<E> cur;
-
-        if (i < count / 2) {
-            cur = sentinel.next;
-            for (int index = 0; index < i; index++)
-                cur = cur.next;
-        } else {
-            cur = sentinel.prev;
-            for (int index = count - 1; index > i; index--)
-                cur = cur.prev;
-        }
-
-        E replaced = cur.data;
-        cur.data = data;
+        DoublyNode<E> node = getNode(i);
+        E replaced = node.data;
+        node.data = data;
 
         return replaced;
     }
 
     public E get(int i) {
-        if (i < 0 || i >= count) throw new IndexOutOfBoundsException("Index cannot be out of bound");
+        Checker.checkIndex(i, count);
+        return getNode(i).data;
+    }
 
-        if (i == 0) return peekFirst();
-        if (i == count - 1) return peekLast();
-
+    private DoublyNode<E> getNode(int i) {
         DoublyNode<E> cur;
 
         if (i < count / 2) {
@@ -226,6 +190,6 @@ public class MyCircularDoublyLinkedList<E> {
                 cur = cur.prev;
         }
 
-        return cur.data;
+        return cur;
     }
 }
