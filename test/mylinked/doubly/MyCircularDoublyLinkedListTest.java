@@ -6,6 +6,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.Comparator;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -102,5 +104,30 @@ class MyCircularDoublyLinkedListTest {
         assertEquals(37, listI.get(1));
         assertEquals(52, listI.set(2, 13));
         assertEquals(13, listI.get(2));
+    }
+
+    @Test
+    @DisplayName("Should throw exception for out of bound access")
+    void testOutOfBounds() {
+        listI.addLast(68);
+
+        assertThrows(IndexOutOfBoundsException.class, () -> listI.set(-1, 37));
+        assertThrows(IndexOutOfBoundsException.class, () -> listI.get(2));
+    }
+
+    @Test
+    @DisplayName("Should iterate through every element in the list")
+    void testIterator() {
+        listI.addFirst(89);
+        listI.addFirst(79);
+
+        Iterator<Integer> it = listI.iterator();
+
+        assertTrue(it.hasNext());
+        assertEquals(79, it.next());
+        assertTrue(it.hasNext());
+        assertEquals(89, it.next());
+        assertFalse(it.hasNext());
+        assertThrows(NoSuchElementException.class, it::next);
     }
 }
