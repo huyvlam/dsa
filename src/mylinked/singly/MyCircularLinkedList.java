@@ -114,25 +114,25 @@ public class MyCircularLinkedList<E> {
         count++;
     }
 
-//    public E remove(int i) {
-//        if (i < 0 || i >= count) throw new IndexOutOfBoundsException("Index cannot be out of bound");
-//
-//        if (i == 0) return pollFirst();
-//        if (i == count - 1) return pollLast();
-//
-//        SinglyNode<E> prev = head;
-//
-//        for (int index = 0; index < i - 1; index++)
-//            prev = prev.next;
-//
-//        SinglyNode<E> removed = prev.next;
-//        E data = removed.data;
-//        prev.next = removed.next;
-//
-//        count--;
-//        return data;
-//    }
-//
+    public E remove(int i) {
+        Checker.checkBounds(i, count);
+
+        if (i == 0) return pollFirst();
+        if (i == count - 1) return pollLast();
+
+        SinglyNode<E> prev = tail.next;
+
+        for (int index = 0; index < i - 1; index++)
+            prev = prev.next;
+
+        SinglyNode<E> target = prev.next;
+        E data = target.data;
+        prev.next = target.next;
+
+        count--;
+        return data;
+    }
+
 //    public boolean remove(E data) {
 //        return remove(data, comparator);
 //    }
@@ -179,20 +179,20 @@ public class MyCircularLinkedList<E> {
 //
 //        return replaced;
 //    }
-//
-//    public E get(int i) {
-//        if (i < 0 || i >= count) throw new IndexOutOfBoundsException("Index cannot be out of bound");
-//
-//        if (i == count - 1) return peekLast();
-//
-//        SinglyNode<E> cur = head;
-//
-//        for (int index = 0; index < i; index++)
-//            cur = cur.next;
-//
-//        return cur.data;
-//    }
-//
+
+    public E get(int i) {
+        Checker.checkBounds(i, count);
+
+        if (i == count - 1) return peekLast();
+
+        SinglyNode<E> cur = tail.next;
+
+        for (int index = 0; index < i; index++)
+            cur = cur.next;
+
+        return cur.data;
+    }
+
 //    public int indexOf(E data) {
 //        return indexOf(data, comparator);
 //    }
