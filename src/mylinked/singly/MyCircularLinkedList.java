@@ -133,38 +133,38 @@ public class MyCircularLinkedList<E> {
         return data;
     }
 
-//    public boolean remove(E data) {
-//        return remove(data, comparator);
-//    }
-//
-//    public boolean remove(E data, Comparator<? super E> comp) {
-//        Checker.checkNullArgument(comp, "Comparator");
-//        if (data == null || count == 0) return false;
-//
-//        if (comp.compare(head.data, data) == 0) {
-//            pollFirst();
-//            return true;
-//        }
-//        if (comp.compare(tail.data, data) == 0) {
-//            pollLast();
-//            return true;
-//        }
-//
-//        SinglyNode<E> prev = head;
-//
-//        while (prev.next != tail) {
-//            SinglyNode<E> cur = prev.next;
-//            if (comp.compare(cur.data, data) == 0) {
-//                prev.next = cur.next;
-//                count--;
-//
-//                return true;
-//            }
-//            prev = prev.next;
-//        }
-//        return false;
-//    }
-//
+    public boolean remove(E data) {
+        return remove(data, comparator);
+    }
+
+    public boolean remove(E data, Comparator<? super E> comp) {
+        Checker.checkNullArgument(comp, "Comparator");
+        if (data == null || count == 0) return false;
+
+        if (comp.compare(tail.next.data, data) == 0) {
+            pollFirst();
+            return true;
+        }
+        if (comp.compare(tail.data, data) == 0) {
+            pollLast();
+            return true;
+        }
+
+        SinglyNode<E> prev = tail.next;
+
+        while (prev.next != tail) {
+            SinglyNode<E> cur = prev.next;
+            if (comp.compare(cur.data, data) == 0) {
+                prev.next = cur.next;
+                count--;
+
+                return true;
+            }
+            prev = prev.next;
+        }
+        return false;
+    }
+
 //    public E set(int i, E data) {
 //        if (i < 0 || i >= count) throw new IndexOutOfBoundsException("Index cannot be out of bound");
 //        if (data == null) throw new IllegalArgumentException("Data cannot be null");
