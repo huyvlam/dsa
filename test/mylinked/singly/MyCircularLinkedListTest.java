@@ -112,8 +112,7 @@ class MyCircularLinkedListTest {
         String result = list.toString(null);
         String customResult = list.toString(p -> ("I like " + p));
 
-        assertTrue(result.contains("[Soursop]"));
-        assertTrue(result.contains("-> (head)"));
+        assertTrue(result.contains("[Soursop] -> (head)"));
         assertTrue(customResult.contains("I like Soursop"));
     }
 }
