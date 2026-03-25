@@ -202,6 +202,7 @@ public class MyCircularDoublyLinkedList<E> {
     public Iterator<E> iterator() {
         return new Iterator<>() {
             private DoublyNode<E> next = sentinel.next;
+            private DoublyNode<E> lastReturn = null;
 
             public boolean hasNext() {
                 return next != sentinel;
@@ -209,13 +210,22 @@ public class MyCircularDoublyLinkedList<E> {
 
             public E next() {
                 if (next == sentinel) throw new NoSuchElementException("Element not found");
-                E data = next.data;
+                lastReturn = next;
                 next = next.next;
-                return data;
+                return lastReturn.data;
             }
 
             public void remove() {
-                throw new UnsupportedOperationException("The operation is not suppoerted");
+                if (lastReturn == null) throw new IllegalStateException("This method can only be called once after calling next method");
+
+                lastReturn.prev.next = lastReturn.next;
+                lastReturn.next.prev = lastReturn.prev;
+
+                lastReturn.prev = null;
+                lastReturn.next = null;
+
+                count--;
+                lastReturn = null;
             }
         };
     }
