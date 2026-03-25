@@ -77,53 +77,53 @@ class MyCircularLinkedListTest {
         assertEquals(1, listS.size());
     }
 
-//    @Test
-//    @DisplayName("Should get/replace data by the specified index")
-//    void testSetGetByIndex() {
-//        list.addFirst("Strawberry");
-//        list.addLast("Pluot");
-//        list.add(1, "Plum");
-//
-//        assertEquals("Strawberry", list.get(0));
-//        assertEquals("Plum", list.get(1));
-//        assertEquals("Pluot", list.get(2));
-//
-//        assertEquals("Pluot", list.set(2, "Pear"));
-//        assertEquals("Pear", list.get(2));
-//    }
-//
-//    @Test
-//    @DisplayName("Should throw exception for out of bounds access and invalid argument")
-//    void testExceptions() {
-//        list.addFirst("Dragon fruit");
-//
-//        assertThrows(IndexOutOfBoundsException.class, () -> list.get(5));
-//        assertThrows(IndexOutOfBoundsException.class, () -> list.set(-1, null));
-//        assertThrows(IllegalArgumentException.class, () -> list.indexOf("Lime", null));
-//    }
-//
+    @Test
+    @DisplayName("Should get/replace data by the specified index")
+    void testSetGetByIndex() {
+        listS.addFirst("Strawberry");
+        listS.addLast("Pluot");
+        listS.add(1, "Plum");
+
+        assertEquals("Strawberry", listS.get(0));
+        assertEquals("Plum", listS.get(1));
+        assertEquals("Pluot", listS.get(2));
+
+        assertEquals("Pluot", listS.set(2, "Pear"));
+        assertEquals("Pear", listS.get(2));
+    }
+
+    @Test
+    @DisplayName("Should throw exception for out of bounds access and invalid argument")
+    void testExceptions() {
+        listS.addFirst("Dragon fruit");
+
+        assertThrows(IndexOutOfBoundsException.class, () -> listS.get(5));
+        assertThrows(IndexOutOfBoundsException.class, () -> listS.set(-1, null));
+        assertThrows(IllegalArgumentException.class, () -> listS.indexOf("Lime", null));
+    }
+
 //    @Test
 //    @DisplayName("Should reverse the list and swap head/tail pointers")
 //    void testReverse() {
-//        list.addFirst("Tangerine");
-//        list.addFirst("Orange");
-//        list.addFirst("Kiwi");
-//        list.addFirst("Mango");
+//        listS.addFirst("Tangerine");
+//        listS.addFirst("Orange");
+//        listS.addFirst("Kiwi");
+//        listS.addFirst("Mango");
 //
-//        list.reverse();
+//        listS.reverse();
 //
-//        assertEquals("Tangerine", list.peekFirst());
-//        assertEquals("Orange", list.get(1));
-//        assertEquals("Kiwi", list.get(2));
-//        assertEquals("Mango", list.peekLast());
+//        assertEquals("Tangerine", listS.peekFirst());
+//        assertEquals("Orange", listS.get(1));
+//        assertEquals("Kiwi", listS.get(2));
+//        assertEquals("Mango", listS.peekLast());
 //    }
 //
 //    @Test
 //    @DisplayName("Should use custom/default printer in toString")
 //    void testToString() {
-//        list.addFirst("Soursop");
-//        String standard = list.toString();
-//        String custom = list.toString(p -> ("I like " + p));
+//        listS.addFirst("Soursop");
+//        String standard = listS.toString();
+//        String custom = listS.toString(p -> ("I like " + p));
 //
 //        assertTrue(standard.contains("[Soursop] -> (head)"));
 //        assertTrue(custom.contains("I like Soursop"));
