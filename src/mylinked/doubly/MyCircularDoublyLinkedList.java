@@ -3,6 +3,8 @@ package mylinked.doubly;
 import myhelper.Checker;
 
 import java.util.Comparator;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 public class MyCircularDoublyLinkedList<E> {
@@ -199,6 +201,27 @@ public class MyCircularDoublyLinkedList<E> {
         return indexOf(data) >= 0;
     }
 
+    public Iterator<E> iterator() {
+        return new Iterator<E>() {
+            private DoublyNode<E> next = sentinel.next;
+
+            public boolean hasNext() {
+                return next != sentinel;
+            }
+
+            public E next() {
+                if (next == sentinel) throw new NoSuchElementException("Element not found");
+                E data = next.data;
+                next = next.next;
+                return data;
+            }
+
+            public void remove() {
+                throw new UnsupportedOperationException("The operation is not suppoerted");
+            }
+        };
+    }
+
     private DoublyNode<E> getNode(int i) {
         DoublyNode<E> cur;
 
@@ -213,5 +236,17 @@ public class MyCircularDoublyLinkedList<E> {
         }
 
         return cur;
+    }
+
+    static void main() {
+        MyCircularDoublyLinkedList<Integer> list = new MyCircularDoublyLinkedList<Integer>();
+        list.addFirst(10);
+        list.addFirst(20);
+        list.addFirst(30);
+        list.addFirst(40);
+        Iterator<Integer> it = list.iterator();
+        while (it.hasNext()) {
+            IO.println(it.next());
+        }
     }
 }
