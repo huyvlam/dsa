@@ -1,28 +1,20 @@
 package mylinked.singly;
 
 import myinterface.Printer;
+import myhelper.Checker;
 
 import java.util.Comparator;
+import java.util.Objects;
 
 public class MyCircularLinkedList<E> {
     private SinglyNode<E> head, tail;
     private int count;
-    private final Comparator<? super E> comparator;
+    private final Comparator<? super E> comparator = (a, b) -> Objects.equals(a, b) ? 0 : -1;
 
-    public MyCircularLinkedList(Comparator<? super E> comparator) {
+    public MyCircularLinkedList() {
         head = null;
         tail = null;
         count = 0;
-        this.comparator = comparator;
-    }
-
-    public MyCircularLinkedList() {
-        this((E a, E b) -> {
-            if (a instanceof Comparable && b instanceof Comparable)
-                return ((Comparable) a).compareTo(b);
-
-            return a.equals(b) ? 0 : -1;
-        });
     }
 
     public void clear() {
@@ -154,13 +146,18 @@ public class MyCircularLinkedList<E> {
     }
 
     public boolean remove(E data) {
+        return remove(data, comparator);
+    }
+
+    public boolean remove(E data, Comparator<? super E> comp) {
+        Checker.checkNullArgument(comp, "Comparator");
         if (data == null || count == 0) return false;
 
-        if (comparator.compare(head.data, data) == 0) {
+        if (comp.compare(head.data, data) == 0) {
             pollFirst();
             return true;
         }
-        if (comparator.compare(tail.data, data) == 0) {
+        if (comp.compare(tail.data, data) == 0) {
             pollLast();
             return true;
         }
@@ -169,7 +166,7 @@ public class MyCircularLinkedList<E> {
 
         while (prev.next != tail) {
             SinglyNode<E> cur = prev.next;
-            if (comparator.compare(cur.data, data) == 0) {
+            if (comp.compare(cur.data, data) == 0) {
                 prev.next = cur.next;
                 count--;
 
@@ -209,12 +206,17 @@ public class MyCircularLinkedList<E> {
     }
 
     public int indexOf(E data) {
+        return indexOf(data, comparator);
+    }
+
+    public int indexOf(E data, Comparator<? super E> comp) {
+        Checker.checkNullArgument(comp, "Comparator");
         if (data == null) return -1;
 
         SinglyNode<E> cur = head;
 
         for (int index = 0; index < count; index++) {
-            if (comparator.compare(cur.data, data) == 0) return index;
+            if (comp.compare(cur.data, data) == 0) return index;
             cur = cur.next;
         }
 
