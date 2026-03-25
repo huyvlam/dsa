@@ -62,10 +62,8 @@ class MyCircularDoublyLinkedListTest {
 
         assertEquals(13, listI.peekFirst());
         assertEquals(87, listI.peekLast());
-
         assertEquals(45, listI.remove(2));
         assertEquals(69, listI.remove(1));
-
         assertEquals(2, listI.size());
     }
 
