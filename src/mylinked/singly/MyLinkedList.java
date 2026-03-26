@@ -3,6 +3,7 @@ package mylinked.singly;
 import java.util.Comparator;
 import java.util.Objects;
 
+import myhelper.Checker;
 import myinterface.Printer;
 
 public class MyLinkedList<E> {
@@ -36,7 +37,7 @@ public class MyLinkedList<E> {
     }
 
     public void addFirst(E data) {
-        if (data == null) throw new IllegalArgumentException("Data cannot be null");
+        Checker.checkNullArgument(data);
 
         SinglyNode<E> node = new SinglyNode<>(data);
 
@@ -47,11 +48,12 @@ public class MyLinkedList<E> {
             node.next = head;
             head = node;
         }
+
         size++;
     }
 
     public void addLast(E data) {
-        if (data == null) throw new IllegalArgumentException("Data cannot be null");
+        Checker.checkNullArgument(data);
 
         if (head == null) {
             addFirst(data);
@@ -62,6 +64,7 @@ public class MyLinkedList<E> {
 
         tail.next = node;
         tail = node;
+
         size++;
     }
 
@@ -91,13 +94,13 @@ public class MyLinkedList<E> {
 
         prev.next = null;
         tail = prev;
-        size--;
 
+        size--;
         return data;
     }
 
     public void add(int i, E data) {
-        if (data == null) throw new IllegalArgumentException("Data cannot be null");
+        Checker.checkNullArgument(data);
         if (i < 0 || i > size) throw new IndexOutOfBoundsException("Index cannot be out of bound");
 
         if (i == 0) {
@@ -118,6 +121,7 @@ public class MyLinkedList<E> {
 
         node.next = prev.next;
         prev.next = node;
+
         size++;
     }
 
@@ -134,6 +138,7 @@ public class MyLinkedList<E> {
 
         SinglyNode<E> removed = prev.next;
         E data = removed.data;
+
         prev.next = removed.next;
 
         size--;
@@ -162,8 +167,8 @@ public class MyLinkedList<E> {
             SinglyNode<E> cur = prev.next;
             if (comp.compare(cur.data, data) == 0) {
                 prev.next = cur.next;
-                size--;
 
+                size--;
                 return true;
             }
             prev = prev.next;
@@ -173,8 +178,8 @@ public class MyLinkedList<E> {
     }
 
     public E set(int i, E data) {
-        if (i < 0 || i >= size) throw new IndexOutOfBoundsException("Index cannot be out of bound");
-        if (data == null) throw new IllegalArgumentException("Data cannot be null");
+        Checker.checkNullArgument(data);
+        Checker.checkBounds(i, size);
 
         SinglyNode<E> cur = head;
 
@@ -188,7 +193,7 @@ public class MyLinkedList<E> {
     }
 
     public E get(int i) {
-        if (i < 0 || i >= size) throw new IndexOutOfBoundsException("Index cannot be out of bound");
+        Checker.checkBounds(i, size);
 
         // use tail pointer for O(1) search
         if (i == size - 1) return peekLast();
@@ -219,7 +224,7 @@ public class MyLinkedList<E> {
     }
 
     public void reverse() {
-        if (head == null || head.next == null) return;
+        if (size <= 1) return;
 
         SinglyNode<E> prev = null;
         SinglyNode<E> cur = head;
@@ -243,7 +248,7 @@ public class MyLinkedList<E> {
     }
 
     public String toString(Printer<E> printer) {
-        if (head == null) return "List: [ empty ]";
+        if (head == null) return "LinkedList: [ empty ]";
 
         Printer<E> safePrinter = (printer == null) ? (Object::toString) : printer;
 
