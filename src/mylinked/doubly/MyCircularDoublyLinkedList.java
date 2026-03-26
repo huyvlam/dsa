@@ -139,7 +139,7 @@ public class MyCircularDoublyLinkedList<E> {
     }
 
     public boolean remove(E data, Comparator<? super E> comp) {
-        if (data == null || comparator == null) throw new IllegalArgumentException("Data, Comparator cannot be null");
+        if (data == null || comp == null) throw new IllegalArgumentException("Data, Comparator cannot be null");
 
         if (count > 0 && comp.compare(sentinel.prev.data, data) == 0) {
             pollLast();
