@@ -244,7 +244,7 @@ public class MyLinkedList<E> {
 
     @Override
     public String toString() {
-        return toString();
+        return toString(null);
     }
 
     public String toString(Printer<E> printer) {
