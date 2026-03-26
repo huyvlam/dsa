@@ -230,7 +230,7 @@ public class MyCircularLinkedList<E> {
     }
 
     public Iterator<E> iterator() {
-        return new Iterator<E>() {
+        return new Iterator<>() {
             private SinglyNode<E> cur = (tail == null) ? null : tail.next;
             private SinglyNode<E> prev = tail;
             private SinglyNode<E> returned = null;
@@ -259,18 +259,18 @@ public class MyCircularLinkedList<E> {
                 if (returned == null) throw new IllegalStateException("The method can only be called once after calling next method");
                 if (modCount != count) throw new ConcurrentModificationException("List is modified");
 
-                // List has one element -> reset tail/cur
+                // if list has one element, reset tail/cur
                 if (count == 1) {
                     tail = null;
                     cur = null;
                 } else {
                     returnedPrev.next = returned.next;
 
-                    // Returned is tail -> reset tail
+                    // if returned is tail, reset tail
                     if (returned == tail) tail = returnedPrev;
                 }
 
-                // Item is removed -> reset its pointers
+                // once item is removed, reset all pointers to it
                 prev = returnedPrev;
                 returned = null;
 
