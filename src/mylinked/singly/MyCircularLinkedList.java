@@ -3,8 +3,8 @@ package mylinked.singly;
 import myinterface.Printer;
 import myhelper.Checker;
 
-import java.util.Comparator;
-import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.*;
 
 public class MyCircularLinkedList<E> {
     private SinglyNode<E> tail;
@@ -227,6 +227,63 @@ public class MyCircularLinkedList<E> {
 
         tail = next;
         tail.next = prev;
+    }
+
+    public Iterator<E> iterator() {
+        return new Iterator<E>() {
+            private SinglyNode<E> cur = (tail == null) ? null : tail.next;
+            private SinglyNode<E> prev = tail;
+            private SinglyNode<E> returned = null;
+            private SinglyNode<E> returnedPrev = null;
+            private int modCount = count;
+            private int iterated = 0;
+
+            public boolean hasNext() {
+                return iterated < modCount;
+            }
+
+            public E next() {
+                if (modCount != count) throw new ConcurrentModificationException("List is modified");
+                if (!hasNext()) throw new NoSuchElementException("No more elements");
+
+                returned = cur;
+                returnedPrev = prev;
+                prev = cur;
+                cur = cur.next;
+
+                iterated++;
+                return returned.data;
+            }
+
+            public void remove() {
+                if (returned == null) throw new IllegalStateException("The method can only be called once after calling next method");
+                if (modCount != count) throw new ConcurrentModificationException("List is modified");
+
+                // List has one element -> reset tail/cur
+                if (count == 1) {
+                    tail = null;
+                    cur = null;
+                } else {
+                    returnedPrev.next = returned.next;
+
+                    // Returned is tail -> reset tail
+                    if (returned == tail) tail = returnedPrev;
+                }
+
+                // Item is removed -> reset its pointers
+                prev = returnedPrev;
+                returned = null;
+
+                count--;
+                modCount--;
+                iterated--;
+            }
+
+            public void forEachRemaining(Consumer<? super E> action) {
+                while (hasNext())
+                    action.accept(next());
+            }
+        };
     }
 
     @Override
