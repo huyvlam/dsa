@@ -13,7 +13,7 @@ class MyDoublyLinkedListTest {
 
     @Test
     @DisplayName("Should add at both end and maintain head/tail")
-    void testPreviousPointer() {
+    void testHeadTailPointer() {
         list.addLast("Thu");
         list.addFirst("Ha");
         list.addFirst("Xuan");
