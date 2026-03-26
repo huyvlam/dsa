@@ -261,13 +261,8 @@ public class MyCircularLinkedList<E> {
                 return iterated < size;
             }
 
-            private void checkModCount() {
-                if (expectedModCount != modCount)
-                    throw new ConcurrentModificationException("List is modified");
-            }
-
             public E next() {
-                checkModCount();
+                Checker.checkModCount(expectedModCount, modCount);
                 if (!hasNext()) throw new NoSuchElementException("No more elements");
 
                 returnedPrev = prev;
@@ -281,7 +276,7 @@ public class MyCircularLinkedList<E> {
             }
 
             public void remove() {
-                checkModCount();
+                Checker.checkModCount(expectedModCount, modCount);
                 if (returned == null) throw new IllegalStateException("The method can only be called once after calling next method");
 
                 // if list has one element, reset tail/cur
