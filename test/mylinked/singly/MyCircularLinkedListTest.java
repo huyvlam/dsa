@@ -2,8 +2,10 @@ package mylinked.singly;
 
 import mymodel.Person;
 
-import java.util.Comparator;
+import java.util.ConcurrentModificationException;
+import java.util.Iterator;
 import java.util.Objects;
+import java.util.NoSuchElementException;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -128,7 +130,32 @@ class MyCircularLinkedListTest {
     }
 
     @Test
-    @DisplayName("Should print with either custom or standard printer in toString")
+    @DisplayName("Should iterate through all elements in the list")
+    void testIterator() {
+        listS.addFirst("Tangerine");
+        listS.addFirst("Orange");
+        listS.addFirst("Kiwi");
+
+        Iterator<String> it = listS.iterator();
+
+        assertTrue(it.hasNext());
+        assertThrows(IllegalStateException.class, it::remove);
+        assertEquals("Kiwi", it.next());
+
+        assertEquals("Kiwi", listS.peekFirst());
+        it.remove();
+        assertEquals(2, listS.size());
+        assertEquals("Orange", listS.peekFirst());
+
+        it.forEachRemaining(IO::print);
+        assertThrows(NoSuchElementException.class, it::next);
+
+        listS.pollLast();
+        assertThrows(ConcurrentModificationException.class, it::next);
+    }
+
+    @Test
+    @DisplayName("Should print using custom/standard printer in toString")
     void testToString() {
         listS.addFirst("Soursop");
         String standard = listS.toString();
