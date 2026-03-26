@@ -1,6 +1,7 @@
 package mylinked.doubly;
 
 import myinterface.Printer;
+import myhelper.Checker;
 
 import java.util.Comparator;
 
@@ -44,7 +45,7 @@ public class MyDoublyLinkedList<E> {
     }
 
     public void addFirst(E data) {
-        if (data == null) throw new IllegalArgumentException("Data cannot be null");
+        Checker.checkNullArgument(data);
 
         DoublyNode<E> node = new DoublyNode<>(data);
 
@@ -60,7 +61,7 @@ public class MyDoublyLinkedList<E> {
     }
 
     public void addLast(E data) {
-        if (data == null) throw new IllegalArgumentException("Data cannot be null");
+        Checker.checkNullArgument(data);
 
         DoublyNode<E> node = new DoublyNode<>(data);
 
@@ -102,7 +103,7 @@ public class MyDoublyLinkedList<E> {
     }
 
     public void add(int i, E data) {
-        if (data == null) throw new IllegalArgumentException("Data cannot be null");
+        Checker.checkNullArgument(data);
         if (i < 0 || i > count) throw new IndexOutOfBoundsException("Index cannot be out of bound");
 
         if (i == 0) {
@@ -141,7 +142,7 @@ public class MyDoublyLinkedList<E> {
     }
 
     public E remove(int i) {
-        if (i < 0 || i >= count) throw new IndexOutOfBoundsException("Index cannot be out of bound");
+        Checker.checkBounds(i, count);
 
         if (i == 0) return pollFirst();
         if (i == count - 1) return pollLast();
@@ -196,8 +197,8 @@ public class MyDoublyLinkedList<E> {
     }
 
     public E set(int i, E data) {
-        if (i < 0 || i >= count) throw new IndexOutOfBoundsException("Index cannot be out of bound");
-        if (data == null) throw new IllegalArgumentException("Data cannot be null");
+        Checker.checkNullArgument(data);
+        Checker.checkBounds(i, count);
 
         DoublyNode<E> cur;
 
@@ -218,7 +219,7 @@ public class MyDoublyLinkedList<E> {
     }
 
     public E get(int i) {
-        if (i < 0 || i >= count) throw new IndexOutOfBoundsException("Index cannot be out of bound");
+        Checker.checkBounds(i, count);
 
         if (i == 0) return peekFirst();
 
