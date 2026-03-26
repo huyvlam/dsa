@@ -1,34 +1,29 @@
 package myhelper;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import java.util.ConcurrentModificationException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class CheckerTest {
-    private String nullS;
-    private Integer nullI;
-    private int size;
-
-    @BeforeEach
-    void setUp() {
-        nullS = null;
-        nullI = null;
-        size = 10;
-    }
-
     @Test
     @DisplayName("Should throw exception for null argument")
     void testCheckNullArgument() {
-        assertThrows(IllegalArgumentException.class, () -> Checker.checkNullArgument(nullS));
-        assertThrows(IllegalArgumentException.class, () -> Checker.checkNullArgument(nullI));
+        assertThrows(IllegalArgumentException.class, () -> Checker.checkNullArgument(null));
     }
 
     @Test
     @DisplayName("Should throw exception for out of bound access")
     void testCheckOutOfBoundAccess() {
-        assertThrows(IndexOutOfBoundsException.class, () -> Checker.checkBounds(-1, size));
-        assertThrows(IndexOutOfBoundsException.class, () -> Checker.checkBounds(size, size));
+        assertThrows(IndexOutOfBoundsException.class, () -> Checker.checkBounds(-1, 10));
+        assertThrows(IndexOutOfBoundsException.class, () -> Checker.checkBounds(10, 10));
+    }
+
+    @Test
+    @DisplayName("Should throw exception for change in modification count")
+    void testCheckModCount() {
+        assertThrows(ConcurrentModificationException.class, () -> Checker.checkModCount(2, 3));
     }
 }
