@@ -15,7 +15,7 @@ public class LinearSearch {
         int n = arr.length;
         if (n == 0) return null;
 
-        Pair<T> result = new Pair();
+        Pair<T> result = new Pair<>();
         int i;
 
         // initialize min/max
