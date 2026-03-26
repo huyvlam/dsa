@@ -4,26 +4,18 @@ import myinterface.Printer;
 import myhelper.Checker;
 
 import java.util.Comparator;
+import java.util.Objects;
 
 public class MyDoublyLinkedList<E> {
     private DoublyNode<E> head, tail;
-    private int size;
-    private final Comparator<? super E> comparator;
+    private final Comparator<? super E> comparator = (a, b) -> Objects.equals(a, b) ? 0 : -1;
 
-    public MyDoublyLinkedList(Comparator<? super E> comparator) {
+    private int size;
+
+    public MyDoublyLinkedList() {
         head = null;
         tail = null;
         size = 0;
-        this.comparator = comparator;
-    }
-
-    public MyDoublyLinkedList() {
-        this((a, b) -> {
-            if (a instanceof Comparable && b instanceof Comparable)
-                return ((Comparable) a).compareTo(b);
-
-            return a.equals(b) ? 0 : -1;
-        });
     }
 
     public void clear() {
@@ -171,18 +163,22 @@ public class MyDoublyLinkedList<E> {
     }
 
     public boolean remove(E data) {
+        return remove(data, comparator);
+    }
+
+    public boolean remove(E data, Comparator<? super E> comp) {
         if (data == null || size == 0) return false;
 
-        if (comparator.compare(head.data, data) == 0)
+        if (comp.compare(head.data, data) == 0)
             return pollFirst() != null;
 
-        if (comparator.compare(tail.data, data) == 0)
+        if (comp.compare(tail.data, data) == 0)
             return pollLast() != null;
 
         DoublyNode<E> cur = head.next;
 
         while (cur != null) {
-            if (comparator.compare(cur.data, data) == 0) {
+            if (comp.compare(cur.data, data) == 0) {
                 cur.prev.next = cur.next;
                 cur.next.prev = cur.prev;
                 cur.next = null;
@@ -233,12 +229,16 @@ public class MyDoublyLinkedList<E> {
     }
 
     public int indexOf(E data) {
+        return indexOf(data, comparator);
+    }
+
+    public int indexOf(E data, Comparator<? super E> comp) {
         if (data == null) return -1;
 
         DoublyNode<E> cur = head;
 
         for (int index = 0; index < size; index++) {
-            if (comparator.compare(cur.data, data) == 0) return index;
+            if (comp.compare(cur.data, data) == 0) return index;
             cur = cur.next;
         }
 
