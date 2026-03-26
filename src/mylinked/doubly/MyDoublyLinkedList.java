@@ -109,7 +109,7 @@ public class MyDoublyLinkedList<E> {
 
         DoublyNode<E> node = new DoublyNode<>(data);
 
-        if (i < size / 2) {
+        if (i < size >> 1) {
             DoublyNode<E> prev = head;
 
             for (int index = 0; index < i - 1; index++)
@@ -141,7 +141,7 @@ public class MyDoublyLinkedList<E> {
 
         DoublyNode<E> cur;
 
-        if (i < size / 2) {
+        if (i < size >> 1) {
             cur = head;
             for (int index = 0; index < i; index++)
                 cur = cur.next;
@@ -198,7 +198,7 @@ public class MyDoublyLinkedList<E> {
 
         DoublyNode<E> cur;
 
-        if (i < size / 2) {
+        if (i < size >> 1) {
             cur = head;
             for (int index = 0; index < i; index++)
                 cur = cur.next;

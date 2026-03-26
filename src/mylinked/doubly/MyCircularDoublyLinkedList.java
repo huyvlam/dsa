@@ -284,7 +284,7 @@ public class MyCircularDoublyLinkedList<E> {
     private DoublyNode<E> getNode(int i) {
         DoublyNode<E> cur;
 
-        if (i < size / 2) {
+        if (i < size >> 1) {
             cur = sentinel.next;
             for (int index = 0; index < i; index++)
                 cur = cur.next;
