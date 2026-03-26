@@ -218,10 +218,6 @@ public class MyLinkedList<E> {
         return -1;
     }
 
-    public boolean contains(E data) {
-        return indexOf(data) != -1;
-    }
-
     public void reverse() {
         if (head == null || head.next == null) return;
 
