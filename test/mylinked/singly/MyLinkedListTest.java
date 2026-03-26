@@ -103,7 +103,7 @@ class MyLinkedListTest {
         list.addFirst(new Person("Alice", 20));
 
         assertThrows(IndexOutOfBoundsException.class, () -> list.get(5));
-        assertThrows(IndexOutOfBoundsException.class, () -> list.set(-1, null));
+        assertThrows(IndexOutOfBoundsException.class, () -> list.set(-1, new Person("Bob", 34)));
     }
 
     @Test
@@ -113,6 +113,6 @@ class MyLinkedListTest {
         String result = list.toString(p -> p.name + " is " + p.age);
 
         assertTrue(result.contains("Alice is 20"));
-        assertTrue(result.contains("-> null"));
+        assertTrue(result.contains(" -> null"));
     }
 }
