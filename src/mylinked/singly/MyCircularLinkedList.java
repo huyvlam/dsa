@@ -8,29 +8,31 @@ import java.util.*;
 
 public class MyCircularLinkedList<E> {
     private SinglyNode<E> tail;
-    private int count;
+    private int size;
+    private int modCount; // number of modifications
     private final Comparator<? super E> comparator = (a, b) -> Objects.equals(a, b) ? 0 : -1;
 
     public MyCircularLinkedList() {
         tail = null;
-        count = 0;
+        size = 0;
+        modCount = 0;
     }
 
     public void clear() {
         tail = null;
-        count = 0;
+        size = 0;
     }
 
     public int size() {
-        return count;
+        return size;
     }
 
     public E peekFirst() {
-        return (count == 0) ? null : tail.next.data;
+        return (size == 0) ? null : tail.next.data;
     }
 
     public E peekLast() {
-        return (count == 0) ? null : tail.data;
+        return (size == 0) ? null : tail.data;
     }
 
     private void updateTail(SinglyNode<E> node) {
@@ -47,7 +49,8 @@ public class MyCircularLinkedList<E> {
 
         SinglyNode<E> node = new SinglyNode<>(data);
         updateTail(node);
-        count++;
+        size++;
+        modCount++;
     }
 
     public void addLast(E data) {
@@ -56,23 +59,25 @@ public class MyCircularLinkedList<E> {
         SinglyNode<E> node = new SinglyNode<>(data);
         updateTail(node);
         tail = node;
-        count++;
+        size++;
+        modCount++;
     }
 
     public E pollFirst() {
-        if (count == 0) return null;
+        if (size == 0) return null;
 
         SinglyNode<E> first = tail.next;
 
         if (first == tail) tail = null;
         else tail.next = first.next;
 
-        count--;
+        size--;
+        modCount++;
         return first.data;
     }
 
     public E pollLast() {
-        if (count == 0) return null;
+        if (size == 0) return null;
 
         E data = tail.data;
         SinglyNode<E> prev = tail.next;
@@ -87,19 +92,21 @@ public class MyCircularLinkedList<E> {
             tail = prev;
         }
 
-        count--;
+        size--;
+        modCount++;
+
         return data;
     }
 
     public void add(int i, E data) {
         Checker.checkNullArgument(data);
-        if (i < 0 || i > count) throw new IndexOutOfBoundsException("Index cannot be out of bound");
+        if (i < 0 || i > size) throw new IndexOutOfBoundsException("Index cannot be out of bound");
 
         if (i == 0) {
             addFirst(data);
             return;
         }
-        if (i == count) {
+        if (i == size) {
             addLast(data);
             return;
         }
@@ -111,14 +118,16 @@ public class MyCircularLinkedList<E> {
         SinglyNode<E> node = new SinglyNode<>(data);
         node.next = prev.next;
         prev.next = node;
-        count++;
+
+        size++;
+        modCount++;
     }
 
     public E remove(int i) {
-        Checker.checkBounds(i, count);
+        Checker.checkBounds(i, size);
 
         if (i == 0) return pollFirst();
-        if (i == count - 1) return pollLast();
+        if (i == size - 1) return pollLast();
 
         SinglyNode<E> prev = tail.next;
 
@@ -129,7 +138,9 @@ public class MyCircularLinkedList<E> {
         E data = target.data;
         prev.next = target.next;
 
-        count--;
+        size--;
+        modCount++;
+
         return data;
     }
 
@@ -139,7 +150,7 @@ public class MyCircularLinkedList<E> {
 
     public boolean remove(E data, Comparator<? super E> comp) {
         Checker.checkNullArgument(comp, "Comparator");
-        if (data == null || count == 0) return false;
+        if (data == null || size == 0) return false;
 
         if (comp.compare(tail.next.data, data) == 0) {
             pollFirst();
@@ -156,7 +167,9 @@ public class MyCircularLinkedList<E> {
             SinglyNode<E> cur = prev.next;
             if (comp.compare(cur.data, data) == 0) {
                 prev.next = cur.next;
-                count--;
+
+                size--;
+                modCount++;
 
                 return true;
             }
@@ -166,7 +179,7 @@ public class MyCircularLinkedList<E> {
     }
 
     public E set(int i, E data) {
-        Checker.checkBounds(i, count);
+        Checker.checkBounds(i, size);
         Checker.checkNullArgument(data);
 
         SinglyNode<E> cur = tail.next;
@@ -177,13 +190,14 @@ public class MyCircularLinkedList<E> {
         E target = cur.data;
         cur.data = data;
 
+        modCount++;
         return target;
     }
 
     public E get(int i) {
-        Checker.checkBounds(i, count);
+        Checker.checkBounds(i, size);
 
-        if (i == count - 1) return peekLast();
+        if (i == size - 1) return peekLast();
 
         SinglyNode<E> cur = tail.next;
 
@@ -203,7 +217,7 @@ public class MyCircularLinkedList<E> {
 
         SinglyNode<E> cur = tail.next;
 
-        for (int index = 0; index < count; index++) {
+        for (int index = 0; index < size; index++) {
             if (comp.compare(cur.data, data) == 0) return index;
             cur = cur.next;
         }
@@ -212,13 +226,13 @@ public class MyCircularLinkedList<E> {
     }
 
     public void reverse() {
-        if (count <= 1) return;
+        if (size <= 1) return;
 
         SinglyNode<E> prev = tail;
         SinglyNode<E> cur = tail.next;
         SinglyNode<E> next = null;
 
-        for (int i = 0; i < count; i++) {
+        for (int i = 0; i < size; i++) {
             next = cur.next;
             cur.next = prev;
             prev = cur;
@@ -227,27 +241,37 @@ public class MyCircularLinkedList<E> {
 
         tail = next;
         tail.next = prev;
+
+        modCount++;
     }
 
     public Iterator<E> iterator() {
         return new Iterator<>() {
             private SinglyNode<E> cur = (tail == null) ? null : tail.next;
             private SinglyNode<E> prev = tail;
+
             private SinglyNode<E> returned = null;
             private SinglyNode<E> returnedPrev = null;
-            private int modCount = count;
+
+            private int expectedModCount = modCount;
             private int iterated = 0;
 
             public boolean hasNext() {
-                return iterated < modCount;
+                return iterated < size;
+            }
+
+            private void checkModCount() {
+                if (expectedModCount != modCount)
+                    throw new ConcurrentModificationException("List is modified");
             }
 
             public E next() {
-                if (modCount != count) throw new ConcurrentModificationException("List is modified");
+                checkModCount();
                 if (!hasNext()) throw new NoSuchElementException("No more elements");
 
-                returned = cur;
                 returnedPrev = prev;
+                returned = cur;
+
                 prev = cur;
                 cur = cur.next;
 
@@ -256,11 +280,11 @@ public class MyCircularLinkedList<E> {
             }
 
             public void remove() {
+                checkModCount();
                 if (returned == null) throw new IllegalStateException("The method can only be called once after calling next method");
-                if (modCount != count) throw new ConcurrentModificationException("List is modified");
 
                 // if list has one element, reset tail/cur
-                if (count == 1) {
+                if (size == 1) {
                     tail = null;
                     cur = null;
                 } else {
@@ -269,19 +293,17 @@ public class MyCircularLinkedList<E> {
                     // if returned is tail, reset tail
                     if (returned == tail) tail = returnedPrev;
                 }
+                returned.next = null;
 
-                // once item is removed, reset all pointers to it
+                // reset all pointers to the element that is removed
                 prev = returnedPrev;
                 returned = null;
 
-                count--;
-                modCount--;
+                size--;
                 iterated--;
-            }
 
-            public void forEachRemaining(Consumer<? super E> action) {
-                while (hasNext())
-                    action.accept(next());
+                modCount++;
+                expectedModCount++;
             }
         };
     }
@@ -292,12 +314,12 @@ public class MyCircularLinkedList<E> {
     }
 
     public String toString(Printer<E> printer) {
-        if (count == 0) return "CircularLinkedList: [ empty ]";
+        if (size == 0) return "CircularLinkedList: [ empty ]";
 
         Printer<E> safePrinter = (printer == null) ? (Object::toString) : printer;
 
         StringBuilder sb = new StringBuilder();
-        sb.append("CircularLinkedList (size ").append(count).append("): ");
+        sb.append("CircularLinkedList (size ").append(size).append("): ");
 
         SinglyNode<E> cur = tail.next;
         do {
