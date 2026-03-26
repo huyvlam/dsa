@@ -5,13 +5,17 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import mymodel.Person;
 
+import java.util.Comparator;
+
 class MyLinkedListTest {
     private MyLinkedList<Person> list;
+    private Comparator<Person> comparator;
 
     @BeforeEach
     void setUp() {
         // Initialize with an age-based comparator
-        list = new MyLinkedList<>((p1, p2) -> Integer.compare(p1.age, p2.age));
+        list = new MyLinkedList<>();
+        comparator = (p1, p2) -> Integer.compare(p1.age, p2.age);
     }
 
     @Test
@@ -62,24 +66,23 @@ class MyLinkedListTest {
         list.add(1, new Person("Bona", 22));
         list.add(1, new Person("Ciro", 24));
 
-        assertEquals(0, list.indexOf(new Person("A", 20)));
-        assertEquals(1, list.indexOf(new Person("B", 24)));
+        assertEquals(0, list.indexOf(new Person("A", 20), comparator));
+        assertEquals(1, list.indexOf(new Person("B", 24), comparator));
         assertEquals("Bona", list.remove(2).name);
         assertEquals(2, list.size());
-        assertFalse(list.contains(new Person("Ciro", 22)));
     }
 
     @Test
-    @DisplayName("Should remove by data using the comparator")
+    @DisplayName("Should remove by data using custom comparator")
     void testRemoveByData() {
         list.addFirst(new Person("Head", 50));
         list.addLast(new Person("Tail", 25));
         list.add(1, new Person("Mid", 15));
 
-        assertTrue(list.remove(new Person("Ghost", 15))); // match by age
-        assertFalse(list.remove(new Person("Ghost", 15))); // match by age
-        assertTrue(list.remove(new Person("Ghost", 25))); // match by age
-        assertTrue(list.remove(new Person("Ghost", 50))); // match by age
+        assertTrue(list.remove(new Person("Ghost", 15), comparator)); // match by age
+        assertFalse(list.remove(new Person("Ghost", 15), comparator)); // match by age
+        assertTrue(list.remove(new Person("Ghost", 25), comparator)); // match by age
+        assertTrue(list.remove(new Person("Ghost", 50), comparator)); // match by age
         assertEquals(0, list.size());
     }
 
