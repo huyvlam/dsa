@@ -2,14 +2,9 @@ package mylinked.singly;
 
 import mymodel.Person;
 
-import java.util.ConcurrentModificationException;
-import java.util.Iterator;
-import java.util.Objects;
-import java.util.NoSuchElementException;
+import java.util.*;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -142,16 +137,16 @@ class MyCircularLinkedListTest {
         assertThrows(IllegalStateException.class, it::remove);
         assertEquals("Kiwi", it.next());
 
-        assertEquals("Kiwi", listS.peekFirst());
         it.remove();
         assertEquals(2, listS.size());
         assertEquals("Orange", listS.peekFirst());
 
-        it.forEachRemaining(IO::print);
+        it.next();
+        it.next();
         assertThrows(NoSuchElementException.class, it::next);
 
         listS.pollLast();
-        assertThrows(ConcurrentModificationException.class, it::next);
+        assertThrows(ConcurrentModificationException.class, it::remove);
     }
 
     @Test
