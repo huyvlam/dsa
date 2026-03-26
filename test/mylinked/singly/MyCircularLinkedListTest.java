@@ -118,14 +118,14 @@ class MyCircularLinkedListTest {
         assertEquals("Mango", listS.peekLast());
     }
 
-//    @Test
-//    @DisplayName("Should use custom/default printer in toString")
-//    void testToString() {
-//        listS.addFirst("Soursop");
-//        String standard = listS.toString();
-//        String custom = listS.toString(p -> ("I like " + p));
-//
-//        assertTrue(standard.contains("[Soursop] -> (head)"));
-//        assertTrue(custom.contains("I like Soursop"));
-//    }
+    @Test
+    @DisplayName("Should print with either custom or standard printer in toString")
+    void testToString() {
+        listS.addFirst("Soursop");
+        String standard = listS.toString();
+        String custom = listS.toString(p -> ("I like " + p));
+
+        assertTrue(standard.contains("[Soursop] -> (head)"));
+        assertTrue(custom.contains("I like Soursop"));
+    }
 }

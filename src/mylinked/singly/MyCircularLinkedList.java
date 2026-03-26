@@ -229,29 +229,29 @@ public class MyCircularLinkedList<E> {
         tail.next = prev;
     }
 
-//    @Override
-//    public String toString() {
-//        return toString(null);
-//    }
-//
-//    public String toString(Printer<E> printer) {
-//        if (head == null) return "CircularLinkedList: [ empty ]";
-//
-//        Printer<E> safePrinter = (printer == null) ? (Object::toString) : printer;
-//
-//        StringBuilder sb = new StringBuilder();
-//        sb.append("CircularLinkedList (size ").append(count).append("): ");
-//
-//        SinglyNode<E> cur = head;
-//        do {
-//            sb.append("[").append(safePrinter.print(cur.data)).append("]");
-//
-//            if (cur.next != head) sb.append(" -> ");
-//            else sb.append(" -> (head)");
-//
-//            cur = cur.next;
-//        } while (cur != head);
-//
-//        return sb.toString();
-//    }
+    @Override
+    public String toString() {
+        return toString(null);
+    }
+
+    public String toString(Printer<E> printer) {
+        if (count == 0) return "CircularLinkedList: [ empty ]";
+
+        Printer<E> safePrinter = (printer == null) ? (Object::toString) : printer;
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("CircularLinkedList (size ").append(count).append("): ");
+
+        SinglyNode<E> cur = tail.next;
+        do {
+            sb.append("[").append(safePrinter.print(cur.data)).append("]");
+
+            if (cur.next == tail.next) sb.append(" -> (head)");
+            else sb.append(" -> ");
+
+            cur = cur.next;
+        } while (cur != tail.next);
+
+        return sb.toString();
+    }
 }
