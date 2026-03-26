@@ -2,6 +2,9 @@ package mylinked.singly;
 
 import mymodel.Person;
 
+import java.util.Comparator;
+import java.util.Objects;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -65,7 +68,7 @@ class MyCircularLinkedListTest {
     }
 
     @Test
-    @DisplayName("Should remove by the given data")
+    @DisplayName("Should remove the given data by standard or custom comparator")
     void testRemoveByData() {
         listS.addFirst("Lychee");
         listS.addLast("Longan");
@@ -75,6 +78,12 @@ class MyCircularLinkedListTest {
         assertTrue(listS.remove("Rambutan"));
         assertTrue(listS.remove("Lychee"));
         assertEquals(1, listS.size());
+
+        listP.add(0, new Person("Chi", 19));
+        listP.add(1, new Person("Mai", 42));
+
+        assertFalse(listP.remove(new Person("Chi", 35),
+                (p1, p2) -> (Objects.equals(p1.age, p2.age) && Objects.equals(p1.name, p2.name) ? 0 : -1)));
     }
 
     @Test
