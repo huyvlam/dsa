@@ -7,9 +7,10 @@ import java.util.*;
 
 public class MyCircularLinkedList<E> {
     private SinglyNode<E> tail;
-    private int size;
-    private int modCount; // number of modifications
     private final Comparator<? super E> comparator = (a, b) -> Objects.equals(a, b) ? 0 : -1;
+
+    private int size; // number of nodes
+    private int modCount; // number of modifications
 
     public MyCircularLinkedList() {
         tail = null;
@@ -20,6 +21,7 @@ public class MyCircularLinkedList<E> {
     public void clear() {
         tail = null;
         size = 0;
+        modCount++;
     }
 
     public int size() {
