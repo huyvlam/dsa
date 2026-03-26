@@ -10,32 +10,36 @@ import java.util.Objects;
 
 public class MyCircularDoublyLinkedList<E> {
     private final DoublyNode<E> sentinel;
-    private int count;
     private final Comparator<? super E> comparator = (a, b) -> Objects.equals(a, b) ? 0 : -1;
+
+    private int size;
+    private int modCount;
 
     public MyCircularDoublyLinkedList() {
         sentinel = new DoublyNode<>(null);
         sentinel.prev = sentinel;
         sentinel.next = sentinel;
-        count = 0;
+        size = 0;
+        modCount = 0;
     }
 
     public void clear() {
         sentinel.prev = sentinel;
         sentinel.next = sentinel;
-        count = 0;
+        size = 0;
+        modCount++;
     }
 
     public int size() {
-        return count;
+        return size;
     }
 
     public E peekFirst() {
-        return (count == 0) ? null : sentinel.next.data;
+        return (size == 0) ? null : sentinel.next.data;
     }
 
     public E peekLast() {
-        return (count == 0) ? null : sentinel.prev.data;
+        return (size == 0) ? null : sentinel.prev.data;
     }
 
     public void addFirst(E data) {
@@ -49,7 +53,8 @@ public class MyCircularDoublyLinkedList<E> {
         sentinel.next.prev = node;
         sentinel.next = node;
 
-        count++;
+        size++;
+        modCount++;
     }
 
     public void addLast(E data) {
@@ -63,11 +68,12 @@ public class MyCircularDoublyLinkedList<E> {
         sentinel.prev.next = node;
         sentinel.prev = node;
 
-        count++;
+        size++;
+        modCount++;
     }
 
     public E pollFirst() {
-        if (count == 0) return null;
+        if (size == 0) return null;
 
         DoublyNode<E> first = sentinel.next;
         E data = first.data;
@@ -78,12 +84,14 @@ public class MyCircularDoublyLinkedList<E> {
         first.prev = null;
         first.next = null;
 
-        count--;
+        size--;
+        modCount++;
+
         return data;
     }
 
     public E pollLast() {
-        if (count == 0) return null;
+        if (size == 0) return null;
 
         DoublyNode<E> last = sentinel.prev;
         E data = last.data;
@@ -94,15 +102,17 @@ public class MyCircularDoublyLinkedList<E> {
         last.prev = null;
         last.next = null;
 
-        count--;
+        size--;
+        modCount++;
+
         return data;
     }
 
     public void add(int i, E data) {
-        if (i < 0 || i > count) throw new IndexOutOfBoundsException("Index cannot be out of bound");
+        if (i < 0 || i > size) throw new IndexOutOfBoundsException("Index cannot be out of bound");
         Checker.checkNullArgument(data);
 
-        if (i == count) {
+        if (i == size) {
             addLast(data);
             return;
         }
@@ -115,11 +125,12 @@ public class MyCircularDoublyLinkedList<E> {
         curNode.prev.next = newNode;
         curNode.prev = newNode;
 
-        count++;
+        size++;
+        modCount++;
     }
 
     public E remove(int i) {
-        Checker.checkBounds(i, count);
+        Checker.checkBounds(i, size);
 
         DoublyNode<E> node = getNode(i);
         E data = node.data;
@@ -130,7 +141,9 @@ public class MyCircularDoublyLinkedList<E> {
         node.prev = null;
         node.next = null;
 
-        count--;
+        size--;
+        modCount++;
+
         return data;
     }
 
@@ -141,7 +154,7 @@ public class MyCircularDoublyLinkedList<E> {
     public boolean remove(E data, Comparator<? super E> comp) {
         if (data == null || comp == null) throw new IllegalArgumentException("Data, Comparator cannot be null");
 
-        if (count > 0 && comp.compare(sentinel.prev.data, data) == 0) {
+        if (size > 0 && comp.compare(sentinel.prev.data, data) == 0) {
             pollLast();
             return true;
         }
@@ -156,7 +169,9 @@ public class MyCircularDoublyLinkedList<E> {
                 cur.prev = null;
                 cur.next = null;
 
-                count--;
+                size--;
+                modCount++;
+
                 return true;
             }
             cur = cur.next;
@@ -166,18 +181,19 @@ public class MyCircularDoublyLinkedList<E> {
     }
 
     public E set(int i, E data) {
-        Checker.checkBounds(i, count);
         Checker.checkNullArgument(data);
+        Checker.checkBounds(i, size);
 
         DoublyNode<E> node = getNode(i);
         E replaced = node.data;
         node.data = data;
 
+        modCount++;
         return replaced;
     }
 
     public E get(int i) {
-        Checker.checkBounds(i, count);
+        Checker.checkBounds(i, size);
         return getNode(i).data;
     }
 
@@ -191,7 +207,7 @@ public class MyCircularDoublyLinkedList<E> {
 
         DoublyNode<E> cur = sentinel.next;
 
-        for (int index = 0; index < count; index++) {
+        for (int index = 0; index < size; index++) {
             if (comp.compare(cur.data, data) == 0) return index;
             cur = cur.next;
         }
@@ -202,32 +218,39 @@ public class MyCircularDoublyLinkedList<E> {
     public Iterator<E> iterator() {
         return new Iterator<>() {
             private DoublyNode<E> cur = sentinel.next;
-            private DoublyNode<E> lastReturn = null;
+            private DoublyNode<E> returned = null;
+
+            private int expectedModCount = modCount;
 
             public boolean hasNext() {
                 return cur != sentinel;
             }
 
             public E next() {
-                if (cur == sentinel) throw new NoSuchElementException("No more elements");
+                Checker.checkModCount(expectedModCount, modCount);
+                if (!hasNext()) throw new NoSuchElementException("No more elements");
 
-                lastReturn = cur;
+                returned = cur;
                 cur = cur.next;
 
-                return lastReturn.data;
+                return returned.data;
             }
 
             public void remove() {
-                if (lastReturn == null) throw new IllegalStateException("This method can only be called once after calling next method");
+                Checker.checkModCount(expectedModCount, modCount);
+                if (returned == null) throw new IllegalStateException("This method can only be called once after calling next method");
 
-                lastReturn.prev.next = lastReturn.next;
-                lastReturn.next.prev = lastReturn.prev;
+                returned.prev.next = returned.next;
+                returned.next.prev = returned.prev;
 
-                lastReturn.prev = null;
-                lastReturn.next = null;
-                lastReturn = null;
+                returned.prev = null;
+                returned.next = null;
+                returned = null;
 
-                count--;
+                size--;
+
+                modCount++;
+                expectedModCount++;
             }
         };
     }
@@ -243,7 +266,7 @@ public class MyCircularDoublyLinkedList<E> {
         Printer<E> safePrinter = (printer == null) ? (Object::toString) : printer;
 
         StringBuilder sb = new StringBuilder();
-        sb.append("CircularDoublyLinkedList (size").append(count).append("): ");
+        sb.append("CircularDoublyLinkedList (size").append(size).append("): ");
 
         DoublyNode<E> cur = sentinel.next;
         while (cur != sentinel) {
@@ -261,13 +284,13 @@ public class MyCircularDoublyLinkedList<E> {
     private DoublyNode<E> getNode(int i) {
         DoublyNode<E> cur;
 
-        if (i < count / 2) {
+        if (i < size / 2) {
             cur = sentinel.next;
             for (int index = 0; index < i; index++)
                 cur = cur.next;
         } else {
             cur = sentinel.prev;
-            for (int index = count - 1; index > i; index--)
+            for (int index = size - 1; index > i; index--)
                 cur = cur.prev;
         }
 
@@ -283,7 +306,7 @@ public class MyCircularDoublyLinkedList<E> {
         assert sentinel.prev != null;
 
         // 3. Empty list invariant
-        if (count == 0) {
+        if (size == 0) {
             assert sentinel.next == sentinel;
             assert sentinel.prev == sentinel;
             return;
@@ -309,10 +332,10 @@ public class MyCircularDoublyLinkedList<E> {
             cur = cur.next;
 
             // prevent infinite loop if corrupted
-            assert actual <= count;
+            assert actual <= size;
         }
 
         // 7. Count must match the actual number of nodes
-        assert actual == count;
+        assert actual == size;
     }
 }
