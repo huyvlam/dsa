@@ -201,17 +201,19 @@ public class MyCircularDoublyLinkedList<E> {
 
     public Iterator<E> iterator() {
         return new Iterator<>() {
-            private DoublyNode<E> next = sentinel.next;
+            private DoublyNode<E> cur = sentinel.next;
             private DoublyNode<E> lastReturn = null;
 
             public boolean hasNext() {
-                return next != sentinel;
+                return cur != sentinel;
             }
 
             public E next() {
-                if (next == sentinel) throw new NoSuchElementException("Element not found");
-                lastReturn = next;
-                next = next.next;
+                if (cur == sentinel) throw new NoSuchElementException("No more elements");
+
+                lastReturn = cur;
+                cur = cur.next;
+
                 return lastReturn.data;
             }
 
@@ -223,9 +225,9 @@ public class MyCircularDoublyLinkedList<E> {
 
                 lastReturn.prev = null;
                 lastReturn.next = null;
+                lastReturn = null;
 
                 count--;
-                lastReturn = null;
             }
         };
     }
