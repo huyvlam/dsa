@@ -7,13 +7,13 @@ import java.util.Comparator;
 
 public class MyDoublyLinkedList<E> {
     private DoublyNode<E> head, tail;
-    private int count;
+    private int size;
     private final Comparator<? super E> comparator;
 
     public MyDoublyLinkedList(Comparator<? super E> comparator) {
         head = null;
         tail = null;
-        count = 0;
+        size = 0;
         this.comparator = comparator;
     }
 
@@ -29,11 +29,11 @@ public class MyDoublyLinkedList<E> {
     public void clear() {
         head = null;
         tail = null;
-        count = 0;
+        size = 0;
     }
 
     public int size() {
-        return count;
+        return size;
     }
 
     public E peekFirst() {
@@ -57,7 +57,7 @@ public class MyDoublyLinkedList<E> {
             head.prev = node;
             head = node;
         }
-        count++;
+        size++;
     }
 
     public void addLast(E data) {
@@ -73,7 +73,7 @@ public class MyDoublyLinkedList<E> {
             tail.next = node;
             tail = node;
         }
-        count++;
+        size++;
     }
 
     public E pollFirst() {
@@ -85,7 +85,7 @@ public class MyDoublyLinkedList<E> {
         if (head != null) head.prev = null;
         else tail = null;
 
-        count--;
+        size--;
         return data;
     }
 
@@ -98,26 +98,26 @@ public class MyDoublyLinkedList<E> {
         if (tail != null) tail.next = null;
         else head = null;
 
-        count--;
+        size--;
         return data;
     }
 
     public void add(int i, E data) {
         Checker.checkNullArgument(data);
-        if (i < 0 || i > count) throw new IndexOutOfBoundsException("Index cannot be out of bound");
+        if (i < 0 || i > size) throw new IndexOutOfBoundsException("Index cannot be out of bound");
 
         if (i == 0) {
             addFirst(data);
             return;
         }
-        if (i == count) {
+        if (i == size) {
             addLast(data);
             return;
         }
 
         DoublyNode<E> node = new DoublyNode<>(data);
 
-        if (i < count / 2) {
+        if (i < size / 2) {
             DoublyNode<E> prev = head;
 
             for (int index = 0; index < i - 1; index++)
@@ -130,7 +130,7 @@ public class MyDoublyLinkedList<E> {
         } else {
             DoublyNode<E> cur = tail;
 
-            for (int index = count - 1; index > i; index--)
+            for (int index = size - 1; index > i; index--)
                 cur = cur.prev;
 
             node.prev = cur.prev;
@@ -138,24 +138,24 @@ public class MyDoublyLinkedList<E> {
             cur.prev.next = node;
             cur.prev = node;
         }
-        count++;
+        size++;
     }
 
     public E remove(int i) {
-        Checker.checkBounds(i, count);
+        Checker.checkBounds(i, size);
 
         if (i == 0) return pollFirst();
-        if (i == count - 1) return pollLast();
+        if (i == size - 1) return pollLast();
 
         DoublyNode<E> cur;
 
-        if (i < count / 2) {
+        if (i < size / 2) {
             cur = head;
             for (int index = 0; index < i; index++)
                 cur = cur.next;
         } else {
             cur = tail;
-            for (int index = count - 1; index > i; index--)
+            for (int index = size - 1; index > i; index--)
                 cur = cur.prev;
         }
 
@@ -166,12 +166,12 @@ public class MyDoublyLinkedList<E> {
         cur.next = null;
         cur.prev = null;
 
-        count--;
+        size--;
         return data;
     }
 
     public boolean remove(E data) {
-        if (data == null || count == 0) return false;
+        if (data == null || size == 0) return false;
 
         if (comparator.compare(head.data, data) == 0)
             return pollFirst() != null;
@@ -188,7 +188,7 @@ public class MyDoublyLinkedList<E> {
                 cur.next = null;
                 cur.prev = null;
 
-                count--;
+                size--;
                 return true;
             }
             cur = cur.next;
@@ -198,17 +198,17 @@ public class MyDoublyLinkedList<E> {
 
     public E set(int i, E data) {
         Checker.checkNullArgument(data);
-        Checker.checkBounds(i, count);
+        Checker.checkBounds(i, size);
 
         DoublyNode<E> cur;
 
-        if (i < count / 2) {
+        if (i < size / 2) {
             cur = head;
             for (int index = 0; index < i; index++)
                 cur = cur.next;
         } else {
             cur = tail;
-            for (int index = count - 1; index > i; index--)
+            for (int index = size - 1; index > i; index--)
                 cur = cur.prev;
         }
 
@@ -219,11 +219,11 @@ public class MyDoublyLinkedList<E> {
     }
 
     public E get(int i) {
-        Checker.checkBounds(i, count);
+        Checker.checkBounds(i, size);
 
         if (i == 0) return peekFirst();
 
-        if (i == count - 1) return peekLast();
+        if (i == size - 1) return peekLast();
 
         DoublyNode<E> cur = head;
         for (int count = 0; count < i; count++)
@@ -237,7 +237,7 @@ public class MyDoublyLinkedList<E> {
 
         DoublyNode<E> cur = head;
 
-        for (int index = 0; index < count; index++) {
+        for (int index = 0; index < size; index++) {
             if (comparator.compare(cur.data, data) == 0) return index;
             cur = cur.next;
         }
@@ -279,7 +279,7 @@ public class MyDoublyLinkedList<E> {
         Printer<E> safePrinter = (printer == null) ? (Object::toString) : printer;
 
         StringBuilder sb = new StringBuilder();
-        sb.append("List (size ").append(count).append("): ");
+        sb.append("List (size ").append(size).append("): ");
 
         DoublyNode<E> cur = head;
         while (cur != null) {
