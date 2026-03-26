@@ -7,24 +7,14 @@ import myinterface.Printer;
 
 public class MyLinkedList<E> {
     private SinglyNode<E> head, tail;
-    private final Comparator<? super E> comparator;
+    private final Comparator<? super E> comparator = (a, b) -> Objects.equals(a, b) ? 0 : -1;
 
     private int size;
 
-    public MyLinkedList(Comparator<? super E> comparator) {
+    public MyLinkedList() {
         head = null;
         tail = null;
         size = 0;
-        this.comparator = comparator;
-    }
-
-    public MyLinkedList() {
-        this((E a, E b) -> {
-            if (a instanceof Comparable && b instanceof Comparable)
-                return ((Comparable) a).compareTo(b);
-
-            return a.equals(b) ? 0 : -1;
-        });
     }
 
     public void clear() {
@@ -151,13 +141,17 @@ public class MyLinkedList<E> {
     }
 
     public boolean remove(E data) {
+        return remove(data, comparator);
+    }
+
+    public boolean remove(E data, Comparator<? super E> comp) {
         if (data == null || size == 0) return false;
 
-        if (comparator.compare(head.data, data) == 0) {
+        if (comp.compare(head.data, data) == 0) {
             pollFirst();
             return true;
         }
-        if (comparator.compare(tail.data, data) == 0) {
+        if (comp.compare(tail.data, data) == 0) {
             pollLast();
             return true;
         }
@@ -166,7 +160,7 @@ public class MyLinkedList<E> {
 
         while (prev.next != tail) {
             SinglyNode<E> cur = prev.next;
-            if (comparator.compare(cur.data, data) == 0) {
+            if (comp.compare(cur.data, data) == 0) {
                 prev.next = cur.next;
                 size--;
 
@@ -208,12 +202,16 @@ public class MyLinkedList<E> {
     }
 
     public int indexOf(E data) {
+        return indexOf(data, comparator);
+    }
+
+    public int indexOf(E data, Comparator<? super E> comp) {
         if (data == null) return -1;
 
         SinglyNode<E> cur = head;
 
         for (int index = 0; index < size; index++) {
-            if (comparator.compare(cur.data, data) == 0) return index;
+            if (comp.compare(cur.data, data) == 0) return index;
             cur = cur.next;
         }
 
