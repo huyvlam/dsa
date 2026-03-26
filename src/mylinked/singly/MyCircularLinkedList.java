@@ -3,7 +3,6 @@ package mylinked.singly;
 import myinterface.Printer;
 import myhelper.Checker;
 
-import java.util.function.Consumer;
 import java.util.*;
 
 public class MyCircularLinkedList<E> {
