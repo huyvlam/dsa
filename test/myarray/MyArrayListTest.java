@@ -5,22 +5,34 @@ import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class MyArrayListTest {
-    private MyArrayList<String> al;
-    private final int INITIAL_CAPACITY = 2;
+    private MyArrayList<String> arrList;
+    private final int INITIAL_CAPACITY = 1;
 
     @BeforeEach
     void setUp() {
-        al = new MyArrayList<>(INITIAL_CAPACITY);
+        arrList = new MyArrayList<>(INITIAL_CAPACITY);
     }
 
     @Test
     @DisplayName("Should grow in capacity when exceeding initial capacity")
     void testGrowCapacity() {
-        al.add("Sepak Takraw");
-        al.add("Yachting");
-        al.add("Boxing");
+        arrList.add("Sepak Takraw");
+        arrList.add("Yachting");
+        arrList.add("Boxing");
 
-        assertNotEquals(INITIAL_CAPACITY, al.capacity());
-        assertEquals(3, al.size());
+        assertNotEquals(INITIAL_CAPACITY, arrList.capacity());
+        assertEquals(3, arrList.size());
+    }
+
+    @Test
+    @DisplayName("Should remove data and move remaining elements to the left")
+    void testRemoveByIndex() {
+        arrList.add("Soccer");
+        arrList.add("Archery");
+        arrList.add("Swimming");
+
+        arrList.remove(0);
+
+        assertEquals("Archery", arrList.get(0));
     }
 }
