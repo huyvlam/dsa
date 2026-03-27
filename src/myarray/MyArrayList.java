@@ -41,14 +41,14 @@ public class MyArrayList<E> {
         arrList[size++] = data;
     }
 
-    public E remove(int i) {
-        Checker.checkBounds(i, size);
+    public E remove(int index) {
+        Checker.checkBounds(index, size);
 
-        E removed = (E) arrList[i];
+        E removed = (E) arrList[index];
 
-        int numShift = size - i - 1;
+        int numShift = size - index - 1;
         if (numShift > 0)
-            System.arraycopy(arrList, i + 1, arrList, i, numShift);
+            System.arraycopy(arrList, index + 1, arrList, index, numShift);
 
         arrList[--size] = null;
 
@@ -58,5 +58,11 @@ public class MyArrayList<E> {
     public void trimToSize() {
         if (size < arrList.length)
             arrList = (size == 0) ? new Object[DEFAULT_CAPACITY] : Arrays.copyOf(arrList, size);
+    }
+
+    public E get(int index) {
+        Checker.checkBounds(index, size);
+
+        return (E) arrList[index];
     }
 }
