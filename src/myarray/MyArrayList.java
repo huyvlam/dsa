@@ -5,19 +5,20 @@ import myhelper.Checker;
 import java.util.Arrays;
 
 public class MyArrayList<E> {
-    private Object[] arrList;
+    private Object[] dataList;
 
     private final int DEFAULT_CAPACITY;
     private int size;
 
     public MyArrayList(int capacity) {
-        DEFAULT_CAPACITY = (capacity == 0) ? 5 : capacity;
-        arrList = new Object[DEFAULT_CAPACITY];
+        if (capacity < 0) throw new IllegalArgumentException("Capacity cannot be negative");
+        DEFAULT_CAPACITY = capacity;
+        dataList = new Object[DEFAULT_CAPACITY];
         size = 0;
     }
 
-    public int capacity() {
-        return arrList.length;
+    public MyArrayList() {
+        this(10);
     }
 
     public int size() {
@@ -25,7 +26,7 @@ public class MyArrayList<E> {
     }
 
     private void grow() {
-        int curCap = arrList.length;
+        int curCap = dataList.length;
 
         if (size < curCap) return;
 
@@ -33,36 +34,42 @@ public class MyArrayList<E> {
         // ensure new capacity grow by at least 1 for edge case
         newCap = (newCap <= curCap) ? curCap + 1 : newCap;
 
-        arrList = Arrays.copyOf(arrList, newCap);
+        dataList = Arrays.copyOf(dataList, newCap);
     }
 
-    public void add(E data) {
+    public boolean add(E data) {
         grow();
-        arrList[size++] = data;
+        dataList[size++] = data;
+
+        return true;
     }
 
     public E remove(int index) {
         Checker.checkBounds(index, size);
 
-        E removed = (E) arrList[index];
+        E removed = (E) dataList[index];
 
         int numShift = size - index - 1;
         if (numShift > 0)
-            System.arraycopy(arrList, index + 1, arrList, index, numShift);
+            System.arraycopy(dataList, index + 1, dataList, index, numShift);
 
-        arrList[--size] = null;
+        dataList[--size] = null;
 
         return removed;
     }
 
     public void trimToSize() {
-        if (size < arrList.length)
-            arrList = (size == 0) ? new Object[DEFAULT_CAPACITY] : Arrays.copyOf(arrList, size);
+        if (size < dataList.length)
+            dataList = (size == 0) ? new Object[DEFAULT_CAPACITY] : Arrays.copyOf(dataList, size);
     }
 
     public E get(int index) {
         Checker.checkBounds(index, size);
 
-        return (E) arrList[index];
+        return (E) dataList[index];
+    }
+
+    static void main() {
+
     }
 }
