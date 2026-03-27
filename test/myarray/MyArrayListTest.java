@@ -23,7 +23,7 @@ class MyArrayListTest {
         arrList.add("Yachting");
         arrList.add("Boxing");
 
-        assertNotEquals(INITIAL_CAPACITY, arrList.size());
+        assertTrue(INITIAL_CAPACITY < arrList.size());
         assertEquals("Boxing", arrList.get(2));
     }
 
