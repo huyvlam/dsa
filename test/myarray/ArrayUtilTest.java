@@ -14,9 +14,7 @@ class ArrayUtilTest {
     @BeforeEach
     void setUp() {
         numbers = new Integer[5];
-        persons = new Person[2];
-        persons[0] = new Person("Herra", 23);
-        persons[1] = new Person("Rambo", 54);
+        persons = new Person[]{new Person("Herra",23),new Person("Rambo",54)};
     }
 
     @Test
@@ -30,13 +28,10 @@ class ArrayUtilTest {
     }
 
     @Test
-    @DisplayName("Should return string value from the given array")
-    void testToString() {
-        ArrayUtil.fillRandomNumbers(numbers, 20);
-        String standard = ArrayUtil.toString(numbers);
+    @DisplayName("Should toString array elements using custom printer")
+    void testToStringCustomPrint() {
         String custom = ArrayUtil.toString(persons, (p) -> p.name + " is " + p.age);
 
-        assertTrue(standard.contains(numbers[2].toString()));
         assertTrue(custom.contains("Herra is 23"));
     }
 }

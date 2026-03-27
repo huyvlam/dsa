@@ -8,7 +8,7 @@ public class ArrayUtil {
     /**
      * Fill the given array w/ random numbers ranged from 0 to the given bound
      * @param arr array to be filled
-     * @param bound upper limit (number generated does not exceed this)
+     * @param bound upper limit
      */
     public static void fillRandomNumbers(Integer[] arr, int bound) {
         Random rand = new Random();
@@ -18,34 +18,24 @@ public class ArrayUtil {
     }
 
     /**
-     * Standard toString
+     * Flexible toString using custom printer
      * @param arr array of elements
-     * @return string value
-     * @param <E> element type
-     */
-    public static <E> String toString(E[] arr) {
-        return toString(arr, null);
-    }
-
-    /**
-     * Flexible toString w/ custom print of data
-     * @param arr array of elements
-     * @param printer custom way to print element
-     * @return string value of every element in the given array
+     * @param custom way to print element
+     * @return string value of array elements
      * @param <E> type of element
      */
-    public static <E> String toString(E[] arr, Printer<E> printer) {
+    public static <E> String toString(E[] arr, Printer<E> custom) {
         int n = arr.length;
-        if (n == 0) return "[ empty ]";
+        if (n == 0) return "Array: [empty]";
 
-        // check and provide fallback print method
-        Printer<E> safePrinter = (printer == null) ? (Object::toString) : printer;
+        Printer<E> standard = (e) -> e == null ? null : e.toString();
+        Printer<E> safePrinter = (custom == null) ? standard : custom;
 
         StringBuilder sb = new StringBuilder();
-        sb.append("[");
+        sb.append("Array (size ").append(n).append("): [");
 
         for (E e : arr) {
-            if (e.equals(arr[n - 1])) sb.append(safePrinter.print(e));
+            if (e == arr[n - 1]) sb.append(safePrinter.print(e));
             else sb.append(safePrinter.print(e)).append(", ");
         }
 
