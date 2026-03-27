@@ -1,8 +1,11 @@
 package myarray;
 
 import myhelper.Checker;
+import mysearch.LinearSearch;
 
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Objects;
 
 public class MyArrayList<E> {
     private Object[] dataList;
@@ -67,6 +70,16 @@ public class MyArrayList<E> {
         Checker.checkBounds(index, size);
 
         return (E) dataList[index];
+    }
+
+    public int indexOf(E data) {
+        return indexOf(data, (a, b) -> Objects.equals(a, b) ? 0 : -1);
+    }
+
+    public int indexOf(E data, Comparator<? super E> comp) {
+        Checker.checkNullArgument(data);
+
+        return LinearSearch.findIndex((E[]) dataList, data, comp);
     }
 
     static void main() {

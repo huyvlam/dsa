@@ -65,6 +65,18 @@ class MyArrayListTest {
     }
 
     @Test
+    @DisplayName("Should find the index of given data")
+    void testIndexOf() {
+        arrList.add("Judo");
+        arrList.add("Rowing");
+        arrList.add("Baseball");
+
+        int i = 0;
+        assertEquals(i, arrList.indexOf(arrList.get(i)));
+        assertEquals(-1, arrList.indexOf("Tennis"));
+    }
+
+    @Test
     @DisplayName("Should throw exception if constructor capacity is negative")
     void testConstructorCapacity() {
         assertThrows(IllegalArgumentException.class, () -> new MyArrayList<Integer>(-1));
