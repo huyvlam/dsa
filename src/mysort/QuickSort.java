@@ -11,18 +11,18 @@ public class QuickSort<T extends Comparable<T>> {
         int n = arr.length;
         if (n <= 1) return;
 
-        sort(arr, 0, n - 1, comp);
+        recurseSort(arr, 0, n - 1, comp);
     }
 
-    private static <T> void sort(T[] arr, int lo, int hi,  Comparator<? super T> comp) {
+    private static <T> void recurseSort(T[] arr, int lo, int hi, Comparator<? super T> comp) {
         // 1. Partition the array until it becomes a single element
         if (lo < hi) {
             // Note: Pivot point is equivalent to the root in red black tree
             int p = partition(arr, lo, hi, comp);
 
             // 2. Use returned pivot point to recurse sorting left/right half
-            sort(arr, lo, p - 1, comp); // smaller elements
-            sort(arr, p + 1, hi, comp); // larger elements
+            recurseSort(arr, lo, p - 1, comp); // smaller elements
+            recurseSort(arr, p + 1, hi, comp); // larger elements
         }
     }
 
