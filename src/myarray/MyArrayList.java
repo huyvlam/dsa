@@ -2,6 +2,7 @@ package myarray;
 
 import myhelper.Checker;
 import mysearch.LinearSearch;
+import mysort.QuickSort;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -82,7 +83,16 @@ public class MyArrayList<E> {
         return LinearSearch.findIndex((E[]) dataList, data, comp);
     }
 
-    static void main() {
+    public void sort(Comparator<? super E> comp) {
+        if (size <= 1) return;
 
+        if (comp == null) {
+            if (Checker.isComparable(dataList, size))
+                comp = (Comparator<? super E>) Comparator.naturalOrder();
+            else
+                throw new IllegalArgumentException("Comparator cannot be null for non-Comparable elements");
+        }
+
+        QuickSort.sort((E[]) dataList, 0, size - 1, comp);
     }
 }
