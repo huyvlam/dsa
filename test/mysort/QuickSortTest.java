@@ -13,12 +13,10 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 class QuickSortTest {
     private String[] arrS;
     private Person[] arrP;
-    private Comparator<String> naturalComp;
     private Comparator<Person> customComp;
 
     @BeforeEach
     void setUp() {
-        naturalComp = Comparator.naturalOrder();
         customComp = Comparator.comparing((p) -> p.age);
 
         arrS = new String[]{"soccer","archery",null,"rowing","baseball","volleyball","judo","sepak takraw"};
@@ -35,7 +33,7 @@ class QuickSortTest {
     @Test
     @DisplayName("Should sort elements using natural order")
     void testSortNaturalOrder() {
-        QuickSort.sort(arrS, naturalComp);
+        QuickSort.sort(arrS, 0, arrS.length - 1, null);
         assertEquals("archery", arrS[0]);
         assertEquals("volleyball", arrS[arrS.length - 2]);
         assertNull(arrS[arrS.length - 1]);
@@ -44,7 +42,7 @@ class QuickSortTest {
     @Test
     @DisplayName("Should sort elements using custom comparator")
     void testSortCustom() {
-        QuickSort.sort(arrP, customComp);
+        QuickSort.sort(arrP, 0, arrP.length - 1, customComp);
         assertEquals("Domo", arrP[0].name);
         assertEquals("Ha", arrP[arrP.length - 2].name);
         assertNull(arrP[arrP.length - 1]);

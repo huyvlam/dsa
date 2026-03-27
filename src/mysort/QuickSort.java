@@ -1,63 +1,58 @@
 package mysort;
 
-import myhelper.Checker;
-
 import java.util.Comparator;
 
-public class QuickSort<T extends Comparable<T>> {
-    public static <T> void sort(T[] arr, Comparator<? super T> comp) {
-        Checker.checkNullArgument(comp);
+public class QuickSort {
+    public static <T> void sort(T[] arr, int lo, int hi, Comparator<? super T> comp) {
+        if (lo >= hi || arr == null) return;
 
-        int n = arr.length;
-        if (n <= 1) return;
+        // Handle null data inside array
+        Comparator<? super T> safeComp = (comp == null)
+                ? (Comparator<T>) Comparator.nullsLast(Comparator.naturalOrder())
+                : Comparator.nullsLast(comp);
 
-        recurseSort(arr, 0, n - 1, comp);
+        recursiveSort(arr, lo, hi, safeComp);
     }
 
-    private static <T> void recurseSort(T[] arr, int lo, int hi, Comparator<? super T> comp) {
+    private static <T> void recursiveSort(T[] arr, int lo, int hi, Comparator<? super T> comp) {
         // 1. Partition the array until it becomes a single element
         if (lo < hi) {
-            // Note: Pivot point is equivalent to the root in red black tree
+            // Pivot point behaves like the root in red black tree
             int p = partition(arr, lo, hi, comp);
 
-            // 2. Use returned pivot point to recurse sorting left/right half
-            recurseSort(arr, lo, p - 1, comp); // smaller elements
-            recurseSort(arr, p + 1, hi, comp); // larger elements
+            // 2. Use returned pivot point to recur sorting left/right half
+            recursiveSort(arr, lo, p - 1, comp); // smaller elements
+            recursiveSort(arr, p + 1, hi, comp); // larger elements
         }
     }
 
     private static <T> int partition(T[] arr, int lo, int hi, Comparator<? super T> comp) {
-        Comparator<? super T> safeComp = Comparator.nullsLast(comp);
+        // 3. Use the middle as pivot
+        int mid = lo + (hi - lo) / 2;
+        swap(arr, mid, hi);
 
-        // 3. We use the last element as pivot
-        T pivotElement = arr[hi];
+        T pivot = arr[hi];
+        int i = lo - 1; // Index of element recently swapped
 
-        // 4. Initialize the position of swapped element (we start out of bound since no swap occurs initially)
-        int swapIndex = lo - 1;
-
-        // 5. Iterate left to right
+        // 4. Iterate left to right
         for (int j = lo; j < hi; j++) {
-            // 6. If current element is the winner, pivot to the left
-            if (safeComp.compare(arr[j], pivotElement) < 0) {
-                swapIndex++; // move swap position forward
-
-                T temp = arr[swapIndex];
-
-                // Move the winner into swap position
-                arr[swapIndex] = arr[j];
-                arr[j] = temp;
+            // 5. If current element is the winner, move it to the left
+            if (comp.compare(arr[j], pivot) < 0) {
+                i++;
+                swap(arr, i, j);
             }
         }
 
-        int pivotIndex = swapIndex + 1;
-        T temp = arr[pivotIndex];
-
-        // 5. Move pivot element right behind the last element that was swapped
-        // All elements left of pivot are smaller, right of pivot are larger
-        arr[pivotIndex] = arr[hi];
-        arr[hi] = temp;
+        // 5. Move leftmost element right behind the element recently swapped
+        swap(arr, i + 1, hi);
 
         // 6. Return the pivot position to use as starting point for subsequent partition
-        return pivotIndex;
+        return i + 1;
+    }
+
+    private static <T> void swap(T[] arr, int a, int b) {
+        T temp = arr[a];
+        arr[a] = arr[b];
+        arr[b] = temp;
     }
 }
