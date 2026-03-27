@@ -1,5 +1,6 @@
 package myarray;
 
+import mymodel.Person;
 import org.junit.jupiter.api.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -77,8 +78,35 @@ class MyArrayListTest {
     }
 
     @Test
+    @DisplayName("Should sort elements using custom comparator or natural order")
+    void testSort() {
+        arrList.add("soccer");
+        arrList.add("baseball");
+        arrList.add("recurve");
+        arrList.add("tennis");
+        arrList.add("badminton");
+        arrList.add("marathon");
+
+        arrList.sort(null);
+
+        assertEquals("badminton", arrList.get(0));
+        assertEquals("baseball", arrList.get(1));
+        assertEquals("tennis", arrList.get(arrList.size() - 1));
+    }
+
+    @Test
     @DisplayName("Should throw exception if constructor capacity is negative")
-    void testConstructorCapacity() {
+    void testConstructorException() {
         assertThrows(IllegalArgumentException.class, () -> new MyArrayList<Integer>(-1));
+    }
+
+    @Test
+    @DisplayName("Should throw exception if no comparator is provided for sorting non-Comparable element")
+    void testSortException() {
+        MyArrayList<Person> listP = new MyArrayList<>(2);
+        listP.add(new Person("X", 9));
+        listP.add(new Person("Z", 6));
+
+        assertThrows(IllegalArgumentException.class, () -> listP.sort(null));
     }
 }
