@@ -1,6 +1,7 @@
 package myarray;
 
 import myhelper.Checker;
+import mysearch.BinarySearch;
 import mysearch.LinearSearch;
 import mysort.QuickSort;
 
@@ -10,6 +11,7 @@ import java.util.Objects;
 
 public class MyArrayList<E> {
     private Object[] dataList;
+    private boolean sorted;
 
     private final int DEFAULT_CAPACITY;
     private int size;
@@ -19,6 +21,7 @@ public class MyArrayList<E> {
         DEFAULT_CAPACITY = capacity;
         dataList = new Object[DEFAULT_CAPACITY];
         size = 0;
+        sorted = false;
     }
 
     public MyArrayList() {
@@ -74,13 +77,21 @@ public class MyArrayList<E> {
     }
 
     public int indexOf(E data) {
-        return indexOf(data, (a, b) -> Objects.equals(a, b) ? 0 : -1);
+        return indexOf(data, null);
     }
 
     public int indexOf(E data, Comparator<? super E> comp) {
         Checker.checkNullArgument(data);
 
-        return LinearSearch.findIndex((E[]) dataList, data, comp);
+        if (comp == null) {
+            comp = Checker.isComparable(dataList, size) ?
+                    (Comparator<? super E>) Comparator.naturalOrder() :
+                    (a, b) -> Objects.equals(a, b) ? 0 : -1;
+        }
+
+        return sorted ?
+                BinarySearch.findIndex((E[]) dataList, data, comp) :
+                LinearSearch.findIndex((E[]) dataList, data, comp);
     }
 
     public void sort(Comparator<? super E> comp) {
@@ -94,5 +105,6 @@ public class MyArrayList<E> {
         }
 
         QuickSort.sort((E[]) dataList, 0, size - 1, comp);
+        sorted = true;
     }
 }
