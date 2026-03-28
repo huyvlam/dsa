@@ -23,6 +23,12 @@ public class Checker {
             throw new ConcurrentModificationException("Data is modified");
     }
 
+    public static <E> Comparator<? super E> nullsLastComparator(Comparator<? super E> comparator) {
+        return (comparator == null)
+                ? (Comparator<E>) Comparator.nullsLast(Comparator.naturalOrder())
+                : Comparator.nullsLast(comparator);
+    }
+
     public static <T> boolean isComparable(T[] arr, int n) {
         T element = null;
         for (int i = 0; i < n; i++) {
