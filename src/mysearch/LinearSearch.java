@@ -18,14 +18,11 @@ public class LinearSearch {
         int n = arr.length;
         if (n == 0) return -1;
 
-        int i;
+        int i = 0;
 
         if (n % 2 == 1) {
             if (arr[0] != null && comp.compare(arr[0], value) == 0) return 0;
-
             i = 1;
-        } else {
-            i = 0;
         }
 
         while (i < n - 1) {
