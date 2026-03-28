@@ -84,13 +84,13 @@ public class MyArrayList<E> {
         Checker.checkNullArgument(data);
 
         if (comp == null) {
-            comp = Checker.isComparable(dataList, size) ?
-                    (Comparator<? super E>) Comparator.naturalOrder() :
-                    (a, b) -> Objects.equals(a, b) ? 0 : -1;
+            comp = Checker.isComparable(dataList, size)
+                    ? Checker.nullsLastComparator(null)
+                    : (a, b) -> Objects.equals(a, b) ? 0 : -1;
         }
 
         return sorted ?
-                BinarySearch.findIndex((E[]) dataList, data, comp) :
+                BinarySearch.findIndex((E[]) dataList, data, 0, size - 1, comp) :
                 LinearSearch.findIndex((E[]) dataList, data, comp);
     }
 
@@ -99,7 +99,7 @@ public class MyArrayList<E> {
 
         if (comp == null) {
             if (Checker.isComparable(dataList, size))
-                comp = (Comparator<? super E>) Comparator.naturalOrder();
+                comp = Checker.nullsLastComparator(null);
             else
                 throw new IllegalArgumentException("Comparator cannot be null for non-Comparable elements");
         }
