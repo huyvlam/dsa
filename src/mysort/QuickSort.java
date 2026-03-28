@@ -1,24 +1,20 @@
 package mysort;
 
-import java.util.Arrays;
+import myhelper.Checker;
 import java.util.Comparator;
 
 public class QuickSort {
     public static <E> void sort(E[] arr, int lo, int hi, Comparator<? super E> comp) {
         if (lo >= hi || arr == null) return;
 
-        // Handle null data inside array
-        Comparator<? super E> safeComp = (comp == null)
-                ? (Comparator<E>) Comparator.nullsLast(Comparator.naturalOrder())
-                : Comparator.nullsLast(comp);
-
+        Comparator<? super E> safeComp = Checker.nullsLastComparator(comp);
         recursiveSort(arr, lo, hi, safeComp);
     }
 
     private static <E> void recursiveSort(E[] arr, int lo, int hi, Comparator<? super E> comp) {
-        // 1. Partition the array until it becomes a single element
+        // 1. Partition the array until it contains one single element
         if (lo < hi) {
-            // This behaves like the root in red black tree
+            // Behaves like the root in red black tree
             int p = partition(arr, lo, hi, comp);
 
             // 2. Use returned pivot point to recur sorting left/right half
