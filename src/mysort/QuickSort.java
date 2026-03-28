@@ -1,5 +1,6 @@
 package mysort;
 
+import java.util.Arrays;
 import java.util.Comparator;
 
 public class QuickSort {
@@ -17,7 +18,7 @@ public class QuickSort {
     private static <E> void recursiveSort(E[] arr, int lo, int hi, Comparator<? super E> comp) {
         // 1. Partition the array until it becomes a single element
         if (lo < hi) {
-            // Pivot point behaves like the root in red black tree
+            // This behaves like the root in red black tree
             int p = partition(arr, lo, hi, comp);
 
             // 2. Use returned pivot point to recur sorting left/right half
@@ -27,23 +28,22 @@ public class QuickSort {
     }
 
     private static <E> int partition(E[] arr, int lo, int hi, Comparator<? super E> comp) {
-        // 3. Use the middle as pivot
+        // 3. Use the middle pivot to avoid O(n2) on sorted array
         int mid = lo + (hi - lo) / 2;
         swap(arr, mid, hi);
 
         E pivot = arr[hi];
         int i = lo - 1; // Index of element recently swapped
 
-        // 4. Iterate left to right
         for (int j = lo; j < hi; j++) {
-            // 5. If current element is the winner, move it to the left
+            // 4. If current element is smaller, move it to the left
             if (comp.compare(arr[j], pivot) < 0) {
                 i++;
                 swap(arr, i, j);
             }
         }
 
-        // 5. Move leftmost element right behind the element recently swapped
+        // 5. Place leftmost element after the element recently swapped
         swap(arr, i + 1, hi);
 
         // 6. Return the pivot position to use as starting point for subsequent partition
