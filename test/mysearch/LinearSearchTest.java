@@ -14,15 +14,13 @@ class LinearSearchTest {
     private Integer[] arrI;
     private Person[] arrP;
     private Comparator<Person> customComp;
-    private Comparator<Integer> naturalComp;
 
     @BeforeEach
     void setUp() {
-        naturalComp = Comparator.naturalOrder();
-        customComp = Comparator.comparingInt((Person p) -> p.age);
+        customComp = Comparator.comparing((Person p) -> p.name);
 
         arrP = new Person[]{
-                new Person("Herra",23),
+                new Person("Hera",23),
                 new Person("Rumi",54),
                 new Person("Oro",40),
                 new Person("Niko",19)};
@@ -36,7 +34,7 @@ class LinearSearchTest {
     @Test
     @DisplayName("Should find min/max elements in the given array")
     void testFindMinMax() {
-        Pair<Integer> natural = LinearSearch.findMinMax(arrI, naturalComp);
+        Pair<Integer> natural = LinearSearch.findMinMax(arrI, null);
 
         assertNotNull(natural);
         assertEquals(-5, natural.min);
@@ -45,19 +43,19 @@ class LinearSearchTest {
         Pair<Person> custom = LinearSearch.findMinMax(arrP, customComp);
 
         assertNotNull(custom);
-        assertEquals(19, custom.min.age);
-        assertEquals(54, custom.max.age);
+        assertEquals("Hera", custom.min.name);
+        assertEquals("Rumi", custom.max.name);
     }
 
     @Test
     @DisplayName("Should find the index of given element in the array")
     void testFindIndex() {
         int i = 0;
-        assertEquals(i, LinearSearch.findIndex(arrI, arrI[i], naturalComp));
+        assertEquals(i, LinearSearch.findIndex(arrI, arrI[i], null));
 
         arrI = new Integer[]{1};
-        assertEquals(-1, LinearSearch.findIndex(arrI, 2, naturalComp));
+        assertEquals(-1, LinearSearch.findIndex(arrI, 2, null));
 
-        assertEquals(2, LinearSearch.findIndex(arrP, new Person("X", 40), customComp));
+        assertEquals(2, LinearSearch.findIndex(arrP, new Person("Oro", 35), customComp));
     }
 }
