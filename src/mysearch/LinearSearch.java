@@ -11,9 +11,9 @@ public class LinearSearch {
     /**
      * Find the index of given data in the unsorted array
      *
-     * @param arr   array of unsorted elements to be searched
+     * @param arr   array of unsorted elements to search
      * @param value target element to look for
-     * @param lo    lower bound must not be less than 0
+     * @param lo    lower bound must be equal/greater than 0 and less than upper bound
      * @param hi    upper bound must be less than the array size
      * @param comp  custom comparator for generics, or natural order for Comparables
      * @return      the position where the given data is found, or -1 if not found
@@ -43,18 +43,19 @@ public class LinearSearch {
     }
 
     /**
-     * Search for min/max elements in the given array
-     * @param arr array of elements to search
-     * @param comp custom comparator for generic elements
-     *             Comparator.naturalOrder() may be used for elements w/ natural ordering
-     * @return Pair<T> with min/max field
-     * @param <E> type of element
+     * Search for min/max elements in the unsorted array
+     *
+     * @param arr   array of unsorted elements to search
+     * @param lo    lower bound must be equal/greater than 0 and less than upper bound
+     * @param hi    upper bound must be less than the array size
+     * @param comp  custom comparator for generics, or natural order for Comparables
+     * @return      Pair<E> with min/max field
+     * @param <E>   type of element stored in the array
      */
-    public static <E> Pair<E> findMinMax(E[] arr, Comparator<? super E> comp) {
-        if (arr == null) return null;
+    public static <E> Pair<E> findMinMax(E[] arr, int lo, int hi, Comparator<? super E> comp) {
+        if (arr == null || hi < lo) return null;
 
-        int n = arr.length;
-        if (n == 0) return null;
+        int n = hi - lo + 1;
 
         Comparator<? super E> safeComp = MyComparator.nullsLastComparator(comp);
         Pair<E> result = new Pair<>();
@@ -62,18 +63,18 @@ public class LinearSearch {
 
         // Initialize min/max
         if (n % 2 == 0) { // if number of elements are even
-            if (safeComp.compare(arr[0], arr[1]) > 0) {
-                result.max = arr[0];
-                result.min = arr[1];
+            if (safeComp.compare(arr[lo], arr[lo + 1]) > 0) {
+                result.max = arr[lo];
+                result.min = arr[lo + 1];
             } else {
-                result.max = arr[1];
-                result.min = arr[0];
+                result.max = arr[lo + 1];
+                result.min = arr[lo];
             }
-            i = 2;
+            i = lo + 2;
         } else {
-            result.max = arr[0];
-            result.min = arr[0];
-            i = 1;
+            result.max = arr[lo];
+            result.min = arr[lo];
+            i = lo + 1;
         }
 
         // compare in pair

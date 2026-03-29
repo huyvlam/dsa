@@ -34,13 +34,13 @@ class LinearSearchTest {
     @Test
     @DisplayName("Should find min/max elements in the given array")
     void testFindMinMax() {
-        Pair<Integer> natural = LinearSearch.findMinMax(arrI, null);
+        Pair<Integer> natural = LinearSearch.findMinMax(arrI, 0, arrI.length - 1, null);
 
         assertNotNull(natural);
         assertEquals(-5, natural.min);
         assertEquals(200, natural.max);
 
-        Pair<Person> custom = LinearSearch.findMinMax(arrP, customComp);
+        Pair<Person> custom = LinearSearch.findMinMax(arrP, 0, arrP.length - 1, customComp);
 
         assertNotNull(custom);
         assertEquals("Hera", custom.min.name);
