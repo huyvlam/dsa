@@ -4,6 +4,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.EmptyStackException;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class MyStackTest {
@@ -43,5 +45,12 @@ class MyStackTest {
         assertEquals(1, stack.search(stack.peek()));
         assertEquals(2, stack.search(3));
         assertEquals(3, stack.search(1));
+    }
+
+    @Test
+    @DisplayName("Should throw exception if stack is empty")
+    void testEmptyException() {
+        assertThrows(EmptyStackException.class, () -> stack.peek());
+        assertThrows(EmptyStackException.class, () -> stack.pop());
     }
 }
