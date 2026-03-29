@@ -9,25 +9,27 @@ import java.util.Comparator;
  */
 public class LinearSearch {
     /**
-     * Find the index of given element in the array
-     * @param arr array of elements to be searched
-     * @param value target element
-     * @param comp custom comparator, if null the method resolve to natural order
-     * @return the index of given element, or -1 if not found
-     * @param <E> type of element
+     * Find the index of given data in the unsorted array
+     *
+     * @param arr   array of unsorted elements to be searched
+     * @param value target element to look for
+     * @param lo    lower bound must not be less than 0
+     * @param hi    upper bound must be less than the array size
+     * @param comp  custom comparator for generics, or natural order for Comparables
+     * @return      the position where the given data is found, or -1 if not found
+     * @param <E>   type of element stored in the array
      */
-    public static <E> int findIndex(E[] arr, E value, Comparator<? super E> comp) {
-        if (arr == null || value == null) return -1;
+    public static <E> int findIndex(E[] arr, E value, int lo, int hi, Comparator<? super E> comp) {
+        if (arr == null || value == null || hi < lo) return -1;
 
-        int n = arr.length;
-        if (n == 0) return -1;
+        int n = hi - lo + 1;
 
         Comparator<? super E> safeComp = MyComparator.nullsLastComparator(comp);
-        int i = 0;
+        int i = lo;
 
         if (n % 2 == 1) {
-            if (arr[0] != null && safeComp.compare(arr[0], value) == 0) return 0;
-            i = 1;
+            if (arr[lo] != null && safeComp.compare(arr[lo], value) == 0) return lo;
+            i = lo + 1;
         }
 
         while (i < n - 1) {

@@ -51,11 +51,11 @@ class LinearSearchTest {
     @DisplayName("Should find the index of given element in the array")
     void testFindIndex() {
         int i = 0;
-        assertEquals(i, LinearSearch.findIndex(arrI, arrI[i], null));
+        assertEquals(i, LinearSearch.findIndex(arrI, arrI[i], 0, i, null));
 
         arrI = new Integer[]{1};
-        assertEquals(-1, LinearSearch.findIndex(arrI, 2, null));
+        assertEquals(-1, LinearSearch.findIndex(arrI, 2, 0, 0, null));
 
-        assertEquals(2, LinearSearch.findIndex(arrP, new Person("Oro", 35), customComp));
+        assertEquals(2, LinearSearch.findIndex(arrP, new Person("Oro", 35), 0, arrP.length - 1, customComp));
     }
 }

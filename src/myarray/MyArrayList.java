@@ -85,7 +85,7 @@ public class MyArrayList<E> {
 
         return sorted
                 ? BinarySearch.findIndex((E[]) dataList, data, 0, size - 1, MyComparator.nullsLastComparator(comp))
-                : LinearSearch.findIndex((E[]) dataList, data, MyComparator.nullsLastComparator(comp));
+                : LinearSearch.findIndex((E[]) dataList, data, 0, size - 1, MyComparator.nullsLastComparator(comp));
     }
 
     public void sort(Comparator<? super E> comp) {
