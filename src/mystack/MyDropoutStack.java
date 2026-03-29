@@ -6,11 +6,11 @@ import java.util.EmptyStackException;
 
 public class MyDropoutStack<E> {
     private final MyCircularDoublyLinkedList<E> stack;
-    private final int MAX_CAPACITY;
+    private final int CAPACITY;
 
-    public MyDropoutStack(int maxCapacity) {
+    public MyDropoutStack(int capacity) {
         stack = new MyCircularDoublyLinkedList<>();
-        MAX_CAPACITY = maxCapacity;
+        CAPACITY = capacity;
     }
 
     public boolean empty() {
@@ -28,7 +28,7 @@ public class MyDropoutStack<E> {
     }
 
     public E push(E data) {
-        if (stack.size() == MAX_CAPACITY) stack.pollLast();
+        if (stack.size() == CAPACITY) stack.pollLast();
 
         stack.addFirst(data);
         return data;
