@@ -1,6 +1,6 @@
 package mysearch;
 
-import myhelper.Checker;
+import myhelper.MyComparator;
 
 import java.util.Comparator;
 
@@ -22,7 +22,7 @@ public class LinearSearch {
         int n = arr.length;
         if (n == 0) return -1;
 
-        Comparator<? super E> safeComp = Checker.nullsLastComparator(comp);
+        Comparator<? super E> safeComp = MyComparator.nullsLastComparator(comp);
         int i = 0;
 
         if (n % 2 == 1) {
@@ -54,7 +54,7 @@ public class LinearSearch {
         int n = arr.length;
         if (n == 0) return null;
 
-        Comparator<? super E> safeComp = Checker.nullsLastComparator(comp);
+        Comparator<? super E> safeComp = MyComparator.nullsLastComparator(comp);
         Pair<E> result = new Pair<>();
         int i;
 
