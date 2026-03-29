@@ -65,8 +65,8 @@ class MyCircularLinkedListTest {
     }
 
     @Test
-    @DisplayName("Should remove the given data by standard or custom comparator")
-    void testRemoveByData() {
+    @DisplayName("Should remove Comparable element by data using natural order")
+    void testRemoveComparableByData() {
         listS.addFirst("Lychee");
         listS.addLast("Longan");
         listS.add(1, "Rambutan");
@@ -75,11 +75,19 @@ class MyCircularLinkedListTest {
         assertTrue(listS.remove("Rambutan"));
         assertTrue(listS.remove("Lychee"));
         assertEquals(1, listS.size());
+    }
+
+    @Test
+    @DisplayName("Should remove generic element by data using equals comparison or custom comparator")
+    void testRemoveGenericByData() {
+        Person mai = new Person("Mai", 42);
+        listP.add(0, mai);
+        assertTrue(listP.remove(mai));
 
         listP.add(0, new Person("Chi", 19));
-        listP.add(1, new Person("Mai", 42));
+        assertFalse(listP.remove(new Person("Chi", 19)));
 
-        assertFalse(listP.remove(new Person("Chi", 35),
+        assertTrue(listP.remove(new Person("Chi", 19),
                 (p1, p2) -> (Objects.equals(p1.age, p2.age) && Objects.equals(p1.name, p2.name) ? 0 : -1)));
     }
 
@@ -99,13 +107,12 @@ class MyCircularLinkedListTest {
     }
 
     @Test
-    @DisplayName("Should throw exception for out of bounds access and invalid argument")
+    @DisplayName("Should throw exception for out of bounds access")
     void testExceptions() {
         listS.addFirst("Dragon fruit");
 
         assertThrows(IndexOutOfBoundsException.class, () -> listS.get(5));
         assertThrows(IndexOutOfBoundsException.class, () -> listS.set(-1, null));
-        assertThrows(IllegalArgumentException.class, () -> listS.indexOf("Lime", null));
     }
 
     @Test

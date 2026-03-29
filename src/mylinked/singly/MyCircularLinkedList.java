@@ -1,5 +1,6 @@
 package mylinked.singly;
 
+import myhelper.MyComparator;
 import myinterface.Printer;
 import myhelper.Checker;
 
@@ -7,10 +8,9 @@ import java.util.*;
 
 public class MyCircularLinkedList<E> {
     private SinglyNode<E> tail;
-    private final Comparator<? super E> comparator = (a, b) -> Objects.equals(a, b) ? 0 : -1;
 
-    private int size; // number of nodes
     private int modCount; // number of modifications
+    private int size; // number of nodes
 
     public MyCircularLinkedList() {
         tail = null;
@@ -146,18 +146,19 @@ public class MyCircularLinkedList<E> {
     }
 
     public boolean remove(E data) {
-        return remove(data, comparator);
+        return remove(data, MyComparator.equalsComparator);
     }
 
     public boolean remove(E data, Comparator<? super E> comp) {
-        Checker.checkNullArgument(comp, "Comparator");
         if (data == null || size == 0) return false;
 
-        if (comp.compare(tail.next.data, data) == 0) {
+        Comparator<? super E> safeComp = MyComparator.nullsLastComparator(comp);
+
+        if (safeComp.compare(tail.next.data, data) == 0) {
             pollFirst();
             return true;
         }
-        if (comp.compare(tail.data, data) == 0) {
+        if (safeComp.compare(tail.data, data) == 0) {
             pollLast();
             return true;
         }
@@ -166,7 +167,7 @@ public class MyCircularLinkedList<E> {
 
         while (prev.next != tail) {
             SinglyNode<E> cur = prev.next;
-            if (comp.compare(cur.data, data) == 0) {
+            if (safeComp.compare(cur.data, data) == 0) {
                 prev.next = cur.next;
 
                 size--;
@@ -209,17 +210,17 @@ public class MyCircularLinkedList<E> {
     }
 
     public int indexOf(E data) {
-        return indexOf(data, comparator);
+        return indexOf(data, MyComparator.equalsComparator);
     }
 
     public int indexOf(E data, Comparator<? super E> comp) {
-        Checker.checkNullArgument(comp, "Comparator");
         if (data == null) return -1;
 
+        Comparator<? super E> safeComp = MyComparator.nullsLastComparator(comp);
         SinglyNode<E> cur = tail.next;
 
         for (int index = 0; index < size; index++) {
-            if (comp.compare(cur.data, data) == 0) return index;
+            if (safeComp.compare(cur.data, data) == 0) return index;
             cur = cur.next;
         }
 
