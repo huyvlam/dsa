@@ -16,6 +16,7 @@ public class MyStack<E> {
     }
 
     public E peek() {
+        if (empty()) throw new EmptyStackException();
         return stack.get(stack.size() - 1);
     }
 
