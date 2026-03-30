@@ -5,45 +5,45 @@ import mylinked.singly.MyCircularLinkedList;
 import java.util.NoSuchElementException;
 
 public class MyQueue<E> {
-    private final MyCircularLinkedList<E> queue;
+    private final MyCircularLinkedList<E> cslist;
     private final int CAPACITY;
 
     public MyQueue(int capacity) {
-        queue = new MyCircularLinkedList<>();
+        cslist = new MyCircularLinkedList<>();
         CAPACITY = capacity;
     }
 
     public boolean add(E data) {
-        if (queue.size() == CAPACITY) throw new IllegalStateException("No available space");
+        if (cslist.size() == CAPACITY) throw new IllegalStateException("No available space");
 
-        queue.addLast(data);
+        cslist.addLast(data);
         return true;
     }
 
     public boolean offer(E data) {
-        if (queue.size() == CAPACITY) return false;
+        if (cslist.size() == CAPACITY) return false;
 
-        queue.addLast(data);
+        cslist.addLast(data);
         return true;
     }
 
     public E peek() {
-        return queue.peekFirst();
+        return cslist.peekFirst();
     }
 
     public E element() {
-        if (queue.size() == 0) throw new NoSuchElementException("Queue is empty");
+        if (cslist.size() == 0) throw new NoSuchElementException("Queue is empty");
 
-        return queue.peekFirst();
+        return cslist.peekFirst();
     }
 
     public E poll() {
-        return queue.pollFirst();
+        return cslist.pollFirst();
     }
 
     public E remove() {
-        if (queue.size() == 0) throw new NoSuchElementException("Queue is empty");
+        if (cslist.size() == 0) throw new NoSuchElementException("Queue is empty");
 
-        return queue.pollFirst();
+        return cslist.pollFirst();
     }
 }
