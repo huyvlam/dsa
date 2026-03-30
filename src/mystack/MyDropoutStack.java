@@ -5,37 +5,37 @@ import mylinked.doubly.MyCircularDoublyLinkedList;
 import java.util.EmptyStackException;
 
 public class MyDropoutStack<E> {
-    private final MyCircularDoublyLinkedList<E> stack;
+    private final MyCircularDoublyLinkedList<E> cdlist;
     private final int CAPACITY;
 
     public MyDropoutStack(int capacity) {
-        stack = new MyCircularDoublyLinkedList<>();
+        cdlist = new MyCircularDoublyLinkedList<>();
         CAPACITY = capacity;
     }
 
     public boolean empty() {
-        return stack.size() == 0;
+        return cdlist.size() == 0;
     }
 
     public E peek() {
         if (empty()) throw new EmptyStackException();
-        return stack.peekFirst();
+        return cdlist.peekFirst();
     }
 
     public E pop() {
         if (empty()) throw new EmptyStackException();
-        return stack.pollFirst();
+        return cdlist.pollFirst();
     }
 
     public E push(E data) {
-        if (stack.size() == CAPACITY) stack.pollLast();
+        if (cdlist.size() == CAPACITY) cdlist.pollLast();
 
-        stack.addFirst(data);
+        cdlist.addFirst(data);
         return data;
     }
 
     public int search(E data) {
-        int index = stack.indexOf(data);
+        int index = cdlist.indexOf(data);
         return (index == -1) ? -1 : index + 1;
     }
 }
