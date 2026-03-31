@@ -40,7 +40,7 @@ public class ChainHashMap<K, V> {
         return size == 0;
     }
 
-    public void put(K key, V value) {
+    public V put(K key, V value) {
         int index = HashHelper.hashIndex(key, table.length);
 
         ChainHashNode<K, V> head = table[index];
@@ -48,8 +48,9 @@ public class ChainHashMap<K, V> {
 
         while (cur != null) {
             if (HashHelper.areEqualKeys(cur, key)) {
+                V prevValue = cur.value;
                 cur.value = value;
-                return;
+                return prevValue;
             }
             cur = cur.next;
         }
@@ -59,6 +60,8 @@ public class ChainHashMap<K, V> {
         size++;
 
         if (HashHelper.needsResize(size, table.length, loadFactor)) resize();
+
+        return null;
     }
 
     public void resize() {

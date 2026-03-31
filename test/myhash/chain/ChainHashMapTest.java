@@ -26,9 +26,10 @@ class ChainHashMapTest<K, V> {
     @Test
     @DisplayName("Should put and get data by the key specified")
     void testPutGetData() {
-        map.put((K) "name", (V) "nelly");
+        assertNull(map.put((K) "name", (V) "nelly"));
+        assertEquals("nelly", map.put((K) "name", (V) "molly"));
 
-        assertEquals("nelly", map.get((K) "name"));
+        assertEquals("molly", map.get((K) "name"));
         assertEquals(1, map.size());
     }
 
