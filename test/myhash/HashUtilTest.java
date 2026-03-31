@@ -22,11 +22,13 @@ class HashUtilTest {
     @Test
     @DisplayName("Should compare the field key in the object with key value")
     <K, V> void testEqualKeys() {
-        ChainHashNode<K, V> entry = new ChainHashNode<>((K) "id", (V) "12345", null);
+        K k1 = (K) "address";
+        K k2 = (K) "name";
 
-        assertTrue(HashUtil.areEqualKeys(entry, (K) "id"));
-        assertFalse(HashUtil.areEqualKeys(entry, (K) "ids"));
-        assertFalse(HashUtil.areEqualKeys(null, (K) "id"));
+        assertTrue(HashUtil.areEqualKeys(k1, k1));
+        assertTrue(HashUtil.areEqualKeys(null, null));
+        assertFalse(HashUtil.areEqualKeys(k1, k2));
+        assertFalse(HashUtil.areEqualKeys(null, k2));
     }
 
     @Test

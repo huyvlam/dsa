@@ -11,16 +11,14 @@ public class HashUtil {
     /**
      * Equally compare the field key of given object with the given key value
      *
-     * @param node the hash node must contain field key
+     * @param nodeKey the hash node must contain field key
      * @param key   key value to compare with
      * @return      return true if matched, otherwise false
      * @param <K>   key type
      * @param <V>   value type
      */
-    public static <K, V> boolean areEqualKeys(ChainHashNode<K, V> node, K key) {
-        if (node == null)  return false;
-
-        return Objects.equals(node.key, key);
+    public static <K, V> boolean areEqualKeys(K nodeKey, K key) {
+        return Objects.equals(nodeKey, key);
     }
 
     /**

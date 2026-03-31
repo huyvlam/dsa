@@ -44,7 +44,7 @@ public class ChainHashMap<K, V> {
         ChainHashNode<K, V> cur = head;
 
         while (cur != null) {
-            if (HashUtil.areEqualKeys(cur, key)) {
+            if (HashUtil.areEqualKeys(cur.key, key)) {
                 V prevValue = cur.value;
                 cur.value = value;
                 return prevValue;
@@ -88,7 +88,7 @@ public class ChainHashMap<K, V> {
         ChainHashNode<K, V> cur = table[index];
 
         while (cur != null) {
-            if (HashUtil.areEqualKeys(cur, key)) return cur.value;
+            if (HashUtil.areEqualKeys(cur.key, key)) return cur.value;
 
             cur = cur.next;
         }
@@ -102,7 +102,7 @@ public class ChainHashMap<K, V> {
         ChainHashNode<K, V> prev = null;
 
         while (cur != null) {
-            if (HashUtil.areEqualKeys(cur, key)) {
+            if (HashUtil.areEqualKeys(cur.key, key)) {
                 V removed = cur.value;
 
                 if (prev == null) table[index] = cur.next;
