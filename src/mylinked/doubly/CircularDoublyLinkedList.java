@@ -8,14 +8,14 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Objects;
 
-public class MyCircularDoublyLinkedList<E> {
+public class CircularDoublyLinkedList<E> {
     private final DoublyNode<E> sentinel;
     private final Comparator<? super E> comparator = (a, b) -> Objects.equals(a, b) ? 0 : -1;
 
     private int size;
     private int modCount;
 
-    public MyCircularDoublyLinkedList() {
+    public CircularDoublyLinkedList() {
         sentinel = new DoublyNode<>(null);
         sentinel.prev = sentinel;
         sentinel.next = sentinel;

@@ -11,14 +11,14 @@ import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class MyCircularDoublyLinkedListTest {
-    private MyCircularDoublyLinkedList<Integer> listI;
-    private MyCircularDoublyLinkedList<Person> listP;
+class CircularDoublyLinkedListTest {
+    private CircularDoublyLinkedList<Integer> listI;
+    private CircularDoublyLinkedList<Person> listP;
 
     @BeforeEach
     void setUp() {
-        listI = new MyCircularDoublyLinkedList<>();
-        listP = new MyCircularDoublyLinkedList<>();
+        listI = new CircularDoublyLinkedList<>();
+        listP = new CircularDoublyLinkedList<>();
     }
 
     @Test

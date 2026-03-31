@@ -8,13 +8,13 @@ import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class MyQueueTest {
-    private MyQueue<Integer> queue;
+class QueueTest {
+    private Queue<Integer> queue;
 
     @BeforeEach
     void setUp() {
         int capacity = 3;
-        queue = new MyQueue<>(capacity);
+        queue = new Queue<>(capacity);
     }
 
     @Test

@@ -1,15 +1,15 @@
 package myqueue;
 
-import mylinked.singly.MyCircularLinkedList;
+import mylinked.singly.SinglyCircularLinkedList;
 
 import java.util.NoSuchElementException;
 
-public class MyQueue<E> {
-    private final MyCircularLinkedList<E> cslist;
+public class Queue<E> {
+    private final SinglyCircularLinkedList<E> cslist;
     private final int CAPACITY;
 
-    public MyQueue(int capacity) {
-        cslist = new MyCircularLinkedList<>();
+    public Queue(int capacity) {
+        cslist = new SinglyCircularLinkedList<>();
         CAPACITY = capacity;
     }
 

@@ -6,13 +6,13 @@ import myhelper.Checker;
 
 import java.util.*;
 
-public class MyCircularLinkedList<E> {
+public class SinglyCircularLinkedList<E> {
     private SinglyNode<E> tail;
 
     private int modCount; // number of modifications
     private int size; // number of nodes
 
-    public MyCircularLinkedList() {
+    public SinglyCircularLinkedList() {
         tail = null;
         size = 0;
         modCount = 0;

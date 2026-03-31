@@ -1,18 +1,18 @@
-package mylinked.singly;
+package mylinked.doubly;
+
+import myinterface.Printer;
+import myhelper.Checker;
 
 import java.util.Comparator;
 import java.util.Objects;
 
-import myhelper.Checker;
-import myinterface.Printer;
-
-public class MyLinkedList<E> {
-    private SinglyNode<E> head, tail;
+public class DoublyLinkedList<E> {
+    private DoublyNode<E> head, tail;
     private final Comparator<? super E> comparator = (a, b) -> Objects.equals(a, b) ? 0 : -1;
 
     private int size;
 
-    public MyLinkedList() {
+    public DoublyLinkedList() {
         head = null;
         tail = null;
         size = 0;
@@ -39,32 +39,32 @@ public class MyLinkedList<E> {
     public void addFirst(E data) {
         Checker.checkNullArgument(data);
 
-        SinglyNode<E> node = new SinglyNode<>(data);
+        DoublyNode<E> node = new DoublyNode<>(data);
 
         if (head == null) {
             head = node;
             tail = node;
         } else {
             node.next = head;
+            head.prev = node;
             head = node;
         }
-
         size++;
     }
 
     public void addLast(E data) {
         Checker.checkNullArgument(data);
 
+        DoublyNode<E> node = new DoublyNode<>(data);
+
         if (head == null) {
-            addFirst(data);
-            return;
+            head = node;
+            tail = node;
+        } else {
+            node.prev = tail;
+            tail.next = node;
+            tail = node;
         }
-
-        SinglyNode<E> node = new SinglyNode<>(data);
-
-        tail.next = node;
-        tail = node;
-
         size++;
     }
 
@@ -74,8 +74,8 @@ public class MyLinkedList<E> {
         E data = head.data;
         head = head.next;
 
-        // * When list becomes empty, tail MUST be set to null (i.e ghost node)
-        if (head == null) tail = null;
+        if (head != null) head.prev = null;
+        else tail = null;
 
         size--;
         return data;
@@ -84,16 +84,11 @@ public class MyLinkedList<E> {
     public E pollLast() {
         if (tail == null) return null;
 
-        if (head == tail) return pollFirst();
-
         E data = tail.data;
-        SinglyNode<E> prev = head;
+        tail = tail.prev;
 
-        while (prev.next != tail)
-            prev = prev.next;
-
-        prev.next = null;
-        tail = prev;
+        if (tail != null) tail.next = null;
+        else head = null;
 
         size--;
         return data;
@@ -107,39 +102,61 @@ public class MyLinkedList<E> {
             addFirst(data);
             return;
         }
-
         if (i == size) {
             addLast(data);
             return;
         }
 
-        SinglyNode<E> node = new SinglyNode<>(data);
-        SinglyNode<E> prev = head;
+        DoublyNode<E> node = new DoublyNode<>(data);
 
-        for (int index = 0; index < i - 1; index++)
-            prev = prev.next;
+        if (i < size >> 1) {
+            DoublyNode<E> prev = head;
 
-        node.next = prev.next;
-        prev.next = node;
+            for (int index = 0; index < i - 1; index++)
+                prev = prev.next;
 
+            node.next = prev.next;
+            node.prev = prev;
+            prev.next = node;
+            prev.next.prev = node;
+        } else {
+            DoublyNode<E> cur = tail;
+
+            for (int index = size - 1; index > i; index--)
+                cur = cur.prev;
+
+            node.prev = cur.prev;
+            node.next = cur;
+            cur.prev.next = node;
+            cur.prev = node;
+        }
         size++;
     }
 
     public E remove(int i) {
-        if (i < 0 || i >= size) throw new IndexOutOfBoundsException("Index cannot be out of bound");
+        Checker.checkBounds(i, size);
 
         if (i == 0) return pollFirst();
         if (i == size - 1) return pollLast();
 
-        SinglyNode<E> prev = head;
+        DoublyNode<E> cur;
 
-        for (int index = 0; index < i - 1; index++)
-            prev = prev.next;
+        if (i < size >> 1) {
+            cur = head;
+            for (int index = 0; index < i; index++)
+                cur = cur.next;
+        } else {
+            cur = tail;
+            for (int index = size - 1; index > i; index--)
+                cur = cur.prev;
+        }
 
-        SinglyNode<E> removed = prev.next;
-        E data = removed.data;
+        E data = cur.data;
 
-        prev.next = removed.next;
+        cur.prev.next = cur.next;
+        cur.next.prev = cur.prev;
+        cur.next = null;
+        cur.prev = null;
 
         size--;
         return data;
@@ -152,28 +169,26 @@ public class MyLinkedList<E> {
     public boolean remove(E data, Comparator<? super E> comp) {
         if (data == null || size == 0) return false;
 
-        if (comp.compare(head.data, data) == 0) {
-            pollFirst();
-            return true;
-        }
-        if (comp.compare(tail.data, data) == 0) {
-            pollLast();
-            return true;
-        }
+        if (comp.compare(head.data, data) == 0)
+            return pollFirst() != null;
 
-        SinglyNode<E> prev = head;
+        if (comp.compare(tail.data, data) == 0)
+            return pollLast() != null;
 
-        while (prev.next != tail) {
-            SinglyNode<E> cur = prev.next;
+        DoublyNode<E> cur = head.next;
+
+        while (cur != null) {
             if (comp.compare(cur.data, data) == 0) {
-                prev.next = cur.next;
+                cur.prev.next = cur.next;
+                cur.next.prev = cur.prev;
+                cur.next = null;
+                cur.prev = null;
 
                 size--;
                 return true;
             }
-            prev = prev.next;
+            cur = cur.next;
         }
-
         return false;
     }
 
@@ -181,10 +196,17 @@ public class MyLinkedList<E> {
         Checker.checkNullArgument(data);
         Checker.checkBounds(i, size);
 
-        SinglyNode<E> cur = head;
+        DoublyNode<E> cur;
 
-        for (int index = 0; index < i; index++)
-            cur = cur.next;
+        if (i < size >> 1) {
+            cur = head;
+            for (int index = 0; index < i; index++)
+                cur = cur.next;
+        } else {
+            cur = tail;
+            for (int index = size - 1; index > i; index--)
+                cur = cur.prev;
+        }
 
         E replaced = cur.data;
         cur.data = data;
@@ -195,11 +217,11 @@ public class MyLinkedList<E> {
     public E get(int i) {
         Checker.checkBounds(i, size);
 
-        // use tail pointer for O(1) search
+        if (i == 0) return peekFirst();
+
         if (i == size - 1) return peekLast();
 
-        SinglyNode<E> cur = head;
-
+        DoublyNode<E> cur = head;
         for (int count = 0; count < i; count++)
             cur = cur.next;
 
@@ -213,7 +235,7 @@ public class MyLinkedList<E> {
     public int indexOf(E data, Comparator<? super E> comp) {
         if (data == null) return -1;
 
-        SinglyNode<E> cur = head;
+        DoublyNode<E> cur = head;
 
         for (int index = 0; index < size; index++) {
             if (comp.compare(cur.data, data) == 0) return index;
@@ -223,21 +245,25 @@ public class MyLinkedList<E> {
         return -1;
     }
 
-    public void reverse() {
-        if (size <= 1) return;
+    public boolean contains(E data) {
+        return indexOf(data) != -1;
+    }
 
-        SinglyNode<E> prev = null;
-        SinglyNode<E> cur = head;
-        SinglyNode<E> next;
+    public void reverse() {
+        if (head == null || head.next == null) return;
+
+        DoublyNode<E> cur = head;
+        DoublyNode<E> temp;
 
         while (cur != null) {
-            next = cur.next;
-            cur.next = prev;
-            prev = cur;
-            cur = next;
+            temp = cur.prev;
+            cur.prev = cur.next;
+            cur.next = temp;
+
+            cur = cur.prev;
         }
 
-        SinglyNode<E> temp = head;
+        temp = head;
         head = tail;
         tail = temp;
     }
@@ -248,20 +274,22 @@ public class MyLinkedList<E> {
     }
 
     public String toString(Printer<E> printer) {
-        if (head == null) return "LinkedList: [ empty ]";
+        if (head == null) return "List: [ empty ]";
 
         Printer<E> safePrinter = (printer == null) ? (Object::toString) : printer;
 
         StringBuilder sb = new StringBuilder();
-        sb.append("LinkedList (size ").append(size).append("): ");
+        sb.append("List (size ").append(size).append("): ");
 
-        SinglyNode<E> cur = head;
+        DoublyNode<E> cur = head;
         while (cur != null) {
             sb.append("[").append(safePrinter.print(cur.data)).append("]");
 
-            if (cur.next != null) sb.append(" -> ");
-            else sb.append(" -> null");
-
+            if (cur.next != null) {
+                sb.append(" -> ");
+            } else {
+                sb.append(" -> null");
+            }
             cur = cur.next;
         }
 

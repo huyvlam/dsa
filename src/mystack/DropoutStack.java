@@ -1,15 +1,15 @@
 package mystack;
 
-import mylinked.doubly.MyCircularDoublyLinkedList;
+import mylinked.doubly.CircularDoublyLinkedList;
 
 import java.util.EmptyStackException;
 
-public class MyDropoutStack<E> {
-    private final MyCircularDoublyLinkedList<E> cdlist;
+public class DropoutStack<E> {
+    private final CircularDoublyLinkedList<E> cdlist;
     private final int CAPACITY;
 
-    public MyDropoutStack(int capacity) {
-        cdlist = new MyCircularDoublyLinkedList<>();
+    public DropoutStack(int capacity) {
+        cdlist = new CircularDoublyLinkedList<>();
         CAPACITY = capacity;
     }
 

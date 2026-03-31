@@ -7,14 +7,14 @@ import mymodel.Person;
 
 import java.util.Comparator;
 
-class MyLinkedListTest {
-    private MyLinkedList<Person> list;
+class SinglyLinkedListTest {
+    private SinglyLinkedList<Person> list;
     private Comparator<Person> comparator;
 
     @BeforeEach
     void setUp() {
         // Initialize with an age-based comparator
-        list = new MyLinkedList<>();
+        list = new SinglyLinkedList<>();
         comparator = (p1, p2) -> Integer.compare(p1.age, p2.age);
     }
 

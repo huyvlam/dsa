@@ -8,14 +8,14 @@ import org.junit.jupiter.api.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class MyCircularLinkedListTest {
-    private MyCircularLinkedList<String> listS;
-    private MyCircularLinkedList<Person> listP;
+class SinglyCircularLinkedListTest {
+    private SinglyCircularLinkedList<String> listS;
+    private SinglyCircularLinkedList<Person> listP;
 
     @BeforeEach
     void setUp() {
-        listS = new MyCircularLinkedList<>();
-        listP = new MyCircularLinkedList<>();
+        listS = new SinglyCircularLinkedList<>();
+        listP = new SinglyCircularLinkedList<>();
     }
 
     @Test

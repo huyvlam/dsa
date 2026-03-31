@@ -8,13 +8,13 @@ import java.util.EmptyStackException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class MyDropoutStackTest {
-    private MyDropoutStack<String> stack;
+class DropoutStackTest {
+    private DropoutStack<String> stack;
 
     @BeforeEach
     void setUp() {
         int MAX_CAPACITY = 3;
-        stack = new MyDropoutStack<>(MAX_CAPACITY);
+        stack = new DropoutStack<>(MAX_CAPACITY);
     }
 
     @Test
