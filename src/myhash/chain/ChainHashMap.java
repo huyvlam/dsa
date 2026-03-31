@@ -1,9 +1,6 @@
 package myhash.chain;
 
-import myhash.HashHelper;
 import myhash.HashUtil;
-
-import static myhash.HashUtil.*;
 
 public class ChainHashMap<K, V> {
     private ChainHashNode<K, V>[] table;
@@ -41,13 +38,13 @@ public class ChainHashMap<K, V> {
     }
 
     public V put(K key, V value) {
-        int index = HashHelper.hashIndex(key, table.length);
+        int index = HashUtil.hashIndex(key, table.length);
 
         ChainHashNode<K, V> head = table[index];
         ChainHashNode<K, V> cur = head;
 
         while (cur != null) {
-            if (HashHelper.areEqualKeys(cur, key)) {
+            if (HashUtil.areEqualKeys(cur, key)) {
                 V prevValue = cur.value;
                 cur.value = value;
                 return prevValue;
@@ -59,7 +56,7 @@ public class ChainHashMap<K, V> {
         table[index] = node;
         size++;
 
-        if (HashHelper.needsResize(size, table.length, loadFactor)) resize();
+        if (HashUtil.needsResize(size, table.length, loadFactor)) resize();
 
         return null;
     }
@@ -74,7 +71,7 @@ public class ChainHashMap<K, V> {
             while (cur != null) {
                 ChainHashNode<K, V> next = cur.next;
 
-                int index = HashHelper.hashIndex(cur.key, newCapacity);
+                int index = HashUtil.hashIndex(cur.key, newCapacity);
 
                 cur.next = newEntries[index];
                 newEntries[index] = cur;
@@ -87,11 +84,11 @@ public class ChainHashMap<K, V> {
     }
 
     public V get(K key) {
-        int index = HashHelper.hashIndex(key, table.length);
+        int index = HashUtil.hashIndex(key, table.length);
         ChainHashNode<K, V> cur = table[index];
 
         while (cur != null) {
-            if (HashHelper.areEqualKeys(cur, key)) return cur.value;
+            if (HashUtil.areEqualKeys(cur, key)) return cur.value;
 
             cur = cur.next;
         }
@@ -100,12 +97,12 @@ public class ChainHashMap<K, V> {
     }
 
     public V remove(K key) {
-        int index = HashHelper.hashIndex(key, table.length);
+        int index = HashUtil.hashIndex(key, table.length);
         ChainHashNode<K, V> cur = table[index];
         ChainHashNode<K, V> prev = null;
 
         while (cur != null) {
-            if (HashHelper.areEqualKeys(cur, key)) {
+            if (HashUtil.areEqualKeys(cur, key)) {
                 V removed = cur.value;
 
                 if (prev == null) table[index] = cur.next;

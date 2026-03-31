@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class HashHelperTest {
+class HashUtilTest {
     private String[] keys;
     private int S, addressI, idI;
 
@@ -15,8 +15,8 @@ class HashHelperTest {
     void setup() {
         keys = new String[]{"address","name","id","city","profession","phone"};
         S = keys.length;
-        addressI = HashHelper.hashIndex(keys[0], S);
-        idI = HashHelper.hashIndex(keys[2], S);
+        addressI = HashUtil.hashIndex(keys[0], S);
+        idI = HashUtil.hashIndex(keys[2], S);
     }
 
     @Test
@@ -24,9 +24,9 @@ class HashHelperTest {
     <K, V> void testEqualKeys() {
         ChainHashNode<K, V> entry = new ChainHashNode<>((K) "id", (V) "12345", null);
 
-        assertTrue(HashHelper.areEqualKeys(entry, (K) "id"));
-        assertFalse(HashHelper.areEqualKeys(entry, (K) "ids"));
-        assertFalse(HashHelper.areEqualKeys(null, (K) "id"));
+        assertTrue(HashUtil.areEqualKeys(entry, (K) "id"));
+        assertFalse(HashUtil.areEqualKeys(entry, (K) "ids"));
+        assertFalse(HashUtil.areEqualKeys(null, (K) "id"));
     }
 
     @Test
@@ -36,9 +36,9 @@ class HashHelperTest {
         int tableSize = 12;
         int curSize = 9;
 
-        assertTrue(HashHelper.needsResize(curSize, tableSize, factor));
-        assertTrue(HashHelper.needsResize(curSize + 2, tableSize, factor));
-        assertFalse(HashHelper.needsResize(curSize - 1, tableSize, factor));
+        assertTrue(HashUtil.needsResize(curSize, tableSize, factor));
+        assertTrue(HashUtil.needsResize(curSize + 2, tableSize, factor));
+        assertFalse(HashUtil.needsResize(curSize - 1, tableSize, factor));
     }
 
     @Test
@@ -47,36 +47,36 @@ class HashHelperTest {
         String keyS = "address";
         int tableSize = 3;
 
-        int index = HashHelper.hashIndex(keyS, tableSize);
+        int index = HashUtil.hashIndex(keyS, tableSize);
         assertTrue(index >= 0);
         assertTrue(index < tableSize);
-        assertEquals(0, HashHelper.hashIndex(null, tableSize));
+        assertEquals(0, HashUtil.hashIndex(null, tableSize));
     }
 
     @Test
     @DisplayName("Should compute a linear hash index greater than the original index")
     void testLinearHashIndex() {
-        int linearI = HashHelper.linearHashIndex(idI, 1, S);
+        int linearI = HashUtil.linearHashIndex(idI, 1, S);
 
         assertEquals(addressI, idI);
         assertTrue(linearI > idI);
-        assertTrue(HashHelper.linearHashIndex(idI, 2, S) > linearI);
+        assertTrue(HashUtil.linearHashIndex(idI, 2, S) > linearI);
     }
 
     @Test
     @DisplayName("Should compute a quadratic hash index greater than the original index")
     void testQuadraticHashIndex() {
-        int quadI = HashHelper.quadraticHashIndex(idI, 1, S);
+        int quadI = HashUtil.quadraticHashIndex(idI, 1, S);
 
         assertEquals(addressI, idI);
         assertTrue(quadI > idI);
-        assertTrue(HashHelper.quadraticHashIndex(idI, 2, S) > quadI);
+        assertTrue(HashUtil.quadraticHashIndex(idI, 2, S) > quadI);
     }
 
     @Test
     @DisplayName("Should compute a double hash index within legal bounds of the table size")
     void testDoubleHashIndex() {
-        int doubleI = HashHelper.doubleHashIndex(keys[2], idI, 1, S);
+        int doubleI = HashUtil.doubleHashIndex(keys[2], idI, 1, S);
 
         assertEquals(addressI, idI);
         assertNotEquals(doubleI, idI);
