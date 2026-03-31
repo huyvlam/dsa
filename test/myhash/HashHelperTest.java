@@ -1,5 +1,6 @@
 package myhash;
 
+import myhash.chaining.LinkedHashNode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,7 +22,7 @@ class HashHelperTest {
     @Test
     @DisplayName("Should compare the field key in the object with key value")
     <K, V> void testEqualKeys() {
-        Entry<K, V> entry = new Entry<>((K) "id", (V) "12345", null);
+        LinkedHashNode<K, V> entry = new LinkedHashNode<>((K) "id", (V) "12345", null);
 
         assertTrue(HashHelper.areEqualKeys(entry, (K) "id"));
         assertFalse(HashHelper.areEqualKeys(entry, (K) "ids"));

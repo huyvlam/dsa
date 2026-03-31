@@ -1,21 +1,23 @@
 package myhash;
 
+import myhash.chaining.LinkedHashNode;
+
 import java.util.Objects;
 
 public class HashHelper {
     /**
      * Equally compare the field key of given object with the given key value
      *
-     * @param entry the hash node must contain field key
+     * @param node the hash node must contain field key
      * @param key   key value to compare with
      * @return      return true if matched, otherwise false
      * @param <K>   key type
      * @param <V>   value type
      */
-    public static <K, V> boolean areEqualKeys(Entry<K, V> entry, K key) {
-        if (entry == null)  return false;
+    public static <K, V> boolean areEqualKeys(LinkedHashNode<K, V> node, K key) {
+        if (node == null)  return false;
 
-        return Objects.equals(entry.key, key);
+        return Objects.equals(node.key, key);
     }
 
     /**
