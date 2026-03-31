@@ -1,6 +1,6 @@
 package myhash;
 
-import myhash.chaining.LinkedHashNode;
+import myhash.chain.ChainHashNode;
 
 import java.util.Objects;
 
@@ -14,7 +14,7 @@ public class HashHelper {
      * @param <K>   key type
      * @param <V>   value type
      */
-    public static <K, V> boolean areEqualKeys(LinkedHashNode<K, V> node, K key) {
+    public static <K, V> boolean areEqualKeys(ChainHashNode<K, V> node, K key) {
         if (node == null)  return false;
 
         return Objects.equals(node.key, key);
@@ -45,13 +45,13 @@ public class HashHelper {
 
         int hash = key.hashCode();
 
-        // mix up bits to ensure even distribution
+        // mix up bits ensuring even distribution
         hash = hash ^ (hash >>> 16);
 
         // 0x7FFFFFFF ensures the hash is positive
 //        return (hash & 0x7FFFFFFF) % size;
 
-        // & (size - 1) optimize (requires size to be a power of 2)
+        // & (size - 1) optimize mode (size MUST be a power of 2)
         return hash & (tableSize - 1);
     }
 
@@ -91,7 +91,8 @@ public class HashHelper {
      */
     public static <K> int doubleHashIndex(K key, int original, int gap, int tableSize) {
         int prime = tableSize - 1;
-        int step = prime - (Math.abs(key.hashCode()) % prime);
+        int step = prime - ((key.hashCode() & 0x7FFFFFFF) % prime);
+
         return (original + gap * step) % tableSize;
     }
 }
