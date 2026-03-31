@@ -3,6 +3,7 @@ package myqueue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import tree.BTNode;
 
 import java.util.NoSuchElementException;
 
@@ -10,10 +11,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class QueueTest {
     private Queue<Integer> queue;
+    private int capacity;
 
     @BeforeEach
     void setUp() {
-        int capacity = 3;
+        capacity = 3;
         queue = new Queue<>(capacity);
     }
 
@@ -25,12 +27,14 @@ class QueueTest {
         assertTrue(queue.add(9));
 
         assertFalse(queue.offer(2));
+        assertEquals(capacity, queue.size());
 
         assertEquals(5, queue.poll());
         assertEquals(8, queue.remove());
         assertEquals(9, queue.element());
 
-        assertEquals(9, queue.remove());
+        queue.clear();
+        assertTrue(queue.isEmpty());
         assertNull(queue.peek());
         assertNull(queue.poll());
     }
