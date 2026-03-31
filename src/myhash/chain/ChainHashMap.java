@@ -13,7 +13,7 @@ public class ChainHashMap<K, V> {
 
         initialCapacity = capacity;
         loadFactor = factor;
-        table = new ChainHashNode[initialCapacity];
+        table = (ChainHashNode<K, V>[]) new ChainHashNode[initialCapacity];
     }
 
     public ChainHashMap(int capacity) {
@@ -25,7 +25,7 @@ public class ChainHashMap<K, V> {
     }
 
     public void clear() {
-        table = new ChainHashNode[initialCapacity];
+        table = (ChainHashNode<K, V>[]) new ChainHashNode[initialCapacity];
         size = 0;
     }
 
@@ -63,7 +63,7 @@ public class ChainHashMap<K, V> {
 
     public void resize() {
         int newCapacity = table.length * 2;
-        ChainHashNode<K, V>[] newEntries = new ChainHashNode[newCapacity];
+        ChainHashNode<K, V>[] newEntries = (ChainHashNode<K, V>[]) new ChainHashNode[newCapacity];
 
         for (int i = 0; i < table.length; i++) {
             ChainHashNode<K, V> cur = table[i];
