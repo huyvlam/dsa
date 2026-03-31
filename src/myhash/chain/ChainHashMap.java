@@ -1,15 +1,15 @@
 package myhash.chain;
 
 import myhash.HashHelper;
+import myhash.HashUtil;
+
+import static myhash.HashUtil.*;
 
 public class ChainHashMap<K, V> {
     private ChainHashNode<K, V>[] table;
     private int size;
     private final int initialCapacity;
     private final double loadFactor;
-
-    private static final int DEFAULT_CAPACITY = 16;
-    private static final double DEFAULT_LOAD_FACTOR = 0.75;
 
     public ChainHashMap(int capacity, double factor) {
         if (capacity <= 0 || (capacity & (capacity - 1)) != 0) throw new IllegalArgumentException("Capacity must be power of 2");
@@ -20,11 +20,11 @@ public class ChainHashMap<K, V> {
     }
 
     public ChainHashMap(int capacity) {
-        this(capacity, DEFAULT_LOAD_FACTOR);
+        this(capacity, HashUtil.DEFAULT_LOAD_FACTOR);
     }
 
     public ChainHashMap() {
-        this(DEFAULT_CAPACITY, DEFAULT_LOAD_FACTOR);
+        this(HashUtil.DEFAULT_CAPACITY, HashUtil.DEFAULT_LOAD_FACTOR);
     }
 
     public void clear() {
