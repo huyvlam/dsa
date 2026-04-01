@@ -2,6 +2,8 @@ package myhash.chained;
 
 import myhash.HashUtil;
 
+import java.util.Objects;
+
 public class ChainedHashMap<K, V> {
     private Entry<K, V>[] entries;
     private int size;
@@ -37,30 +39,6 @@ public class ChainedHashMap<K, V> {
         return size == 0;
     }
 
-    public V put(K key, V value) {
-        int index = HashUtil.hashIndex(key, entries.length);
-
-        Entry<K, V> head = entries[index];
-        Entry<K, V> cur = head;
-
-        while (cur != null) {
-            if (HashUtil.areEqualKeys(cur.key, key)) {
-                V prevValue = cur.value;
-                cur.value = value;
-                return prevValue;
-            }
-            cur = cur.next;
-        }
-
-        Entry<K, V> node = new Entry<>(key, value, head);
-        entries[index] = node;
-        size++;
-
-        if (HashUtil.needsResize(size, entries.length, loadFactor)) resize();
-
-        return null;
-    }
-
     @SuppressWarnings("unchecked")
     public void resize() {
         int newCapacity = entries.length * 2;
@@ -84,12 +62,36 @@ public class ChainedHashMap<K, V> {
         entries = newEntries;
     }
 
+    public V put(K key, V value) {
+        int index = HashUtil.hashIndex(key, entries.length);
+
+        Entry<K, V> head = entries[index];
+        Entry<K, V> cur = head;
+
+        while (cur != null) {
+            if (Objects.equals(cur.key, key)) {
+                V prevValue = cur.value;
+                cur.value = value;
+                return prevValue;
+            }
+            cur = cur.next;
+        }
+
+        Entry<K, V> node = new Entry<>(key, value, head);
+        entries[index] = node;
+        size++;
+
+        if (HashUtil.needsResize(size, entries.length, loadFactor)) resize();
+
+        return null;
+    }
+
     public V get(K key) {
         int index = HashUtil.hashIndex(key, entries.length);
         Entry<K, V> cur = entries[index];
 
         while (cur != null) {
-            if (HashUtil.areEqualKeys(cur.key, key)) return cur.value;
+            if (Objects.equals(cur.key, key)) return cur.value;
 
             cur = cur.next;
         }
@@ -103,7 +105,7 @@ public class ChainedHashMap<K, V> {
         Entry<K, V> prev = null;
 
         while (cur != null) {
-            if (HashUtil.areEqualKeys(cur.key, key)) {
+            if (Objects.equals(cur.key, key)) {
                 V removed = cur.value;
 
                 if (prev == null) entries[index] = cur.next;
@@ -116,5 +118,30 @@ public class ChainedHashMap<K, V> {
             cur = cur.next;
         }
         return null;
+    }
+
+    public boolean containsKey(K key) {
+        int index = HashUtil.hashIndex(key, entries.length);
+        Entry<K, V> cur = entries[index];
+
+        while (cur != null) {
+            if (Objects.equals(cur.key, key)) return true;
+            cur = cur.next;
+        }
+
+        return false;
+    }
+
+    public boolean containsValue(V value) {
+        for (int i = 0; i < entries.length; i++) {
+            Entry<K, V> cur = entries[i];
+
+            while (cur != null) {
+                if (Objects.equals(cur.value, value)) return true;
+                cur = cur.next;
+            }
+        }
+
+        return false;
     }
 }
