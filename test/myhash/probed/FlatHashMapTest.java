@@ -25,7 +25,7 @@ class FlatHashMapTest<K, V> {
     }
 
     @Test
-    @DisplayName("Should put and get data by the key specified")
+    @DisplayName("Should put and get data by key")
     void testPutGetData() {
         assertNull(map.put((K) "name", (V) "nelly"));
         assertEquals("nelly", map.put((K) "name", (V) "molly"));
@@ -35,7 +35,7 @@ class FlatHashMapTest<K, V> {
     }
 
     @Test
-    @DisplayName("Should remove data by the key specified")
+    @DisplayName("Should remove data by key")
     void testRemoveData() {
         map.put((K) "name", (V) "nelly");
 
@@ -59,7 +59,7 @@ class FlatHashMapTest<K, V> {
     }
 
     @Test
-    @DisplayName("Should check whether the table contains key or value")
+    @DisplayName("Should check whether the table contains key/value")
     void testContainsKeyValue() {
         map.put((K) "name", (V) "nelly");
         map.put((K) "age", (V) "20");

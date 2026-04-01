@@ -5,6 +5,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.Objects;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class HashUtilTest<K, V> {
@@ -21,18 +23,6 @@ class HashUtilTest<K, V> {
         S = keys.length;
         addressI = HashUtil.hashIndex(keys[0], S);
         idI = HashUtil.hashIndex(keys[2], S);
-    }
-
-    @Test
-    @DisplayName("Should compare the field key in the object with key value")
-    <K, V> void testEqualKeys() {
-        K k1 = (K) "address";
-        K k2 = (K) "name";
-
-        assertTrue(HashUtil.areEqualKeys(k1, k1));
-        assertTrue(HashUtil.areEqualKeys(null, null));
-        assertFalse(HashUtil.areEqualKeys(k1, k2));
-        assertFalse(HashUtil.areEqualKeys(null, k2));
     }
 
     @Test
@@ -148,7 +138,7 @@ class HashUtilTest<K, V> {
         K unknownKey = (K) "berry";
 
         HashUtil.probe(unknownKey, table, (node) -> {
-            if (HashUtil.areEqualKeys(unknownKey, node.key)) {
+            if (Objects.equals(unknownKey, node.key)) {
                 result[0] = node.value;
                 return false;
             }
@@ -161,7 +151,7 @@ class HashUtilTest<K, V> {
         V tableValue = table[i].value;
 
         HashUtil.probe(tableKey, table, (node) -> {
-            if (HashUtil.areEqualKeys(tableKey, node.key)) {
+            if (Objects.equals(tableKey, node.key)) {
                 result[0] = node.value;
                 return false;
             }
@@ -184,7 +174,7 @@ class HashUtilTest<K, V> {
             V tableValue = table[i].value;
 
             HashUtil.probe(tableKey, table, (node) -> {
-                if (HashUtil.areEqualKeys(tableKey, node.key)) {
+                if (Objects.equals(tableKey, node.key)) {
                     result[0] = node.value;
                     return false;
                 }

@@ -73,7 +73,7 @@ public class FlatHashMap<K, V> {
         final V[] removed = (V[]) new Object[]{null};
 
         HashUtil.probe(key, table, (node) -> {
-            if (!node.deleted && HashUtil.areEqualKeys(node.key, key)) {
+            if (!node.deleted && Objects.equals(node.key, key)) {
                 removed[0] = node.value;
                 node.key = null;
                 node.value = null;
@@ -92,7 +92,7 @@ public class FlatHashMap<K, V> {
         final V[] result = (V[]) new Object[]{null};
 
         HashUtil.probe(key, table, (node) -> {
-            if (!node.deleted && HashUtil.areEqualKeys(node.key, key)) {
+            if (!node.deleted && Objects.equals(node.key, key)) {
                 result[0] = node.value;
 
                 return false;
@@ -107,7 +107,7 @@ public class FlatHashMap<K, V> {
         final boolean[] result = new boolean[]{false};
 
         HashUtil.probe(key, table, (node) -> {
-            if (!node.deleted && HashUtil.areEqualKeys(node.key, key)) {
+            if (!node.deleted && Objects.equals(node.key, key)) {
                 result[0] = true;
                 return false;
             }

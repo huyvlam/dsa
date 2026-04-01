@@ -10,18 +10,6 @@ public class HashUtil {
     public static final double DEFAULT_LOAD_FACTOR = 0.75;
 
     /**
-     * Null safe equal comparison of the keys provided
-     *
-     * @param nodeKey   key of a hash node
-     * @param key       key value to compare with
-     * @return          return true if matched, otherwise false
-     * @param <K>       key must be type K
-     */
-    public static <K, V> boolean areEqualKeys(K nodeKey, K key) {
-        return Objects.equals(nodeKey, key);
-    }
-
-    /**
      * Compute the table resize threshold and compare it w/ the number of elements
      *
      * @param curSize   the number of elements currently in the hash table
@@ -119,7 +107,7 @@ public class HashUtil {
         while (table[index] != null && gap <= table.length) {
             FlatNode<K, V> node = table[index];
 
-            if (!node.deleted && areEqualKeys(node.key, key)) {
+            if (!node.deleted && Objects.equals(node.key, key)) {
                 V prevValue = node.value;
                 node.value = value;
                 return prevValue;
