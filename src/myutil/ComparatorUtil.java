@@ -1,9 +1,9 @@
-package myhelper;
+package myutil;
 
 import java.util.Comparator;
 import java.util.Objects;
 
-public class MyComparator {
+public class ComparatorUtil {
     /**
      * Provide an equal comparison callback function
      *

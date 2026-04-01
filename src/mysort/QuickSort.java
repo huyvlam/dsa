@@ -1,6 +1,6 @@
 package mysort;
 
-import myhelper.MyComparator;
+import myutil.ComparatorUtil;
 
 import java.util.Comparator;
 
@@ -8,7 +8,7 @@ public class QuickSort {
     public static <E> void sort(E[] arr, int lo, int hi, Comparator<? super E> comp) {
         if (lo >= hi || arr == null) return;
 
-        Comparator<? super E> safeComp = MyComparator.nullsLastComparator(comp);
+        Comparator<? super E> safeComp = ComparatorUtil.nullsLastComparator(comp);
         recursiveSort(arr, lo, hi, safeComp);
     }
 

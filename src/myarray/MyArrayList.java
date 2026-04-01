@@ -1,7 +1,7 @@
 package myarray;
 
 import myhelper.Checker;
-import myhelper.MyComparator;
+import myutil.ComparatorUtil;
 import mysearch.BinarySearch;
 import mysearch.LinearSearch;
 import mysort.QuickSort;
@@ -77,24 +77,24 @@ public class MyArrayList<E> {
     }
 
     public int indexOf(E data) {
-        return indexOf(data, MyComparator.equalsComparator);
+        return indexOf(data, ComparatorUtil.equalsComparator);
     }
 
     public int indexOf(E data, Comparator<? super E> comp) {
         Checker.checkNullArgument(data);
 
         return sorted
-                ? BinarySearch.findIndex((E[]) dataList, data, 0, size - 1, MyComparator.nullsLastComparator(comp))
-                : LinearSearch.findIndex((E[]) dataList, data, 0, size - 1, MyComparator.nullsLastComparator(comp));
+                ? BinarySearch.findIndex((E[]) dataList, data, 0, size - 1, ComparatorUtil.nullsLastComparator(comp))
+                : LinearSearch.findIndex((E[]) dataList, data, 0, size - 1, ComparatorUtil.nullsLastComparator(comp));
     }
 
     public void sort(Comparator<? super E> comp) {
         if (size <= 1) return;
 
-        if (comp == null && !MyComparator.isComparable(dataList, size))
+        if (comp == null && !ComparatorUtil.isComparable(dataList, size))
             throw new IllegalArgumentException("Comparator cannot be null for non-Comparable elements");
 
-        QuickSort.sort((E[]) dataList, 0, size - 1, MyComparator.nullsLastComparator(comp));
+        QuickSort.sort((E[]) dataList, 0, size - 1, ComparatorUtil.nullsLastComparator(comp));
         sorted = true;
     }
 }

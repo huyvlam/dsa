@@ -1,4 +1,4 @@
-package myhelper;
+package myutil;
 
 import mymodel.Person;
 
@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 
-class MyComparatorTest {
+class ComparatorUtilTest {
     private Integer[] arrI;
     private Person[] arrP;
 
@@ -23,7 +23,7 @@ class MyComparatorTest {
     @Test
     @DisplayName("Should return equals comparison for generics or natural order for Comparables")
     void testEqualsComparator() {
-        Comparator comp = MyComparator.equalsComparator;
+        Comparator comp = ComparatorUtil.equalsComparator;
 
         assertTrue(comp.compare(arrI[1], 3) == 0);
 
@@ -35,13 +35,13 @@ class MyComparatorTest {
     @DisplayName("Should move null elements to last")
     void testNullsLastComparator() {
         assertThrows(NullPointerException.class, () -> Arrays.sort(arrI));
-        assertDoesNotThrow(() -> Arrays.sort(arrP, MyComparator.nullsLastComparator(null)));
+        assertDoesNotThrow(() -> Arrays.sort(arrP, ComparatorUtil.nullsLastComparator(null)));
     }
 
     @Test
     @DisplayName("Should return false if array elements are not Comparable")
     void testIsComparable() {
-        assertFalse(MyComparator.isComparable(arrP, arrP.length));
-        assertTrue(MyComparator.isComparable(arrI, 2));
+        assertFalse(ComparatorUtil.isComparable(arrP, arrP.length));
+        assertTrue(ComparatorUtil.isComparable(arrI, 2));
     }
 }

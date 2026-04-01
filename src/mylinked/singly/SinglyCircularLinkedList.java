@@ -1,6 +1,6 @@
 package mylinked.singly;
 
-import myhelper.MyComparator;
+import myutil.ComparatorUtil;
 import myinterface.Printer;
 import myhelper.Checker;
 
@@ -146,13 +146,13 @@ public class SinglyCircularLinkedList<E> {
     }
 
     public boolean remove(E data) {
-        return remove(data, MyComparator.equalsComparator);
+        return remove(data, ComparatorUtil.equalsComparator);
     }
 
     public boolean remove(E data, Comparator<? super E> comp) {
         if (data == null || size == 0) return false;
 
-        Comparator<? super E> safeComp = MyComparator.nullsLastComparator(comp);
+        Comparator<? super E> safeComp = ComparatorUtil.nullsLastComparator(comp);
 
         if (safeComp.compare(tail.next.data, data) == 0) {
             pollFirst();
@@ -210,13 +210,13 @@ public class SinglyCircularLinkedList<E> {
     }
 
     public int indexOf(E data) {
-        return indexOf(data, MyComparator.equalsComparator);
+        return indexOf(data, ComparatorUtil.equalsComparator);
     }
 
     public int indexOf(E data, Comparator<? super E> comp) {
         if (data == null) return -1;
 
-        Comparator<? super E> safeComp = MyComparator.nullsLastComparator(comp);
+        Comparator<? super E> safeComp = ComparatorUtil.nullsLastComparator(comp);
         SinglyNode<E> cur = tail.next;
 
         for (int index = 0; index < size; index++) {

@@ -1,6 +1,6 @@
 package mysearch;
 
-import myhelper.MyComparator;
+import myutil.ComparatorUtil;
 
 import java.util.Comparator;
 
@@ -17,7 +17,7 @@ public class BinarySearch {
      * @param <E>   type of elements stored in the array
      */
     public static <E> int findIndex(E[] arr, E value, int lo, int hi, Comparator<? super E> comp) {
-        Comparator<? super E> safeComp = MyComparator.nullsLastComparator(comp);
+        Comparator<? super E> safeComp = ComparatorUtil.nullsLastComparator(comp);
 
         int index = -1;
 
