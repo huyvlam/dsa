@@ -91,7 +91,7 @@ class HashUtilTest<K, V> {
     }
 
     @Test
-    @DisplayName("Should find available slot to add/update data")
+    @DisplayName("Should add and update data in available slot")
     void testProbeAddUpdate() {
         assertNull(HashUtil.probe((K) "apple", (V) "red", table));
         assertNull(HashUtil.probe((K) "banana", (V) "yellow", table));
@@ -133,5 +133,65 @@ class HashUtilTest<K, V> {
         assertNull(HashUtil.probe((K) "kiwi", (V) "green", table));
 
         assertThrows(IllegalStateException.class, () -> HashUtil.probe((K) "berry", (V) "blue", table));
+    }
+
+    @Test
+    @DisplayName("Should perform custom action on each returned node")
+    void testProbeCustomAction() {
+        HashUtil.probe((K) "apple", (V) "red", table);
+        HashUtil.probe((K) "banana", (V) "yellow", table);
+        HashUtil.probe((K) "peach", (V) "orange", table);
+        HashUtil.probe((K) "kiwi", (V) "green", table);
+
+        V[] result = (V[]) new Object[]{null};
+
+        K unknownKey = (K) "berry";
+
+        HashUtil.probe(unknownKey, table, (node) -> {
+            if (HashUtil.areEqualKeys(unknownKey, node.key)) {
+                result[0] = node.value;
+                return false;
+            }
+            return true;
+        });
+        assertNull(result[0]);
+
+        int i = 3;
+        K tableKey = table[i].key;
+        V tableValue = table[i].value;
+
+        HashUtil.probe(tableKey, table, (node) -> {
+            if (HashUtil.areEqualKeys(tableKey, node.key)) {
+                result[0] = node.value;
+                return false;
+            }
+            return true;
+        });
+        assertEquals(tableValue, result[0]);
+    }
+
+    @Test
+    @DisplayName("Both probe methods should have parallel hash collision result")
+    void testBothProbesShouldHaveParallelHashResult() {
+        HashUtil.probe((K) "apple", (V) "red", table);
+        HashUtil.probe((K) "banana", (V) "yellow", table);
+        HashUtil.probe((K) "peach", (V) "orange", table);
+        HashUtil.probe((K) "kiwi", (V) "green", table);
+
+        for (int i = 0; i < table.length; i++) {
+            V[] result = (V[]) new Object[]{null};
+            K tableKey = table[i].key;
+            V tableValue = table[i].value;
+
+            HashUtil.probe(tableKey, table, (node) -> {
+                if (HashUtil.areEqualKeys(tableKey, node.key)) {
+                    result[0] = node.value;
+                    return false;
+                }
+                return true;
+            });
+
+            assertEquals(tableValue, result[0]);
+        }
     }
 }

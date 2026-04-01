@@ -100,14 +100,16 @@ public class HashUtil {
     }
 
     /**
-     * Probe for the next available slot and update the table
+     * Probe for the next available slot then update/add to the table
      *
      * @param key   key to search for
      * @param value value to add/update
-     * @param table the table to modify
+     * @param table the table to be modified
      * @return      the previous value for an update, or null for new insert
      * @param <K>   type of key
      * @param <V>   type of value
+     *
+     * IMPORTANT    this probe method and the one below MUST produce parallel hash result
      */
     public static <K, V> V probe(K key, V value, HashNode<K, V>[] table) {
         int initialIndex = hashIndex(key, table.length);
@@ -149,15 +151,15 @@ public class HashUtil {
     }
 
     /**
-     * Iterate thru each available slot and perform a custom action on the node data
+     * Probe each possible slot and return the node where custom action can be performed
      *
      * @param key       key to search for
-     * @param table     table where data is being stored
-     * @param action    custom action (callback method) to perform on each returned data
+     * @param table     table of data to be searched
+     * @param action    custom action to perform on the returned node
      * @param <K>       type of key
      * @param <V>       type of value
      *
-     * Note: While this improves readability and testability, it carries performance overhead in large dataset.
+     * Note: While this DRY improves readability and testability, it carries performance overhead in large dataset.
      *       Using simple looping is better for JVM optimization.
      */
     public static <K, V> void probe(K key, HashNode<K, V>[] table, Predicate<HashNode<K, V>> action) {
