@@ -1,12 +1,14 @@
 package myhash;
 
-import myhash.chain.ChainHashNode;
+import myhash.probed.Flat;
 
 import java.util.Objects;
+import java.util.function.Predicate;
 
 public class HashUtil {
     public static final int DEFAULT_CAPACITY = 16;
     public static final double DEFAULT_LOAD_FACTOR = 0.75;
+    public static enum Status { REMOVED };
 
     /**
      * Equally compare the field key of given object with the given key value
@@ -95,5 +97,72 @@ public class HashUtil {
         int step = prime - ((key.hashCode() & 0x7FFFFFFF) % prime);
 
         return (original + gap * step) % tableSize;
+    }
+
+    /**
+     * Probe for the next available slot and update the table
+     *
+     * @param key
+     * @param value
+     * @param table
+     * @return
+     * @param <K>
+     * @param <V>
+     */
+    public static <K, V> V probe(K key, V value, Flat<K, V>[] table) {
+        int initialIndex = hashIndex(key, table.length);
+        int index = initialIndex;
+        int gap = 1;
+
+        int deletedIndex = -1;
+
+        while (table[index] != null && gap < table.length) {
+            Flat<K, V> node = table[index];
+
+            if (!node.deleted && areEqualKeys(node.key, key)) {
+                V prevValue = node.value;
+                node.value = value;
+                return prevValue;
+            }
+
+            // reuse deleted index for new entry
+            if (node.deleted && deletedIndex == -1) deletedIndex = index;
+
+            index = linearHashIndex(initialIndex, gap, table.length);
+            gap++;
+        }
+
+        if (deletedIndex != -1) {
+            Flat<K, V> reuse = table[deletedIndex];
+            reuse.key = key;
+            reuse.value = value;
+            reuse.deleted = false;
+        } else {
+            table[index] = new Flat<K, V>(key, value);
+        }
+
+        return null;
+    }
+
+    /**
+     * Iterate thru each available slot and perform custom action on the node data
+     *
+     * @param key
+     * @param table
+     * @param action
+     * @param <K>
+     * @param <V>
+     */
+    public static <K, V> void probe(K key, Flat<K, V>[] table, Predicate<Flat<K, V>> action) {
+        int initialIndex = HashUtil.hashIndex(key, table.length);
+        int index = initialIndex;
+        int gap = 1;
+
+        while (table[index] != null && gap < table.length) {
+            if (!action.test(table[index])) return;
+
+            index = HashUtil.linearHashIndex(initialIndex, gap, table.length);
+            gap++;
+        }
     }
 }
