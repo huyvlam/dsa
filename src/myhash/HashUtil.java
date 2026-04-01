@@ -1,6 +1,6 @@
 package myhash;
 
-import myhash.probed.HashNode;
+import myhash.probed.FlatNode;
 
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -111,7 +111,7 @@ public class HashUtil {
      *
      * IMPORTANT    this probe method and the one below MUST produce parallel hash result
      */
-    public static <K, V> V probe(K key, V value, HashNode<K, V>[] table) {
+    public static <K, V> V probe(K key, V value, FlatNode<K, V>[] table) {
         int initialIndex = hashIndex(key, table.length);
         int index = initialIndex;
         int gap = 1;
@@ -119,7 +119,7 @@ public class HashUtil {
         int deletedIndex = -1;
 
         while (table[index] != null && gap <= table.length) {
-            HashNode<K, V> node = table[index];
+            FlatNode<K, V> node = table[index];
 
             if (!node.deleted && areEqualKeys(node.key, key)) {
                 V prevValue = node.value;
@@ -135,10 +135,10 @@ public class HashUtil {
         }
 
         if (table[index] == null) {
-            table[index] = new HashNode<K, V>(key, value);
+            table[index] = new FlatNode<K, V>(key, value);
         } else {
             if (deletedIndex != -1) {
-                HashNode<K, V> reuse = table[deletedIndex];
+                FlatNode<K, V> reuse = table[deletedIndex];
                 reuse.key = key;
                 reuse.value = value;
                 reuse.deleted = false;
@@ -162,7 +162,7 @@ public class HashUtil {
      * Note: While this DRY improves readability and testability, it carries performance overhead in large dataset.
      *       Using simple looping is better for JVM optimization.
      */
-    public static <K, V> void probe(K key, HashNode<K, V>[] table, Predicate<HashNode<K, V>> action) {
+    public static <K, V> void probe(K key, FlatNode<K, V>[] table, Predicate<FlatNode<K, V>> action) {
         int initialIndex = HashUtil.hashIndex(key, table.length);
         int index = initialIndex;
         int gap = 1;

@@ -1,6 +1,6 @@
 package myhash;
 
-import myhash.probed.HashNode;
+import myhash.probed.FlatNode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class HashUtilTest<K, V> {
-    private HashNode<K, V>[] table;
+    private FlatNode<K, V>[] table;
     private String[] keys;
     private int S, addressI, idI;
     private int capacity;
@@ -16,7 +16,7 @@ class HashUtilTest<K, V> {
     @BeforeEach
     void setup() {
         capacity = 4;
-        table = (HashNode<K, V>[]) new HashNode[capacity];
+        table = (FlatNode<K, V>[]) new FlatNode[capacity];
         keys = new String[]{"address","name","id","city","profession","phone"};
         S = keys.length;
         addressI = HashUtil.hashIndex(keys[0], S);
@@ -115,7 +115,7 @@ class HashUtilTest<K, V> {
         assertNull(HashUtil.probe((K) "peach", (V) "orange", table));
         assertNull(HashUtil.probe((K) "kiwi", (V) "green", table));
 
-        HashNode<K, V> node = table[1];
+        FlatNode<K, V> node = table[1];
         node.key = null;
         node.value = null;
         node.deleted = true;

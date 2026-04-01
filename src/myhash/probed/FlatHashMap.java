@@ -2,8 +2,10 @@ package myhash.probed;
 
 import myhash.HashUtil;
 
+import java.util.Objects;
+
 public class FlatHashMap<K, V> {
-    private HashNode<K, V>[] table;
+    private FlatNode<K, V>[] table;
 
     private final int initialCapacity;
     private final double loadFactor;
@@ -17,7 +19,7 @@ public class FlatHashMap<K, V> {
         initialCapacity = capacity;
         loadFactor = factor;
         size = 0;
-        table = (HashNode<K, V>[]) new HashNode[initialCapacity];
+        table = (FlatNode<K, V>[]) new FlatNode[initialCapacity];
         resizeThreshold = table.length * loadFactor;
     }
 
@@ -30,7 +32,7 @@ public class FlatHashMap<K, V> {
     }
 
     public void clear() {
-        table = new HashNode[initialCapacity];
+        table = new FlatNode[initialCapacity];
         resizeThreshold = table.length * loadFactor;
         size = 0;
     }
@@ -43,6 +45,19 @@ public class FlatHashMap<K, V> {
         return size;
     }
 
+    @SuppressWarnings("unchecked")
+    public void resize() {
+        int newCapacity = table.length * 2;
+        FlatNode<K, V>[] newTable = (FlatNode<K, V>[]) new FlatNode[newCapacity];
+
+        for (FlatNode<K, V> cur : table) {
+            if (cur != null && !cur.deleted) HashUtil.probe(cur.key, cur.value, newTable);
+        }
+
+        this.table = newTable;
+        this.resizeThreshold = table.length * loadFactor;
+    }
+
     public V put(K key, V value) {
         if (size >= resizeThreshold) resize();
 
@@ -53,17 +68,23 @@ public class FlatHashMap<K, V> {
         return result;
     }
 
-    @SuppressWarnings("unchecked")
-    public void resize() {
-        int newCapacity = table.length * 2;
-        HashNode<K, V>[] newTable = (HashNode<K, V>[]) new HashNode[newCapacity];
+    public V remove(K key) {
+        final V[] removed = (V[]) new Object[]{null};
 
-        for (HashNode<K, V> cur : table) {
-            if (cur != null && !cur.deleted) HashUtil.probe(cur.key, cur.value, newTable);
-        }
+        HashUtil.probe(key, table, (node) -> {
+            if (!node.deleted && HashUtil.areEqualKeys(node.key, key)) {
+                removed[0] = node.value;
+                node.key = null;
+                node.value = null;
+                node.deleted = true;
+                size--;
 
-        this.table = newTable;
-        this.resizeThreshold = table.length * loadFactor;
+                return false; // stopping the loop
+            }
+            return true;
+        });
+
+        return (V) removed[0];
     }
 
     public V get(K key) {
@@ -81,22 +102,24 @@ public class FlatHashMap<K, V> {
         return (V) result[0];
     }
 
-    public V remove(K key) {
-        final V[] removed = (V[]) new Object[]{null};
-
+    public boolean containsKey(K key) {
+        final boolean[] result = new boolean[]{false};
         HashUtil.probe(key, table, (node) -> {
             if (!node.deleted && HashUtil.areEqualKeys(node.key, key)) {
-                removed[0] = node.value;
-                node.key = null;
-                node.value = null;
-                node.deleted = true;
-                size--;
-
+                result[0] = true;
                 return false;
             }
             return true;
         });
 
-        return (V) removed[0];
+        return result[0];
+    }
+
+    public boolean containsValue(V  value) {
+        for (FlatNode<K, V> node : table) {
+            if (node != null && !node.deleted && Objects.equals(node.value, value)) return true;
+        }
+
+        return false;
     }
 }
