@@ -8,7 +8,6 @@ import java.util.function.Predicate;
 public class HashUtil {
     public static final int DEFAULT_CAPACITY = 16;
     public static final double DEFAULT_LOAD_FACTOR = 0.75;
-    public static enum Status { REMOVED };
 
     /**
      * Equally compare the field key of given object with the given key value
