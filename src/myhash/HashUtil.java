@@ -102,12 +102,12 @@ public class HashUtil {
     /**
      * Probe for the next available slot and update the table
      *
-     * @param key
-     * @param value
-     * @param table
-     * @return
-     * @param <K>
-     * @param <V>
+     * @param key   key to search for
+     * @param value value to add/update
+     * @param table the table to modify
+     * @return      the previous value for an update, or null for new insert
+     * @param <K>   type of key
+     * @param <V>   type of value
      */
     public static <K, V> V probe(K key, V value, HashNode<K, V>[] table) {
         int initialIndex = hashIndex(key, table.length);
@@ -116,7 +116,7 @@ public class HashUtil {
 
         int deletedIndex = -1;
 
-        while (table[index] != null && gap < table.length) {
+        while (table[index] != null && gap <= table.length) {
             HashNode<K, V> node = table[index];
 
             if (!node.deleted && areEqualKeys(node.key, key)) {
@@ -125,40 +125,47 @@ public class HashUtil {
                 return prevValue;
             }
 
-            // reuse deleted index for new entry
+            // Tombstone reuse deleted index for new entry
             if (node.deleted && deletedIndex == -1) deletedIndex = index;
 
             index = linearHashIndex(initialIndex, gap, table.length);
             gap++;
         }
 
-        if (deletedIndex != -1) {
-            HashNode<K, V> reuse = table[deletedIndex];
-            reuse.key = key;
-            reuse.value = value;
-            reuse.deleted = false;
-        } else {
+        if (table[index] == null) {
             table[index] = new HashNode<K, V>(key, value);
+        } else {
+            if (deletedIndex != -1) {
+                HashNode<K, V> reuse = table[deletedIndex];
+                reuse.key = key;
+                reuse.value = value;
+                reuse.deleted = false;
+            } else {
+                throw new IllegalStateException("Capacity is exceeded");
+            }
         }
 
         return null;
     }
 
     /**
-     * Iterate thru each available slot and perform custom action on the node data
+     * Iterate thru each available slot and perform a custom action on the node data
      *
-     * @param key
-     * @param table
-     * @param action
-     * @param <K>
-     * @param <V>
+     * @param key       key to search for
+     * @param table     table where data is being stored
+     * @param action    custom action (callback method) to perform on each returned data
+     * @param <K>       type of key
+     * @param <V>       type of value
+     *
+     * Note: While this improves readability and testability, it carries performance overhead in large dataset.
+     *       Using simple looping is better for JVM optimization.
      */
     public static <K, V> void probe(K key, HashNode<K, V>[] table, Predicate<HashNode<K, V>> action) {
         int initialIndex = HashUtil.hashIndex(key, table.length);
         int index = initialIndex;
         int gap = 1;
 
-        while (table[index] != null && gap < table.length) {
+        while (table[index] != null && gap <= table.length) {
             if (!action.test(table[index])) return;
 
             index = HashUtil.linearHashIndex(initialIndex, gap, table.length);

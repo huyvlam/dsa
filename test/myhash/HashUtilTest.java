@@ -1,17 +1,22 @@
 package myhash;
 
+import myhash.probed.HashNode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class HashUtilTest {
+class HashUtilTest<K, V> {
+    private HashNode<K, V>[] table;
     private String[] keys;
     private int S, addressI, idI;
+    private int capacity;
 
     @BeforeEach
     void setup() {
+        capacity = 4;
+        table = (HashNode<K, V>[]) new HashNode[capacity];
         keys = new String[]{"address","name","id","city","profession","phone"};
         S = keys.length;
         addressI = HashUtil.hashIndex(keys[0], S);
@@ -83,5 +88,50 @@ class HashUtilTest {
         assertNotEquals(doubleI, idI);
         assertTrue(doubleI >= 0);
         assertTrue(doubleI < S);
+    }
+
+    @Test
+    @DisplayName("Should find available slot to add/update data")
+    void testProbeAddUpdate() {
+        assertNull(HashUtil.probe((K) "apple", (V) "red", table));
+        assertNull(HashUtil.probe((K) "banana", (V) "yellow", table));
+        assertNull(HashUtil.probe((K) "peach", (V) "orange", table));
+        assertNull(HashUtil.probe((K) "kiwi", (V) "green", table));
+
+        assertNotNull(table[0]);
+        assertNotNull(table[1]);
+        assertNotNull(table[2]);
+        assertNotNull(table[3]);
+
+        assertEquals("green", HashUtil.probe((K) "kiwi", (V) "yellow", table));
+    }
+
+
+    @Test
+    @DisplayName("Should reuse deleted slot to add new data")
+    void testProbeTombstoneReuse() {
+        assertNull(HashUtil.probe((K) "apple", (V) "red", table));
+        assertNull(HashUtil.probe((K) "banana", (V) "yellow", table));
+        assertNull(HashUtil.probe((K) "peach", (V) "orange", table));
+        assertNull(HashUtil.probe((K) "kiwi", (V) "green", table));
+
+        HashNode<K, V> node = table[1];
+        node.key = null;
+        node.value = null;
+        node.deleted = true;
+
+        assertNull(HashUtil.probe((K) "berry", (V) "blue", table));
+        assertEquals("blue", HashUtil.probe((K) "berry", (V) "black", table));
+    }
+
+    @Test
+    @DisplayName("Should throw exception when the table is full")
+    void testProbeCapacityException() {
+        assertNull(HashUtil.probe((K) "apple", (V) "red", table));
+        assertNull(HashUtil.probe((K) "banana", (V) "yellow", table));
+        assertNull(HashUtil.probe((K) "peach", (V) "orange", table));
+        assertNull(HashUtil.probe((K) "kiwi", (V) "green", table));
+
+        assertThrows(IllegalStateException.class, () -> HashUtil.probe((K) "berry", (V) "blue", table));
     }
 }
