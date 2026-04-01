@@ -1,6 +1,6 @@
 package myhash;
 
-import myhash.probed.Flat;
+import myhash.probed.HashNode;
 
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -109,7 +109,7 @@ public class HashUtil {
      * @param <K>
      * @param <V>
      */
-    public static <K, V> V probe(K key, V value, Flat<K, V>[] table) {
+    public static <K, V> V probe(K key, V value, HashNode<K, V>[] table) {
         int initialIndex = hashIndex(key, table.length);
         int index = initialIndex;
         int gap = 1;
@@ -117,7 +117,7 @@ public class HashUtil {
         int deletedIndex = -1;
 
         while (table[index] != null && gap < table.length) {
-            Flat<K, V> node = table[index];
+            HashNode<K, V> node = table[index];
 
             if (!node.deleted && areEqualKeys(node.key, key)) {
                 V prevValue = node.value;
@@ -133,12 +133,12 @@ public class HashUtil {
         }
 
         if (deletedIndex != -1) {
-            Flat<K, V> reuse = table[deletedIndex];
+            HashNode<K, V> reuse = table[deletedIndex];
             reuse.key = key;
             reuse.value = value;
             reuse.deleted = false;
         } else {
-            table[index] = new Flat<K, V>(key, value);
+            table[index] = new HashNode<K, V>(key, value);
         }
 
         return null;
@@ -153,7 +153,7 @@ public class HashUtil {
      * @param <K>
      * @param <V>
      */
-    public static <K, V> void probe(K key, Flat<K, V>[] table, Predicate<Flat<K, V>> action) {
+    public static <K, V> void probe(K key, HashNode<K, V>[] table, Predicate<HashNode<K, V>> action) {
         int initialIndex = HashUtil.hashIndex(key, table.length);
         int index = initialIndex;
         int gap = 1;

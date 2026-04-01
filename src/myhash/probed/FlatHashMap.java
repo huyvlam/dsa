@@ -3,7 +3,7 @@ package myhash.probed;
 import myhash.HashUtil;
 
 public class FlatHashMap<K, V> {
-    private Flat<K, V>[] table;
+    private HashNode<K, V>[] table;
 
     private final int initialCapacity;
     private final double loadFactor;
@@ -17,7 +17,7 @@ public class FlatHashMap<K, V> {
         initialCapacity = capacity;
         loadFactor = factor;
         size = 0;
-        table = (Flat<K, V>[]) new Flat[initialCapacity];
+        table = (HashNode<K, V>[]) new HashNode[initialCapacity];
         resizeThreshold = table.length * loadFactor;
     }
 
@@ -30,7 +30,7 @@ public class FlatHashMap<K, V> {
     }
 
     public void clear() {
-        table = new Flat[initialCapacity];
+        table = new HashNode[initialCapacity];
         resizeThreshold = table.length * loadFactor;
         size = 0;
     }
@@ -56,9 +56,9 @@ public class FlatHashMap<K, V> {
     @SuppressWarnings("unchecked")
     public void resize() {
         int newCapacity = table.length * 2;
-        Flat<K, V>[] newTable = (Flat<K, V>[]) new Flat[newCapacity];
+        HashNode<K, V>[] newTable = (HashNode<K, V>[]) new HashNode[newCapacity];
 
-        for (Flat<K, V> cur : table) {
+        for (HashNode<K, V> cur : table) {
             if (cur != null && !cur.deleted) HashUtil.probe(cur.key, cur.value, newTable);
         }
 
