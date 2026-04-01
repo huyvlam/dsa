@@ -1,31 +1,31 @@
-package myhash.chain;
+package myhash.chained;
 
 import myhash.HashUtil;
 
-public class ChainHashMap<K, V> {
-    private ChainHashNode<K, V>[] table;
+public class EntryHashMap<K, V> {
+    private Entry<K, V>[] table;
     private int size;
     private final int initialCapacity;
     private final double loadFactor;
 
-    public ChainHashMap(int capacity, double factor) {
+    public EntryHashMap(int capacity, double factor) {
         if (capacity <= 0 || (capacity & (capacity - 1)) != 0) throw new IllegalArgumentException("Capacity must be power of 2");
 
         initialCapacity = capacity;
         loadFactor = factor;
-        table = (ChainHashNode<K, V>[]) new ChainHashNode[initialCapacity];
+        table = (Entry<K, V>[]) new Entry[initialCapacity];
     }
 
-    public ChainHashMap(int capacity) {
+    public EntryHashMap(int capacity) {
         this(capacity, HashUtil.DEFAULT_LOAD_FACTOR);
     }
 
-    public ChainHashMap() {
+    public EntryHashMap() {
         this(HashUtil.DEFAULT_CAPACITY, HashUtil.DEFAULT_LOAD_FACTOR);
     }
 
     public void clear() {
-        table = (ChainHashNode<K, V>[]) new ChainHashNode[initialCapacity];
+        table = (Entry<K, V>[]) new Entry[initialCapacity];
         size = 0;
     }
 
@@ -40,8 +40,8 @@ public class ChainHashMap<K, V> {
     public V put(K key, V value) {
         int index = HashUtil.hashIndex(key, table.length);
 
-        ChainHashNode<K, V> head = table[index];
-        ChainHashNode<K, V> cur = head;
+        Entry<K, V> head = table[index];
+        Entry<K, V> cur = head;
 
         while (cur != null) {
             if (HashUtil.areEqualKeys(cur.key, key)) {
@@ -52,7 +52,7 @@ public class ChainHashMap<K, V> {
             cur = cur.next;
         }
 
-        ChainHashNode<K, V> node = new ChainHashNode<>(key, value, head);
+        Entry<K, V> node = new Entry<>(key, value, head);
         table[index] = node;
         size++;
 
@@ -61,15 +61,16 @@ public class ChainHashMap<K, V> {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     public void resize() {
         int newCapacity = table.length * 2;
-        ChainHashNode<K, V>[] newEntries = (ChainHashNode<K, V>[]) new ChainHashNode[newCapacity];
+        Entry<K, V>[] newEntries = (Entry<K, V>[]) new Entry[newCapacity];
 
         for (int i = 0; i < table.length; i++) {
-            ChainHashNode<K, V> cur = table[i];
+            Entry<K, V> cur = table[i];
 
             while (cur != null) {
-                ChainHashNode<K, V> next = cur.next;
+                Entry<K, V> next = cur.next;
 
                 int index = HashUtil.hashIndex(cur.key, newCapacity);
 
@@ -85,7 +86,7 @@ public class ChainHashMap<K, V> {
 
     public V get(K key) {
         int index = HashUtil.hashIndex(key, table.length);
-        ChainHashNode<K, V> cur = table[index];
+        Entry<K, V> cur = table[index];
 
         while (cur != null) {
             if (HashUtil.areEqualKeys(cur.key, key)) return cur.value;
@@ -98,8 +99,8 @@ public class ChainHashMap<K, V> {
 
     public V remove(K key) {
         int index = HashUtil.hashIndex(key, table.length);
-        ChainHashNode<K, V> cur = table[index];
-        ChainHashNode<K, V> prev = null;
+        Entry<K, V> cur = table[index];
+        Entry<K, V> prev = null;
 
         while (cur != null) {
             if (HashUtil.areEqualKeys(cur.key, key)) {
