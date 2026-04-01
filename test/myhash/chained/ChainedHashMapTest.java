@@ -6,21 +6,21 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class EntryHashMapTest<K, V> {
-    private EntryHashMap<K, V> map;
+class ChainedHashMapTest<K, V> {
+    private ChainedHashMap<K, V> map;
     private int initialCapacity;
 
     @BeforeEach
     void setUp() {
         initialCapacity = 2;
-        map = new EntryHashMap<>(initialCapacity);
+        map = new ChainedHashMap<>(initialCapacity);
     }
 
     @Test
     @DisplayName("Should throw exception when capacity is not power of 2")
     void testCapacityNotPowerOf2() {
-        assertThrows(IllegalArgumentException.class, () -> new EntryHashMap<>(0));
-        assertThrows(IllegalArgumentException.class, () -> new EntryHashMap<>(3));
+        assertThrows(IllegalArgumentException.class, () -> new ChainedHashMap<>(0));
+        assertThrows(IllegalArgumentException.class, () -> new ChainedHashMap<>(3));
     }
 
     @Test

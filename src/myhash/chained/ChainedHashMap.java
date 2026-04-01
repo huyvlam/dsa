@@ -2,13 +2,13 @@ package myhash.chained;
 
 import myhash.HashUtil;
 
-public class EntryHashMap<K, V> {
+public class ChainedHashMap<K, V> {
     private Entry<K, V>[] entries;
     private int size;
     private final int initialCapacity;
     private final double loadFactor;
 
-    public EntryHashMap(int capacity, double factor) {
+    public ChainedHashMap(int capacity, double factor) {
         if (capacity <= 0 || (capacity & (capacity - 1)) != 0) throw new IllegalArgumentException("Capacity must be power of 2");
 
         initialCapacity = capacity;
@@ -16,11 +16,11 @@ public class EntryHashMap<K, V> {
         entries = (Entry<K, V>[]) new Entry[initialCapacity];
     }
 
-    public EntryHashMap(int capacity) {
+    public ChainedHashMap(int capacity) {
         this(capacity, HashUtil.DEFAULT_LOAD_FACTOR);
     }
 
-    public EntryHashMap() {
+    public ChainedHashMap() {
         this(HashUtil.DEFAULT_CAPACITY, HashUtil.DEFAULT_LOAD_FACTOR);
     }
 
