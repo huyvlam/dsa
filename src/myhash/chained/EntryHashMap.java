@@ -3,7 +3,7 @@ package myhash.chained;
 import myhash.HashUtil;
 
 public class EntryHashMap<K, V> {
-    private Entry<K, V>[] table;
+    private Entry<K, V>[] entries;
     private int size;
     private final int initialCapacity;
     private final double loadFactor;
@@ -13,7 +13,7 @@ public class EntryHashMap<K, V> {
 
         initialCapacity = capacity;
         loadFactor = factor;
-        table = (Entry<K, V>[]) new Entry[initialCapacity];
+        entries = (Entry<K, V>[]) new Entry[initialCapacity];
     }
 
     public EntryHashMap(int capacity) {
@@ -25,7 +25,7 @@ public class EntryHashMap<K, V> {
     }
 
     public void clear() {
-        table = (Entry<K, V>[]) new Entry[initialCapacity];
+        entries = (Entry<K, V>[]) new Entry[initialCapacity];
         size = 0;
     }
 
@@ -38,9 +38,9 @@ public class EntryHashMap<K, V> {
     }
 
     public V put(K key, V value) {
-        int index = HashUtil.hashIndex(key, table.length);
+        int index = HashUtil.hashIndex(key, entries.length);
 
-        Entry<K, V> head = table[index];
+        Entry<K, V> head = entries[index];
         Entry<K, V> cur = head;
 
         while (cur != null) {
@@ -53,21 +53,21 @@ public class EntryHashMap<K, V> {
         }
 
         Entry<K, V> node = new Entry<>(key, value, head);
-        table[index] = node;
+        entries[index] = node;
         size++;
 
-        if (HashUtil.needsResize(size, table.length, loadFactor)) resize();
+        if (HashUtil.needsResize(size, entries.length, loadFactor)) resize();
 
         return null;
     }
 
     @SuppressWarnings("unchecked")
     public void resize() {
-        int newCapacity = table.length * 2;
+        int newCapacity = entries.length * 2;
         Entry<K, V>[] newEntries = (Entry<K, V>[]) new Entry[newCapacity];
 
-        for (int i = 0; i < table.length; i++) {
-            Entry<K, V> cur = table[i];
+        for (int i = 0; i < entries.length; i++) {
+            Entry<K, V> cur = entries[i];
 
             while (cur != null) {
                 Entry<K, V> next = cur.next;
@@ -81,12 +81,12 @@ public class EntryHashMap<K, V> {
             }
         }
 
-        table = newEntries;
+        entries = newEntries;
     }
 
     public V get(K key) {
-        int index = HashUtil.hashIndex(key, table.length);
-        Entry<K, V> cur = table[index];
+        int index = HashUtil.hashIndex(key, entries.length);
+        Entry<K, V> cur = entries[index];
 
         while (cur != null) {
             if (HashUtil.areEqualKeys(cur.key, key)) return cur.value;
@@ -98,15 +98,15 @@ public class EntryHashMap<K, V> {
     }
 
     public V remove(K key) {
-        int index = HashUtil.hashIndex(key, table.length);
-        Entry<K, V> cur = table[index];
+        int index = HashUtil.hashIndex(key, entries.length);
+        Entry<K, V> cur = entries[index];
         Entry<K, V> prev = null;
 
         while (cur != null) {
             if (HashUtil.areEqualKeys(cur.key, key)) {
                 V removed = cur.value;
 
-                if (prev == null) table[index] = cur.next;
+                if (prev == null) entries[index] = cur.next;
                 else prev.next = cur.next;
 
                 size--;
