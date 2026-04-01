@@ -51,6 +51,7 @@ public class FlatHashMap<K, V> {
         FlatNode<K, V>[] newTable = (FlatNode<K, V>[]) new FlatNode[newCapacity];
 
         for (FlatNode<K, V> cur : table) {
+            // Filter out deleted nodes for garbage collection (Tombstone Purging)
             if (cur != null && !cur.deleted) HashUtil.probe(cur.key, cur.value, newTable);
         }
 
@@ -104,6 +105,7 @@ public class FlatHashMap<K, V> {
 
     public boolean containsKey(K key) {
         final boolean[] result = new boolean[]{false};
+
         HashUtil.probe(key, table, (node) -> {
             if (!node.deleted && HashUtil.areEqualKeys(node.key, key)) {
                 result[0] = true;

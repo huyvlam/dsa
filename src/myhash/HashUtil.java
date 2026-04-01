@@ -127,7 +127,7 @@ public class HashUtil {
                 return prevValue;
             }
 
-            // Tombstone reuse deleted index for new entry
+            // Reuse deleted index for new entry (Lazy Substitution)
             if (node.deleted && deletedIndex == -1) deletedIndex = index;
 
             index = linearHashIndex(initialIndex, gap, table.length);
