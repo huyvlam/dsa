@@ -10,36 +10,35 @@ public class HashUtil {
     public static final double DEFAULT_LOAD_FACTOR = 0.75;
 
     /**
-     * Equally compare the field key of given object with the given key value
+     * Null safe equal comparison of the keys provided
      *
-     * @param nodeKey the hash node must contain field key
-     * @param key   key value to compare with
-     * @return      return true if matched, otherwise false
-     * @param <K>   key type
-     * @param <V>   value type
+     * @param nodeKey   key of a hash node
+     * @param key       key value to compare with
+     * @return          return true if matched, otherwise false
+     * @param <K>       key must be type K
      */
     public static <K, V> boolean areEqualKeys(K nodeKey, K key) {
         return Objects.equals(nodeKey, key);
     }
 
     /**
-     * Determine whether the current size of hash table has reached the resize threshold
+     * Compute the table resize threshold and compare it w/ the number of elements
      *
      * @param curSize   the number of elements currently in the hash table
      * @param tableSize size of the hash table
      * @param factor    the load factor
-     * @return          return true if the hash table reached the resize threshold
+     * @return          return true if the hash table reached or exceeded the resize threshold
      */
     public static boolean needsResize(int curSize, int tableSize, double factor) {
         return curSize >= tableSize * factor;
     }
 
     /**
-     * Compute an available slot using mod table size
+     * Compute the hashcode index using mod table size
      *
-     * @param key       key to convert to hash code (% S)
-     * @param tableSize size of hash table must be power of 2
-     * @return          an index within bounds of the hash table
+     * @param key       key to be converted
+     * @param tableSize size of hash table must be a power of 2
+     * @return          a valid index within bounds
      * @param <K>       key type accepts: string, integer, object, etc.
      */
     public static <K> int hashIndex(K key, int tableSize) {
@@ -53,24 +52,24 @@ public class HashUtil {
         // 0x7FFFFFFF ensures the hash is positive
 //        return (hash & 0x7FFFFFFF) % size;
 
-        // & (size - 1) optimize mode (size MUST be a power of 2)
+        // & (size - 1) optimize mod % size (MUST be a power of 2)
         return hash & (tableSize - 1);
     }
 
     /**
-     * Provide the next available slot in the hash table using linear probe
+     * Using linear probe to find the next available slot in the hash table
      *
      * @param original  original location of the computed hash
      * @param gap       gap from original location to next slot
      * @param tableSize size of hash table
-     * @return          the next available index in the hash table
+     * @return          the next available index in the table
      */
     public static int linearHashIndex(int original, int gap, int tableSize) {
         return (original + gap) % tableSize;
     }
 
     /**
-     * Provide the next available slot in the hash table using quadratic probe
+     * Using quadratic probe to find the next available slot in the hash table
      *
      * @param original  original location of the computed hash
      * @param gap       gap from original location to next slot
@@ -82,9 +81,9 @@ public class HashUtil {
     }
 
     /**
-     * Provide the next available slot in the hash table using double hash
+     * Using double hash to find the next available slot in the hash table
      *
-     * @param key       key to convert to hash code (% 5)
+     * @param key       key to be converted
      * @param original  original location of the computed hash
      * @param gap       gap from original location to next slot
      * @param tableSize size of hash table
@@ -99,16 +98,16 @@ public class HashUtil {
     }
 
     /**
-     * Probe for the next available slot then update/add to the table
+     * Probe for the next available slot then update/add data to the table
      *
      * @param key   key to search for
      * @param value value to add/update
      * @param table the table to be modified
-     * @return      the previous value for an update, or null for new insert
+     * @return      the previous value if the key is updated, or null for new insert
      * @param <K>   type of key
      * @param <V>   type of value
      *
-     * IMPORTANT    this probe method and the one below MUST produce parallel hash result
+     * IMPORTANT: This and the probe method below MUST produce parallel hash result
      */
     public static <K, V> V probe(K key, V value, FlatNode<K, V>[] table) {
         int initialIndex = hashIndex(key, table.length);
