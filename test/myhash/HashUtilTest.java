@@ -99,7 +99,7 @@ class HashUtilTest<K, V> {
 
     @Test
     @DisplayName("Should reuse deleted slot to add new data")
-    void testProbeTombstoneReuse() {
+    void testProbeReuseTombstone() {
         assertNull(HashUtil.probe((K) "apple", (V) "red", table));
         assertNull(HashUtil.probe((K) "banana", (V) "yellow", table));
         assertNull(HashUtil.probe((K) "peach", (V) "orange", table));

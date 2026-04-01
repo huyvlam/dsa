@@ -101,39 +101,48 @@ public class HashUtil {
         int initialIndex = hashIndex(key, table.length);
         int index = initialIndex;
         int gap = 1;
-
         int deletedIndex = -1;
 
-        while (table[index] != null && gap <= table.length) {
+        while (gap <= table.length) {
             FlatNode<K, V> node = table[index];
 
+            // Found empty slot, stop
+            if (node == null) break;
+
+            // Found the key, replace data
             if (!node.deleted && Objects.equals(node.key, key)) {
                 V prevValue = node.value;
                 node.value = value;
+
                 return prevValue;
             }
 
-            // Reuse deleted index for new entry (Lazy Substitution)
+            // Found a tombstone, save the slot for reuse
             if (node.deleted && deletedIndex == -1) deletedIndex = index;
 
+            // Probe for next slot
             index = linearHashIndex(initialIndex, gap, table.length);
             gap++;
         }
 
-        if (table[index] == null) {
-            table[index] = new FlatNode<K, V>(key, value);
-        } else {
-            if (deletedIndex != -1) {
-                FlatNode<K, V> reuse = table[deletedIndex];
-                reuse.key = key;
-                reuse.value = value;
-                reuse.deleted = false;
-            } else {
-                throw new IllegalStateException("Capacity is exceeded");
-            }
+        // Reuse the tombstone we found (Lazy Substitution)
+        if (deletedIndex != -1) {
+            FlatNode<K, V> reuse = table[deletedIndex];
+            reuse.key = key;
+            reuse.value = value;
+            reuse.deleted = false;
+
+            return null;
         }
 
-        return null;
+        // Use the slot if it is empty
+        if (table[index] == null) {
+            table[index] = new FlatNode<K, V>(key, value);
+            return null;
+        }
+
+        // All slots are checked but none available
+        throw new IllegalStateException("Capacity is exceeded");
     }
 
     /**
