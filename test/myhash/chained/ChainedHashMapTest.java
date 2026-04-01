@@ -24,7 +24,7 @@ class ChainedHashMapTest<K, V> {
     }
 
     @Test
-    @DisplayName("Should put and get data by the key specified")
+    @DisplayName("Should put and get data by key")
     void testPutGetData() {
         assertNull(map.put((K) "name", (V) "nelly"));
         assertEquals("nelly", map.put((K) "name", (V) "molly"));
@@ -34,7 +34,7 @@ class ChainedHashMapTest<K, V> {
     }
 
     @Test
-    @DisplayName("Should remove data by the key specified")
+    @DisplayName("Should remove data by key")
     void testRemoveData() {
         map.put((K) "name", (V) "nelly");
 
@@ -43,8 +43,8 @@ class ChainedHashMapTest<K, V> {
     }
 
     @Test
-    @DisplayName("Should remove data by the key specified")
-    void testResizeData() {
+    @DisplayName("Should resize table as needed")
+    void testResizeTable() {
         map.put((K) "name", (V) "nelly");
         map.put((K) "age", (V) "20");
         map.put((K) "hobby", (V) "yoga");
@@ -53,5 +53,20 @@ class ChainedHashMapTest<K, V> {
 
         map.clear();
         assertTrue(map.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Should check whether the table contains key/value")
+    void testContainsKeyValue() {
+        map.put((K) "name", (V) "nelly");
+        map.put((K) "age", (V) "20");
+        map.put((K) "hair", (V) "black");
+        map.put((K) "eyes", (V) "black");
+
+        assertTrue(map.containsKey((K) "hair"));
+        assertFalse(map.containsKey((K) "hobby"));
+
+        assertTrue(map.containsValue((V) "black"));
+        assertFalse(map.containsValue((V) "brown"));
     }
 }
