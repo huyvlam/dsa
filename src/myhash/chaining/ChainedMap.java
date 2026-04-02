@@ -6,10 +6,11 @@ import java.util.Objects;
 
 public class ChainedMap<K, V> {
     private Entry<K, V>[] entries;
-
-    private final int initialCapacity;
-    private final double loadFactor;
+    private double resizeThreshold;
     private int size;
+
+    private final int INIT_CAPACITY;
+    private final double LOAD_FACTOR;
 
     private static final int DEFAULT_CAPACITY = 16;
     private static final double DEFAULT_LOAD_FACTOR = 0.75;
@@ -17,9 +18,11 @@ public class ChainedMap<K, V> {
     public ChainedMap(int capacity, double factor) {
         if (capacity <= 0 || (capacity & (capacity - 1)) != 0) throw new IllegalArgumentException("Capacity must be power of 2");
 
-        initialCapacity = capacity;
-        loadFactor = factor;
-        entries = (Entry<K, V>[]) new Entry[initialCapacity];
+        INIT_CAPACITY = capacity;
+        LOAD_FACTOR = factor;
+        entries = (Entry<K, V>[]) new Entry[INIT_CAPACITY];
+        resizeThreshold = entries.length * LOAD_FACTOR;
+        size = 0;
     }
 
     public ChainedMap(int capacity) {
@@ -31,7 +34,8 @@ public class ChainedMap<K, V> {
     }
 
     public void clear() {
-        entries = (Entry<K, V>[]) new Entry[initialCapacity];
+        entries = (Entry<K, V>[]) new Entry[INIT_CAPACITY];
+        resizeThreshold = entries.length * LOAD_FACTOR;
         size = 0;
     }
 
@@ -63,7 +67,8 @@ public class ChainedMap<K, V> {
             }
         }
 
-        entries = newEntries;
+        this.entries = newEntries;
+        this.resizeThreshold = entries.length * LOAD_FACTOR;
     }
 
     public V put(K key, V value) {
@@ -85,7 +90,7 @@ public class ChainedMap<K, V> {
         entries[index] = node;
         size++;
 
-        if (HashUtil.needsResize(size, entries.length, loadFactor)) resize();
+        if (size >= resizeThreshold) resize();
 
         return null;
     }
