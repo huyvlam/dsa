@@ -139,14 +139,18 @@ public class FlatUtil {
     }
 
     /**
-     * Generate an odd number using the key hashcode given the table must be a power of 2
+     * Compute a positive odd number for Power of 2 table size
      *
      * @param key   the key to be converted
-     * @return      an odd number only if the table size is a power of 2
+     * @return      a prime number to use in conjunction with doubleHashIndex method
      * @param <K>   key type
      */
     public static <K> int stride(K key) {
-        return (Math.abs(key.hashCode()) % 32) | 1;
+        int hash = key == null ? 0 : key.hashCode();
+
+        // & 0x7FFFFFFF clears sign bit and ensure positive
+        // | 1 ensure the number is odd
+        return ((hash & 0x7FFFFFFF) % 32) | 1;
     }
 
     public static <K, V> boolean isActiveKeyEqual(FlatNode<K, V> node, K key) {
