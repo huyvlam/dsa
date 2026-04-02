@@ -1,6 +1,5 @@
 package myhash;
 
-import myhash.probed.FlatNode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,31 +9,15 @@ import java.util.Objects;
 import static org.junit.jupiter.api.Assertions.*;
 
 class HashUtilTest<K, V> {
-    private FlatNode<K, V>[] table;
     private String[] keys;
     private int S, addressI, idI;
-    private int capacity;
 
     @BeforeEach
     void setup() {
-        capacity = 4;
-        table = (FlatNode<K, V>[]) new FlatNode[capacity];
         keys = new String[]{"address","name","id","city","profession","phone"};
         S = keys.length;
         addressI = HashUtil.hashIndex(keys[0], S);
         idI = HashUtil.hashIndex(keys[2], S);
-    }
-
-    @Test
-    @DisplayName("Should compare to the current size to the computing threshold")
-    void testNeedResize() {
-        double factor = 0.75;
-        int tableSize = 12;
-        int curSize = 9;
-
-        assertTrue(HashUtil.needsResize(curSize, tableSize, factor));
-        assertTrue(HashUtil.needsResize(curSize + 2, tableSize, factor));
-        assertFalse(HashUtil.needsResize(curSize - 1, tableSize, factor));
     }
 
     @Test
@@ -72,116 +55,12 @@ class HashUtilTest<K, V> {
     @Test
     @DisplayName("Should compute a double hash index within legal bounds of the table size")
     void testDoubleHashIndex() {
-        int doubleI = HashUtil.doubleHashIndex(keys[2], idI, 1, S);
+        int stride = HashUtil.stride(keys[2]);
+        int doubleI = HashUtil.doubleHashIndex(idI, 1, stride, S);
 
         assertEquals(addressI, idI);
         assertNotEquals(doubleI, idI);
         assertTrue(doubleI >= 0);
         assertTrue(doubleI < S);
-    }
-
-    @Test
-    @DisplayName("Should add and update data in available slot")
-    void testProbeAddUpdate() {
-        assertNull(HashUtil.probe((K) "apple", (V) "red", table));
-        assertNull(HashUtil.probe((K) "banana", (V) "yellow", table));
-        assertNull(HashUtil.probe((K) "peach", (V) "orange", table));
-        assertNull(HashUtil.probe((K) "kiwi", (V) "green", table));
-
-        assertNotNull(table[0]);
-        assertNotNull(table[1]);
-        assertNotNull(table[2]);
-        assertNotNull(table[3]);
-
-        assertEquals("green", HashUtil.probe((K) "kiwi", (V) "yellow", table));
-    }
-
-
-    @Test
-    @DisplayName("Should reuse deleted slot to add new data")
-    void testProbeReuseTombstone() {
-        assertNull(HashUtil.probe((K) "apple", (V) "red", table));
-        assertNull(HashUtil.probe((K) "banana", (V) "yellow", table));
-        assertNull(HashUtil.probe((K) "peach", (V) "orange", table));
-        assertNull(HashUtil.probe((K) "kiwi", (V) "green", table));
-
-        FlatNode<K, V> node = table[1];
-        node.key = null;
-        node.value = null;
-        node.deleted = true;
-
-        assertNull(HashUtil.probe((K) "berry", (V) "blue", table));
-        assertEquals("blue", HashUtil.probe((K) "berry", (V) "black", table));
-    }
-
-    @Test
-    @DisplayName("Should throw exception when the table is full")
-    void testProbeCapacityException() {
-        assertNull(HashUtil.probe((K) "apple", (V) "red", table));
-        assertNull(HashUtil.probe((K) "banana", (V) "yellow", table));
-        assertNull(HashUtil.probe((K) "peach", (V) "orange", table));
-        assertNull(HashUtil.probe((K) "kiwi", (V) "green", table));
-
-        assertThrows(IllegalStateException.class, () -> HashUtil.probe((K) "berry", (V) "blue", table));
-    }
-
-    @Test
-    @DisplayName("Should perform custom action on each returned node")
-    void testProbeCustomAction() {
-        HashUtil.probe((K) "apple", (V) "red", table);
-        HashUtil.probe((K) "banana", (V) "yellow", table);
-        HashUtil.probe((K) "peach", (V) "orange", table);
-        HashUtil.probe((K) "kiwi", (V) "green", table);
-
-        V[] result = (V[]) new Object[]{null};
-
-        K unknownKey = (K) "berry";
-
-        HashUtil.probe(unknownKey, table, (node) -> {
-            if (Objects.equals(unknownKey, node.key)) {
-                result[0] = node.value;
-                return false;
-            }
-            return true;
-        });
-        assertNull(result[0]);
-
-        int i = 3;
-        K tableKey = table[i].key;
-        V tableValue = table[i].value;
-
-        HashUtil.probe(tableKey, table, (node) -> {
-            if (Objects.equals(tableKey, node.key)) {
-                result[0] = node.value;
-                return false;
-            }
-            return true;
-        });
-        assertEquals(tableValue, result[0]);
-    }
-
-    @Test
-    @DisplayName("Both probe methods should have parallel hash collision result")
-    void testBothProbesShouldHaveParallelHashResult() {
-        HashUtil.probe((K) "apple", (V) "red", table);
-        HashUtil.probe((K) "banana", (V) "yellow", table);
-        HashUtil.probe((K) "peach", (V) "orange", table);
-        HashUtil.probe((K) "kiwi", (V) "green", table);
-
-        for (int i = 0; i < table.length; i++) {
-            V[] result = (V[]) new Object[]{null};
-            K tableKey = table[i].key;
-            V tableValue = table[i].value;
-
-            HashUtil.probe(tableKey, table, (node) -> {
-                if (Objects.equals(tableKey, node.key)) {
-                    result[0] = node.value;
-                    return false;
-                }
-                return true;
-            });
-
-            assertEquals(tableValue, result[0]);
-        }
     }
 }
