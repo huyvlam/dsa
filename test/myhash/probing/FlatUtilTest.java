@@ -1,6 +1,6 @@
 package myhash.probing;
 
-import myhash.probing.FlatUtil;
+import myhash.HashUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,10 +11,16 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class FlatUtilTest<K, V> {
     private FlatNode<K, V>[] table;
+    private String[] keys;
+    private int keysSize, addressI, idI;
 
     @BeforeEach
     void setUp() {
         table = new FlatNode[4];
+        keys = new String[]{"address","name","id","city","profession","phone"};
+        keysSize = keys.length;
+        addressI = HashUtil.hashIndex(keys[0], keysSize);
+        idI = HashUtil.hashIndex(keys[2], keysSize);
     }
 
     @Test
@@ -120,5 +126,38 @@ class FlatUtilTest<K, V> {
 
             assertEquals(tableValue, result[0]);
         }
+    }
+
+
+    @Test
+    @DisplayName("Should compute a linear hash index greater than the original index")
+    void testLinearHashIndex() {
+        int linearI = FlatUtil.linearHashIndex(idI, 1, keysSize);
+
+        assertEquals(addressI, idI);
+        assertTrue(linearI > idI);
+        assertTrue(FlatUtil.linearHashIndex(idI, 2, keysSize) > linearI);
+    }
+
+    @Test
+    @DisplayName("Should compute a quadratic hash index greater than the original index")
+    void testQuadraticHashIndex() {
+        int quadI = FlatUtil.quadraticHashIndex(idI, 1, keysSize);
+
+        assertEquals(addressI, idI);
+        assertTrue(quadI > idI);
+        assertTrue(FlatUtil.quadraticHashIndex(idI, 2, keysSize) > quadI);
+    }
+
+    @Test
+    @DisplayName("Should compute a double hash index within legal bounds of the table size")
+    void testDoubleHashIndex() {
+        int stride = FlatUtil.stride(keys[2]);
+        int doubleI = FlatUtil.doubleHashIndex(idI, 1, stride, keysSize);
+
+        assertEquals(addressI, idI);
+        assertNotEquals(doubleI, idI);
+        assertTrue(doubleI >= 0);
+        assertTrue(doubleI < keysSize);
     }
 }

@@ -100,7 +100,56 @@ public class FlatUtil {
         }
     }
 
+    /**
+     * Using linear probe to find the next available slot in the hash table
+     *
+     * @param original  original location of the computed hash
+     * @param gap       gap from original location to next slot
+     * @param tableSize size of hash table
+     * @return          the next available index in the table
+     */
+    public static int linearHashIndex(int original, int gap, int tableSize) {
+        return (original + gap) % tableSize;
+    }
+
+    /**
+     * Using quadratic probe to find the next available slot in the hash table
+     *
+     * @param original  original location of the computed hash
+     * @param gap       gap from original location to next slot
+     * @param tableSize size of hash table
+     * @return          the next available index in the hash table
+     */
+    public static int quadraticHashIndex(int original, int gap, int tableSize) {
+        return (original + gap * gap) % tableSize;
+    }
+
+    /**
+     * Using double hash to find the next available slot in the hash table
+     *
+     * @param original  original location of the computed hash
+     * @param gap       gap from original location to next slot
+     * @param stride    computed value using the key hashcode and a prime number
+     * @param tableSize size of hash table
+     * @return          the next available index in the hash table
+     * @param <K>       key type accepts: string, integer, object, etc.
+     */
+    public static <K> int doubleHashIndex(int original, int gap, int stride, int tableSize) {
+        return (original + gap * stride) % tableSize;
+    }
+
+    /**
+     * Generate an odd number using the key hashcode given the table must be a power of 2
+     *
+     * @param key   the key to be converted
+     * @return      an odd number only if the table size is a power of 2
+     * @param <K>   key type
+     */
     public static <K> int stride(K key) {
         return (Math.abs(key.hashCode()) % 32) | 1;
+    }
+
+    public static <K, V> boolean isActiveKeyEqual(FlatNode<K, V> node, K key) {
+        return node != null && !node.deleted && Objects.equals(node.key, key);
     }
 }
