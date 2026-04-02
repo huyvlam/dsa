@@ -1,10 +1,5 @@
 package myhash;
 
-import myhash.probing.FlatNode;
-
-import java.util.Objects;
-import java.util.function.Predicate;
-
 public class HashUtil {
     /**
      * Compute the hashcode index using mod table size
@@ -27,46 +22,5 @@ public class HashUtil {
 
         // & (size - 1) optimize mod % size (MUST be a power of 2)
         return hash & (tableSize - 1);
-    }
-
-    /**
-     * Using linear probe to find the next available slot in the hash table
-     *
-     * @param original  original location of the computed hash
-     * @param gap       gap from original location to next slot
-     * @param tableSize size of hash table
-     * @return          the next available index in the table
-     */
-    public static int linearHashIndex(int original, int gap, int tableSize) {
-        return (original + gap) % tableSize;
-    }
-
-    /**
-     * Using quadratic probe to find the next available slot in the hash table
-     *
-     * @param original  original location of the computed hash
-     * @param gap       gap from original location to next slot
-     * @param tableSize size of hash table
-     * @return          the next available index in the hash table
-     */
-    public static int quadraticHashIndex(int original, int gap, int tableSize) {
-        return (original + gap * gap) % tableSize;
-    }
-
-    /**
-     * Using double hash to find the next available slot in the hash table
-     *
-     * @param original  original location of the computed hash
-     * @param gap       gap from original location to next slot
-     * @param tableSize size of hash table
-     * @return          the next available index in the hash table
-     * @param <K>       key type accepts: string, integer, object, etc.
-     */
-    public static <K> int doubleHashIndex(int original, int gap, int stride, int tableSize) {
-        return (original + gap * stride) % tableSize;
-    }
-
-    public static <K> int stride(K key) {
-        return (Math.abs(key.hashCode()) % 32) | 1;
     }
 }
