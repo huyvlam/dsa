@@ -1,4 +1,4 @@
-package myhash.probed;
+package myhash.probing;
 
 public class FlatNode<K, V> {
     public K key;
