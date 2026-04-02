@@ -23,7 +23,7 @@ public class FlatUtil {
      *
      * IMPORTANT: This and the probe method below MUST produce parallel hash result
      */
-    public static <K, V> V probe(K key, V value, FlatNode<K, V>[] table, ProbeStrategy strategy) {
+    public static <K, V> V probe(K key, V value, FlatNode<K, V>[] table, ProbeStrategy strategy, int[] tracker) {
         int origIndex = HashUtil.hashIndex(key, table.length);
         int gap = 1;
         int stride = stride(key);
@@ -52,6 +52,9 @@ public class FlatUtil {
             index = strategy.nextIndex(origIndex, gap, table.length, stride);
             gap++;
         }
+
+        // Record the final gap value for tracking purpose
+        if (tracker != null) tracker[0] = gap;
 
         // Reuse the tombstone we found (Lazy Substitution)
         if (deletedIndex != -1) {

@@ -26,55 +26,57 @@ class FlatUtilTest<K, V> {
     @Test
     @DisplayName("Should add/update data in available slot")
     void testProbeAddUpdate() {
-        assertNull(FlatUtil.probe((K) "apple", (V) "red", table, FlatUtil.LINEAR));
-        assertNull(FlatUtil.probe((K) "banana", (V) "yellow", table, FlatUtil.LINEAR));
-        assertNull(FlatUtil.probe((K) "peach", (V) "orange", table, FlatUtil.LINEAR));
-        assertNull(FlatUtil.probe((K) "kiwi", (V) "green", table, FlatUtil.LINEAR));
+        assertNull(FlatUtil.probe((K) "apple", (V) "red", table, FlatUtil.LINEAR, null));
+        assertNull(FlatUtil.probe((K) "banana", (V) "yellow", table, FlatUtil.LINEAR, null));
+        assertNull(FlatUtil.probe((K) "peach", (V) "orange", table, FlatUtil.LINEAR, null));
+        assertNull(FlatUtil.probe((K) "kiwi", (V) "green", table, FlatUtil.LINEAR, null));
 
         assertNotNull(table[0]);
         assertNotNull(table[1]);
         assertNotNull(table[2]);
         assertNotNull(table[3]);
 
-        assertEquals("green", FlatUtil.probe((K) "kiwi", (V) "yellow", table, FlatUtil.LINEAR));
+        assertEquals("green", FlatUtil.probe((K) "kiwi", (V) "yellow", table, FlatUtil.LINEAR, null));
     }
 
 
     @Test
     @DisplayName("Should reuse deleted slot to add new data")
     void testProbeReuseTombstone() {
-        assertNull(FlatUtil.probe((K) "apple", (V) "red", table, FlatUtil.LINEAR));
-        assertNull(FlatUtil.probe((K) "banana", (V) "yellow", table, FlatUtil.LINEAR));
-        assertNull(FlatUtil.probe((K) "peach", (V) "orange", table, FlatUtil.LINEAR));
-        assertNull(FlatUtil.probe((K) "kiwi", (V) "green", table, FlatUtil.LINEAR));
+        assertNull(FlatUtil.probe((K) "apple", (V) "red", table, FlatUtil.LINEAR, null));
+        assertNull(FlatUtil.probe((K) "banana", (V) "yellow", table, FlatUtil.LINEAR, null));
+        assertNull(FlatUtil.probe((K) "peach", (V) "orange", table, FlatUtil.LINEAR, null));
+        assertNull(FlatUtil.probe((K) "kiwi", (V) "green", table, FlatUtil.LINEAR, null));
 
         FlatNode<K, V> node = table[1];
         node.key = null;
         node.value = null;
         node.deleted = true;
 
-        assertNull(FlatUtil.probe((K) "berry", (V) "blue", table, FlatUtil.LINEAR));
-        assertEquals("blue", FlatUtil.probe((K) "berry", (V) "black", table, FlatUtil.LINEAR));
+        assertNull(FlatUtil.probe((K) "berry", (V) "blue", table, FlatUtil.LINEAR, null));
+        assertEquals("blue", FlatUtil.probe((K) "berry", (V) "black", table, FlatUtil.LINEAR, null));
     }
 
     @Test
     @DisplayName("Should throw exception when the table is full")
     void testProbeCapacityException() {
-        assertNull(FlatUtil.probe((K) "apple", (V) "red", table, FlatUtil.LINEAR));
-        assertNull(FlatUtil.probe((K) "banana", (V) "yellow", table, FlatUtil.LINEAR));
-        assertNull(FlatUtil.probe((K) "peach", (V) "orange", table, FlatUtil.LINEAR));
-        assertNull(FlatUtil.probe((K) "kiwi", (V) "green", table, FlatUtil.LINEAR));
+        assertNull(FlatUtil.probe((K) "apple", (V) "red", table, FlatUtil.LINEAR, null));
+        assertNull(FlatUtil.probe((K) "banana", (V) "yellow", table, FlatUtil.LINEAR, null));
+        assertNull(FlatUtil.probe((K) "peach", (V) "orange", table, FlatUtil.LINEAR, null));
+        assertNull(FlatUtil.probe((K) "kiwi", (V) "green", table, FlatUtil.LINEAR, null));
 
-        assertThrows(IllegalStateException.class, () -> FlatUtil.probe((K) "berry", (V) "blue", table, FlatUtil.LINEAR));
+        int[] tracker = new int[1];
+        assertThrows(IllegalStateException.class, () -> FlatUtil.probe((K) "berry", (V) "blue", table, FlatUtil.LINEAR, tracker));
+        assertTrue(tracker[0] > 0);
     }
 
     @Test
     @DisplayName("Should perform custom action on each returned node")
     void testProbeCustomAction() {
-        FlatUtil.probe((K) "apple", (V) "red", table, FlatUtil.LINEAR);
-        FlatUtil.probe((K) "banana", (V) "yellow", table, FlatUtil.LINEAR);
-        FlatUtil.probe((K) "peach", (V) "orange", table, FlatUtil.LINEAR);
-        FlatUtil.probe((K) "kiwi", (V) "green", table, FlatUtil.LINEAR);
+        FlatUtil.probe((K) "apple", (V) "red", table, FlatUtil.LINEAR, null);
+        FlatUtil.probe((K) "banana", (V) "yellow", table, FlatUtil.LINEAR, null);
+        FlatUtil.probe((K) "peach", (V) "orange", table, FlatUtil.LINEAR, null);
+        FlatUtil.probe((K) "kiwi", (V) "green", table, FlatUtil.LINEAR, null);
 
         V[] result = (V[]) new Object[]{null};
 
@@ -106,10 +108,10 @@ class FlatUtilTest<K, V> {
     @Test
     @DisplayName("Both probe methods should have parallel hash collision result")
     void testBothProbesShouldHaveParallelHashResult() {
-        FlatUtil.probe((K) "apple", (V) "red", table, FlatUtil.LINEAR);
-        FlatUtil.probe((K) "banana", (V) "yellow", table, FlatUtil.LINEAR);
-        FlatUtil.probe((K) "peach", (V) "orange", table, FlatUtil.LINEAR);
-        FlatUtil.probe((K) "kiwi", (V) "green", table, FlatUtil.LINEAR);
+        FlatUtil.probe((K) "apple", (V) "red", table, FlatUtil.LINEAR, null);
+        FlatUtil.probe((K) "banana", (V) "yellow", table, FlatUtil.LINEAR, null);
+        FlatUtil.probe((K) "peach", (V) "orange", table, FlatUtil.LINEAR, null);
+        FlatUtil.probe((K) "kiwi", (V) "green", table, FlatUtil.LINEAR, null);
 
         for (int i = 0; i < table.length; i++) {
             V[] result = (V[]) new Object[]{null};
