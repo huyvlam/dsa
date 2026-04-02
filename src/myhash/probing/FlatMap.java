@@ -74,21 +74,6 @@ public class FlatMap<K, V> {
         return result;
     }
 
-    public V get(K key) {
-        final V[] result = (V[]) new Object[]{null};
-
-        FlatUtil.probe(key, table, strategy, (node) -> {
-            if (!node.deleted && Objects.equals(node.key, key)) {
-                result[0] = node.value;
-
-                return false;
-            };
-            return true;
-        });
-
-        return (V) result[0];
-    }
-
     public V remove(K key) {
         final V[] removed = (V[]) new Object[]{null};
 
@@ -108,8 +93,32 @@ public class FlatMap<K, V> {
         return (V) removed[0];
     }
 
+    public V get(K key) {
+        final V[] result = (V[]) new Object[]{null};
+
+        FlatUtil.probe(key, table, strategy, (node) -> {
+            if (!node.deleted && Objects.equals(node.key, key)) {
+                result[0] = node.value;
+                return false;
+            };
+            return true;
+        });
+
+        return (V) result[0];
+    }
+
     public boolean containsKey(K key) {
-        return get(key) != null;
+        final boolean[] found = {false};
+
+        FlatUtil.probe(key, table, strategy, (node) -> {
+            if (!node.deleted && Objects.equals(node.key, key)) {
+                found[0] = true;
+                return false; // stopping the loop
+            }
+            return true;
+        });
+
+        return found[0];
     }
 
     public boolean containsValue(V  value) {
@@ -121,28 +130,20 @@ public class FlatMap<K, V> {
     }
 
     private static ProbeStrategy getProbeStrategy(Probe probe) {
-        switch (probe) {
-            case LINEAR:
-                return FlatUtil.LINEAR;
-            case QUADRATIC:
-                return FlatUtil.QUADRATIC;
-            case DOUBLE:
-                return FlatUtil.DOUBLE;
-            default:
-                throw new IllegalArgumentException("Unsupported probe strategy: " + probe);
-        }
+        return switch (probe) {
+            case LINEAR -> FlatUtil.LINEAR;
+            case QUADRATIC -> FlatUtil.QUADRATIC;
+            case DOUBLE -> FlatUtil.DOUBLE;
+            default -> throw new IllegalArgumentException("Unsupported probe strategy: " + probe);
+        };
     }
 
     private static double getLoadFactor(Probe probe) {
-        switch(probe) {
-            case LINEAR:
-                return 0.7;
-            case QUADRATIC:
-                return 0.5;
-            case DOUBLE:
-                return 0.75;
-            default:
-                throw new IllegalArgumentException("Unsupported probe strategy: " + probe);
-        }
+        return switch (probe) {
+            case LINEAR -> 0.7;
+            case QUADRATIC -> 0.5;
+            case DOUBLE -> 0.75;
+            default -> throw new IllegalArgumentException("Unsupported probe strategy: " + probe);
+        };
     }
 }

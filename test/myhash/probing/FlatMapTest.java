@@ -7,13 +7,13 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class FlatMapTest<K, V> {
-    private FlatMap<K, V> map;
+    private FlatMap<K, V> flat;
     private int initCap;
 
     @BeforeEach
     void setUp() {
         initCap = 4;
-        map = new FlatMap<>(FlatMap.Probe.LINEAR, initCap);
+        flat = new FlatMap<>(FlatMap.Probe.LINEAR, initCap);
     }
 
     @Test
@@ -24,51 +24,55 @@ class FlatMapTest<K, V> {
     }
 
     @Test
-    @DisplayName("Should put and get data by key")
-    void testPutGetData() {
-        assertNull(map.put((K) "name", (V) "nelly"));
-        assertEquals("nelly", map.put((K) "name", (V) "molly"));
+    @DisplayName("Should add data by key")
+    void testAddData() {
+        assertNull(flat.put((K) "name", (V) "nelly"));
+        assertEquals("nelly", flat.get((K) "name"));
+        assertEquals(1, flat.size());
+    }
 
-        assertEquals("molly", map.get((K) "name"));
-        assertEquals(1, map.size());
+    @Test
+    @DisplayName("Should update data by key")
+    void testUpdateData() {
+        assertNull(flat.put((K) "name", (V) "nelly"));
+        assertEquals("nelly", flat.put((K) "name", (V) "molly"));
+        assertEquals("molly", flat.get((K) "name"));
     }
 
     @Test
     @DisplayName("Should remove data by key")
     void testRemoveData() {
-        map.put((K) "name", (V) "nelly");
-
-        assertEquals("nelly", map.remove((K) "name"));
-        assertTrue(map.isEmpty());
+        assertNull(flat.put((K) "name", (V) "molly"));
+        assertEquals("molly", flat.remove((K) "name"));
+        assertTrue(flat.isEmpty());
     }
 
     @Test
     @DisplayName("Should resize table as needed")
     void testResizeTable() {
-        map.put((K) "name", (V) "nelly");
-        map.put((K) "age", (V) "20");
-        map.put((K) "hobby", (V) "yoga");
-        map.put((K) "hair", (V) "black");
-        map.put((K) "eyes", (V) "hazel");
+        flat.put((K) "name", (V) "molly");
+        flat.put((K) "age", (V) "20");
+        flat.put((K) "hobby", (V) "yoga");
+        flat.put((K) "hair", (V) "black");
+        flat.put((K) "eyes", (V) "brown");
 
-        assertTrue(map.size() > initCap);
+        assertTrue(flat.size() > initCap);
 
-        map.clear();
-        assertTrue(map.isEmpty());
+        flat.clear();
+
+        assertTrue(flat.isEmpty());
     }
 
     @Test
     @DisplayName("Should check whether the table contains key/value")
     void testContainsKeyValue() {
-        map.put((K) "name", (V) "nelly");
-        map.put((K) "age", (V) "20");
-        map.put((K) "hair", (V) "black");
-        map.put((K) "eyes", (V) "black");
+        flat.put((K) "name", (V) "nelly");
+        flat.put((K) "hair", (V) "black");
+        flat.put((K) "eyes", (V) "black");
 
-        assertTrue(map.containsKey((K) "hair"));
-        assertFalse(map.containsKey((K) "hobby"));
-
-        assertTrue(map.containsValue((V) "black"));
-        assertFalse(map.containsValue((V) "brown"));
+        assertTrue(flat.containsKey((K) "hair"));
+        assertFalse(flat.containsKey((K) "hobby"));
+        assertTrue(flat.containsValue((V) "black"));
+        assertFalse(flat.containsValue((V) "brown"));
     }
 }
