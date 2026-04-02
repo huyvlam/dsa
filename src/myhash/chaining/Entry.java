@@ -1,4 +1,4 @@
-package myhash.chained;
+package myhash.chaining;
 
 public class Entry<K, V> {
     public final K key;

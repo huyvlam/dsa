@@ -1,16 +1,20 @@
-package myhash.chained;
+package myhash.chaining;
 
 import myhash.HashUtil;
 
 import java.util.Objects;
 
-public class ChainedHashMap<K, V> {
+public class ChainedMap<K, V> {
     private Entry<K, V>[] entries;
-    private int size;
+
     private final int initialCapacity;
     private final double loadFactor;
+    private int size;
 
-    public ChainedHashMap(int capacity, double factor) {
+    private static final int DEFAULT_CAPACITY = 16;
+    private static final double DEFAULT_LOAD_FACTOR = 0.75;
+
+    public ChainedMap(int capacity, double factor) {
         if (capacity <= 0 || (capacity & (capacity - 1)) != 0) throw new IllegalArgumentException("Capacity must be power of 2");
 
         initialCapacity = capacity;
@@ -18,12 +22,12 @@ public class ChainedHashMap<K, V> {
         entries = (Entry<K, V>[]) new Entry[initialCapacity];
     }
 
-    public ChainedHashMap(int capacity) {
-        this(capacity, HashUtil.DEFAULT_LOAD_FACTOR);
+    public ChainedMap(int capacity) {
+        this(capacity, DEFAULT_LOAD_FACTOR);
     }
 
-    public ChainedHashMap() {
-        this(HashUtil.DEFAULT_CAPACITY, HashUtil.DEFAULT_LOAD_FACTOR);
+    public ChainedMap() {
+        this(DEFAULT_CAPACITY, DEFAULT_LOAD_FACTOR);
     }
 
     public void clear() {
