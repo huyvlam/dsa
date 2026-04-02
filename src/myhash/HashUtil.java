@@ -10,11 +10,9 @@ public class HashUtil {
      * @param <K>       key type accepts: string, integer, object, etc.
      */
     public static <K> int hashIndex(K key, int tableSize) {
-        if (key == null) return 0;
+        int hash = key == null ? 0 : key.hashCode();
 
-        int hash = key.hashCode();
-
-        // mix up bits ensuring even distribution
+        // mix up bits for even distribution (minimize clustering)
         hash = hash ^ (hash >>> 16);
 
         // 0x7FFFFFFF ensures the hash is positive
