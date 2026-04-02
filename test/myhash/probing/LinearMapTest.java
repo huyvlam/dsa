@@ -1,6 +1,5 @@
 package myhash.probing;
 
-import myhash.chaining.ChainedMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -8,68 +7,72 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class LinearMapTest<K, V> {
-    private LinearMap<K, V> map;
+    private LinearMap<K, V> linear;
     private int initCap;
 
     @BeforeEach
     void setUp() {
         initCap = 4;
-        map = new LinearMap<>(initCap);
+        linear = new LinearMap<>(initCap);
     }
 
     @Test
     @DisplayName("Should throw exception when capacity is not power of 2")
     void testCapacityNotPowerOf2() {
-        assertThrows(IllegalArgumentException.class, () -> new ChainedMap<>(0));
-        assertThrows(IllegalArgumentException.class, () -> new ChainedMap<>(3));
+        assertThrows(IllegalArgumentException.class, () -> new LinearMap<>(0));
+        assertThrows(IllegalArgumentException.class, () -> new LinearMap<>(3));
     }
 
     @Test
-    @DisplayName("Should put and get data by key")
-    void testPutGetData() {
-        assertNull(map.put((K) "name", (V) "nelly"));
-        assertEquals("nelly", map.put((K) "name", (V) "molly"));
+    @DisplayName("Should add data by key")
+    void testAddData() {
+        assertNull(linear.put((K) "name", (V) "nelly"));
+        assertEquals("nelly", linear.get((K) "name"));
+        assertEquals(1, linear.size());
+    }
 
-        assertEquals("molly", map.get((K) "name"));
-        assertEquals(1, map.size());
+    @Test
+    @DisplayName("Should update data by key")
+    void testUpdateData() {
+        assertNull(linear.put((K) "name", (V) "nelly"));
+        assertEquals("nelly", linear.put((K) "name", (V) "molly"));
+        assertEquals("molly", linear.get((K) "name"));
     }
 
     @Test
     @DisplayName("Should remove data by key")
     void testRemoveData() {
-        map.put((K) "name", (V) "nelly");
-
-        assertEquals("nelly", map.remove((K) "name"));
-        assertTrue(map.isEmpty());
+        assertNull(linear.put((K) "name", (V) "molly"));
+        assertEquals("molly", linear.remove((K) "name"));
+        assertTrue(linear.isEmpty());
     }
 
     @Test
     @DisplayName("Should resize table as needed")
     void testResizeTable() {
-        map.put((K) "name", (V) "nelly");
-        map.put((K) "age", (V) "20");
-        map.put((K) "hobby", (V) "yoga");
-        map.put((K) "hair", (V) "black");
-        map.put((K) "eyes", (V) "hazel");
+        linear.put((K) "name", (V) "molly");
+        linear.put((K) "age", (V) "20");
+        linear.put((K) "hobby", (V) "yoga");
+        linear.put((K) "hair", (V) "black");
+        linear.put((K) "eyes", (V) "brown");
 
-        assertTrue(map.size() > initCap);
+        assertTrue(linear.size() > initCap);
 
-        map.clear();
-        assertTrue(map.isEmpty());
+        linear.clear();
+
+        assertTrue(linear.isEmpty());
     }
 
     @Test
     @DisplayName("Should check whether the table contains key/value")
     void testContainsKeyValue() {
-        map.put((K) "name", (V) "nelly");
-        map.put((K) "age", (V) "20");
-        map.put((K) "hair", (V) "black");
-        map.put((K) "eyes", (V) "black");
+        linear.put((K) "name", (V) "nelly");
+        linear.put((K) "hair", (V) "black");
+        linear.put((K) "eyes", (V) "black");
 
-        assertTrue(map.containsKey((K) "hair"));
-        assertFalse(map.containsKey((K) "hobby"));
-
-        assertTrue(map.containsValue((V) "black"));
-        assertFalse(map.containsValue((V) "brown"));
+        assertTrue(linear.containsKey((K) "hair"));
+        assertFalse(linear.containsKey((K) "hobby"));
+        assertTrue(linear.containsValue((V) "black"));
+        assertFalse(linear.containsValue((V) "brown"));
     }
 }

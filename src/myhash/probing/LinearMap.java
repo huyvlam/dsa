@@ -114,7 +114,20 @@ public class LinearMap<K, V> {
     }
 
     public boolean containsKey(K key) {
-        return get(key) != null;
+        int origIndex = HashUtil.hashIndex(key, table.length);
+        int gap = 1;
+        int index = origIndex;
+
+        while (table[index] != null && gap <= table.length) {
+            FlatNode<K, V> cur = table[index];
+
+            if (FlatUtil.isActiveKeyEqual(cur, key)) return true;
+
+            index = FlatUtil.linearHashIndex(origIndex, gap, table.length);
+            gap++;
+        }
+
+        return false;
     }
 
     public boolean containsValue(V  value) {
@@ -125,7 +138,7 @@ public class LinearMap<K, V> {
         return false;
     }
 
-    private static <K, V> V probe(K key, V value, FlatNode<K, V>[] table) {
+    protected V probe(K key, V value, FlatNode<K, V>[] table) {
         int origIndex = HashUtil.hashIndex(key, table.length);
         int gap = 1;
 
