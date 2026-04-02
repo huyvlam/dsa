@@ -12,19 +12,19 @@ import static org.junit.jupiter.api.Assertions.*;
 class FlatUtilTest<K, V> {
     private FlatNode<K, V>[] table;
     private String[] keys;
-    private int keysSize, addressI, idI;
+    private int keysSize, addIndex, idIndex;
 
     @BeforeEach
     void setUp() {
         table = new FlatNode[4];
         keys = new String[]{"address","name","id","city","profession","phone"};
         keysSize = keys.length;
-        addressI = HashUtil.hashIndex(keys[0], keysSize);
-        idI = HashUtil.hashIndex(keys[2], keysSize);
+        addIndex = HashUtil.hashIndex(keys[0], keysSize);
+        idIndex = HashUtil.hashIndex(keys[2], keysSize);
     }
 
     @Test
-    @DisplayName("Should add and update given data in available slot")
+    @DisplayName("Should add/update data in available slot")
     void testProbeAddUpdate() {
         assertNull(FlatUtil.probe((K) "apple", (V) "red", table, FlatUtil.LINEAR));
         assertNull(FlatUtil.probe((K) "banana", (V) "yellow", table, FlatUtil.LINEAR));
@@ -130,34 +130,43 @@ class FlatUtilTest<K, V> {
 
 
     @Test
-    @DisplayName("Should compute a linear hash index greater than the original index")
+    @DisplayName("Should linear probe to find available slot")
     void testLinearHashIndex() {
-        int linearI = FlatUtil.linearHashIndex(idI, 1, keysSize);
+        int linearI = FlatUtil.linearHashIndex(idIndex, 1, keysSize);
 
-        assertEquals(addressI, idI);
-        assertTrue(linearI > idI);
-        assertTrue(FlatUtil.linearHashIndex(idI, 2, keysSize) > linearI);
+        assertEquals(addIndex, idIndex);
+        assertTrue(linearI > idIndex);
+        assertTrue(FlatUtil.linearHashIndex(idIndex, 2, keysSize) > linearI);
     }
 
     @Test
-    @DisplayName("Should compute a quadratic hash index greater than the original index")
+    @DisplayName("Should quadratic probe to find available slot")
     void testQuadraticHashIndex() {
-        int quadI = FlatUtil.quadraticHashIndex(idI, 1, keysSize);
+        int quadI = FlatUtil.quadraticHashIndex(idIndex, 1, keysSize);
 
-        assertEquals(addressI, idI);
-        assertTrue(quadI > idI);
-        assertTrue(FlatUtil.quadraticHashIndex(idI, 2, keysSize) > quadI);
+        assertEquals(addIndex, idIndex);
+        assertTrue(quadI > idIndex);
+        assertTrue(FlatUtil.quadraticHashIndex(idIndex, 2, keysSize) > quadI);
     }
 
     @Test
-    @DisplayName("Should compute a double hash index within legal bounds of the table size")
+    @DisplayName("Should double hash to find available slot")
     void testDoubleHashIndex() {
         int stride = FlatUtil.stride(keys[2]);
-        int doubleI = FlatUtil.doubleHashIndex(idI, 1, stride, keysSize);
+        int doubleI = FlatUtil.doubleHashIndex(idIndex, 1, stride, keysSize);
 
-        assertEquals(addressI, idI);
-        assertNotEquals(doubleI, idI);
+        assertEquals(addIndex, idIndex);
+        assertNotEquals(doubleI, idIndex);
         assertTrue(doubleI >= 0);
         assertTrue(doubleI < keysSize);
+    }
+
+    @Test
+    @DisplayName("Should compute a positive odd number for a Power of 2 table")
+    void testStrideHash2() {
+        int stride = FlatUtil.stride(keys[2]);
+
+        assertTrue(stride > 0);
+        assertTrue(stride % 2 != 0);
     }
 }
