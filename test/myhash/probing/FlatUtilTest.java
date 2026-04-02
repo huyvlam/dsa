@@ -131,29 +131,29 @@ class FlatUtilTest<K, V> {
 
     @Test
     @DisplayName("Should linear probe to find available slot")
-    void testLinearHashIndex() {
-        int linearI = FlatUtil.linearHashIndex(idIndex, 1, keysSize);
+    void testLinearIndex() {
+        int linearI = FlatUtil.linearIndex(idIndex, 1, keysSize);
 
         assertEquals(addIndex, idIndex);
         assertTrue(linearI > idIndex);
-        assertTrue(FlatUtil.linearHashIndex(idIndex, 2, keysSize) > linearI);
+        assertTrue(FlatUtil.linearIndex(idIndex, 2, keysSize) > linearI);
     }
 
     @Test
     @DisplayName("Should quadratic probe to find available slot")
-    void testQuadraticHashIndex() {
-        int quadI = FlatUtil.quadraticHashIndex(idIndex, 1, keysSize);
+    void testQuadraticIndex() {
+        int quadI = FlatUtil.quadraticIndex(idIndex, 1, keysSize);
 
         assertEquals(addIndex, idIndex);
         assertTrue(quadI > idIndex);
-        assertTrue(FlatUtil.quadraticHashIndex(idIndex, 2, keysSize) > quadI);
+        assertTrue(FlatUtil.quadraticIndex(idIndex, 2, keysSize) > quadI);
     }
 
     @Test
     @DisplayName("Should double hash to find available slot")
-    void testDoubleHashIndex() {
+    void testDoubleIndex() {
         int stride = FlatUtil.stride(keys[2]);
-        int doubleI = FlatUtil.doubleHashIndex(idIndex, 1, stride, keysSize);
+        int doubleI = FlatUtil.doubleIndex(idIndex, 1, stride, keysSize);
 
         assertEquals(addIndex, idIndex);
         assertNotEquals(doubleI, idIndex);

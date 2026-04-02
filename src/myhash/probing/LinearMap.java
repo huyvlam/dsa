@@ -89,7 +89,7 @@ public class LinearMap<K, V> {
                 return removed;
             }
 
-            index = FlatUtil.linearHashIndex(origIndex, gap, table.length);
+            index = FlatUtil.linearIndex(origIndex, gap, table.length);
             gap++;
         }
 
@@ -106,7 +106,7 @@ public class LinearMap<K, V> {
 
             if (FlatUtil.isActiveKeyEqual(cur, key)) return cur.value;
 
-            index = FlatUtil.linearHashIndex(origIndex, gap, table.length);
+            index = FlatUtil.linearIndex(origIndex, gap, table.length);
             gap++;
         }
 
@@ -123,7 +123,7 @@ public class LinearMap<K, V> {
 
             if (FlatUtil.isActiveKeyEqual(cur, key)) return true;
 
-            index = FlatUtil.linearHashIndex(origIndex, gap, table.length);
+            index = FlatUtil.linearIndex(origIndex, gap, table.length);
             gap++;
         }
 
@@ -163,7 +163,7 @@ public class LinearMap<K, V> {
             if (cur.deleted && deletedIndex == -1) deletedIndex = index;
 
             // Probe for next slot
-            index = FlatUtil.linearHashIndex(origIndex, gap, table.length);
+            index = FlatUtil.linearIndex(origIndex, gap, table.length);
             gap++;
         }
 

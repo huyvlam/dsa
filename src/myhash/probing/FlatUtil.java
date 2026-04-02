@@ -108,7 +108,7 @@ public class FlatUtil {
      * @param tableSize size of hash table
      * @return          the next available index in the table
      */
-    public static int linearHashIndex(int original, int gap, int tableSize) {
+    public static int linearIndex(int original, int gap, int tableSize) {
         return (original + gap) % tableSize;
     }
 
@@ -120,7 +120,7 @@ public class FlatUtil {
      * @param tableSize size of hash table
      * @return          the next available index in the hash table
      */
-    public static int quadraticHashIndex(int original, int gap, int tableSize) {
+    public static int quadraticIndex(int original, int gap, int tableSize) {
         return (original + gap * gap) % tableSize;
     }
 
@@ -134,7 +134,7 @@ public class FlatUtil {
      * @return          the next available index in the hash table
      * @param <K>       key type accepts: string, integer, object, etc.
      */
-    public static <K> int doubleHashIndex(int original, int gap, int stride, int tableSize) {
+    public static <K> int doubleIndex(int original, int gap, int stride, int tableSize) {
         return (original + gap * stride) % tableSize;
     }
 
