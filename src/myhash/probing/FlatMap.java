@@ -9,6 +9,10 @@ public class FlatMap<K, V> {
     private double resizeThreshold;
     private int size;
 
+    // track performance records of each strategy
+    private long totalProbes;
+    private long totalOperations;
+
     private final ProbeStrategy strategy;
     private final int INIT_CAPACITY;
     private final double LOAD_FACTOR;
@@ -24,6 +28,8 @@ public class FlatMap<K, V> {
         table = new FlatNode[INIT_CAPACITY];
         resizeThreshold = table.length * LOAD_FACTOR;
         size = 0;
+        totalProbes = 0;
+        totalOperations = 0;
     }
 
     public FlatMap(Probe probe, int capacity) {
@@ -53,29 +59,39 @@ public class FlatMap<K, V> {
         int newCapacity = table.length * 2;
         FlatNode<K, V>[] newTable = (FlatNode<K, V>[]) new FlatNode[newCapacity];
 
+        int[] gapTracker = new int[1];
+
         for (FlatNode<K, V> cur : table) {
             // Filter out deleted nodes for garbage collection (Tombstone Purging)
             if (cur != null && !cur.deleted) {
-                FlatUtil.probe(cur.key, cur.value, newTable, strategy);
+                FlatUtil.probe(cur.key, cur.value, newTable, strategy, gapTracker);
             }
         }
 
-        this.table = newTable;
-        this.resizeThreshold = table.length * LOAD_FACTOR;
+        table = newTable;
+        resizeThreshold = table.length * LOAD_FACTOR;
+
+        totalOperations++;
+        totalProbes += gapTracker[0];
     }
 
     public V put(K key, V value) {
         if (size >= resizeThreshold) resize();
 
-        V result = FlatUtil.probe(key, value, table, strategy);
+        int[] gapTracker = new int[1];
+        V result = FlatUtil.probe(key, value, table, strategy, gapTracker);
 
         if (result == null) size++;
+
+        totalOperations++;
+        totalProbes += gapTracker[0];
 
         return result;
     }
 
     public V remove(K key) {
         final V[] removed = (V[]) new Object[]{null};
+        int[] gapTracker = new int[1];
 
         FlatUtil.probe(key, table, strategy, (node) -> {
             if (!node.deleted && Objects.equals(node.key, key)) {
@@ -88,13 +104,17 @@ public class FlatMap<K, V> {
                 return false; // stopping the loop
             }
             return true;
-        });
+        }, gapTracker);
+
+        totalOperations++;
+        totalProbes += gapTracker[0];
 
         return (V) removed[0];
     }
 
     public V get(K key) {
         final V[] result = (V[]) new Object[]{null};
+        int[] gapTracker = new int[1];
 
         FlatUtil.probe(key, table, strategy, (node) -> {
             if (!node.deleted && Objects.equals(node.key, key)) {
@@ -102,13 +122,17 @@ public class FlatMap<K, V> {
                 return false;
             };
             return true;
-        });
+        }, gapTracker);
+
+        totalOperations++;
+        totalProbes += gapTracker[0];
 
         return (V) result[0];
     }
 
     public boolean containsKey(K key) {
         final boolean[] found = {false};
+        int[] gapTracker = new int[1];
 
         FlatUtil.probe(key, table, strategy, (node) -> {
             if (!node.deleted && Objects.equals(node.key, key)) {
@@ -116,7 +140,10 @@ public class FlatMap<K, V> {
                 return false; // stopping the loop
             }
             return true;
-        });
+        }, gapTracker);
+
+        totalOperations++;
+        totalProbes += gapTracker[0];
 
         return found[0];
     }
@@ -127,6 +154,10 @@ public class FlatMap<K, V> {
         }
 
         return false;
+    }
+
+    public double averageProbeLength() {
+        return totalOperations == 0 ? 0 : (double) totalProbes / totalOperations;
     }
 
     private static ProbeStrategy getProbeStrategy(Probe probe) {

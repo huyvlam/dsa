@@ -88,7 +88,7 @@ class FlatUtilTest<K, V> {
                 return false;
             }
             return true;
-        });
+        }, null);
         assertNull(result[0]);
 
         int i = 3;
@@ -101,7 +101,7 @@ class FlatUtilTest<K, V> {
                 return false;
             }
             return true;
-        });
+        }, null);
         assertEquals(tableValue, result[0]);
     }
 
@@ -124,12 +124,11 @@ class FlatUtilTest<K, V> {
                     return false;
                 }
                 return true;
-            });
+            }, null);
 
             assertEquals(tableValue, result[0]);
         }
     }
-
 
     @Test
     @DisplayName("Should linear probe to find available slot")

@@ -89,7 +89,7 @@ public class FlatUtil {
      * Note: While this DRY improves reading, testing and maintaining, it carries performance overhead in large dataset.
      *       Using simple looping is better for JVM optimization.
      */
-    public static <K, V> void probe(K key, FlatNode<K, V>[] table, ProbeStrategy strategy, Predicate<FlatNode<K, V>> action) {
+    public static <K, V> void probe(K key, FlatNode<K, V>[] table, ProbeStrategy strategy, Predicate<FlatNode<K, V>> action,  int[] tracker) {
         int origIndex = HashUtil.hashIndex(key, table.length);
         int gap = 1;
         int stride = stride(key);
@@ -101,6 +101,8 @@ public class FlatUtil {
             index = strategy.nextIndex(origIndex, gap, table.length, stride);
             gap++;
         }
+
+        if (tracker != null) tracker[0] = gap;
     }
 
     /**
