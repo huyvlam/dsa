@@ -3,6 +3,7 @@ package myhash.probing;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.openjdk.jmh.annotations.Benchmark;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -14,6 +15,26 @@ class FlatMapTest<K, V> {
     void setUp() {
         initCap = 4;
         flat = new FlatMap<>(FlatMap.Probe.LINEAR, initCap);
+    }
+
+    @Test
+    @DisplayName("Should print out the performance stats for all three strategies")
+    public void compareStrategies() {
+        int cap = (int) Math.pow(2, 14);
+        FlatMap<Integer, Integer> linearM = new FlatMap<>(FlatMap.Probe.LINEAR, cap);
+        FlatMap<Integer, Integer> quadraticM = new FlatMap<>(FlatMap.Probe.QUADRATIC, cap);
+        FlatMap<Integer, Integer> doubleM = new FlatMap<>(FlatMap.Probe.DOUBLE, cap);
+
+        // Fill both to 80% capacity
+        for(int i = 0; i < cap * .8; i++) {
+            linearM.put(i, i);
+            quadraticM.put(i, i);
+            doubleM.put(i, i);
+        }
+
+        System.out.println("Linear Avg Probe: " + linearM.averageProbeLength());
+        System.out.println("Quadratic Avg Probe: " + quadraticM.averageProbeLength());
+        System.out.println("Double Avg Probe: " + doubleM.averageProbeLength());
     }
 
     @Test

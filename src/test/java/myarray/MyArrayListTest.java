@@ -59,9 +59,9 @@ class MyArrayListTest {
 
             assertEquals(2, dataList.length);
         } catch (NoSuchFieldException e) {
-            IO.println("Field does not exist");
+            assertEquals(NoSuchFieldException.class, e);
         } catch (IllegalAccessException e) {
-            IO.println("Field cannot be accessed");
+            assertEquals(IllegalAccessException.class, e);
         }
     }
 
