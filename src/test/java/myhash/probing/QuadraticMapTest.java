@@ -6,9 +6,9 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class LinearMapTest<K, V> {
-    private LinearMap<String, String> sMap;
-    private LinearMap<Integer, Integer> iMap;
+class QuadraticMapTest {
+    private QuadraticMap<String, String> sMap;
+    private QuadraticMap<Integer, Integer> iMap;
     private StringBuilder builder;
     private Integer[] keys;
     private int initCap;
@@ -16,13 +16,13 @@ class LinearMapTest<K, V> {
     @BeforeEach
     void setUp() {
         initCap = 4;
-        sMap = new LinearMap<>(initCap);
+        sMap = new QuadraticMap<>(initCap);
     }
 
     @Test
     @DisplayName("Should throw exception when capacity is a negative number")
     void testCapacityException() {
-        assertThrows(IllegalArgumentException.class, () -> new LinearMap<>(-2));
+        assertThrows(IllegalArgumentException.class, () -> new QuadraticMap<>(-2));
     }
 
     @Test
@@ -80,11 +80,11 @@ class LinearMapTest<K, V> {
     }
 
 //    @Test
-//    @DisplayName("Should print the performance metrics for linear probe")
-//    void printLinearMetrics() {
+//    @DisplayName("Should print the performance metrics for quadratic probe")
+//    void printQuadraticMetrics() {
 //        int size = 262144;
 //        int i;
-//        iMap = new LinearMap<>(size);
+//        iMap = new QuadraticMap<>(size);
 //        keys = new Integer[size];
 //        builder = new StringBuilder();
 //

@@ -6,9 +6,9 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class LinearMapTest<K, V> {
-    private LinearMap<String, String> sMap;
-    private LinearMap<Integer, Integer> iMap;
+class DoubleMapTest {
+    private DoubleMap<String, String> sMap;
+    private DoubleMap<Integer, Integer> iMap;
     private StringBuilder builder;
     private Integer[] keys;
     private int initCap;
@@ -16,7 +16,7 @@ class LinearMapTest<K, V> {
     @BeforeEach
     void setUp() {
         initCap = 4;
-        sMap = new LinearMap<>(initCap);
+        sMap = new DoubleMap<>(initCap);
     }
 
     @Test
@@ -80,11 +80,11 @@ class LinearMapTest<K, V> {
     }
 
 //    @Test
-//    @DisplayName("Should print the performance metrics for linear probe")
-//    void printLinearMetrics() {
+//    @DisplayName("Should print the performance metrics for double hash")
+//    void printDoubleMetrics() {
 //        int size = 262144;
 //        int i;
-//        iMap = new LinearMap<>(size);
+//        iMap = new DoubleMap<>(size);
 //        keys = new Integer[size];
 //        builder = new StringBuilder();
 //
