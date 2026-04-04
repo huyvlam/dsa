@@ -20,13 +20,13 @@ class HashUtilTest<K, V> {
 
     @Test
     @DisplayName("Should compute invalid output if table size is not power of 2")
-    void testMustBePowerOf2() {
-//        String keyS = "address";
-//        int tableSize = 3;
-//
-//        int index = HashUtil.hashIndex(keyS, tableSize);
-//        assertTrue(index >= 0);
-//        assertTrue(index < tableSize);
-//        assertEquals(0, HashUtil.hashIndex(null, tableSize));
+    void testPowerOf2TableSize() {
+        int pow2 = 2;
+        int notPow2 = 3;
+        int res = HashUtil.tableSize(notPow2);
+
+        assertEquals(pow2, HashUtil.tableSize(pow2));
+        assertTrue(res !=notPow2);
+        assertTrue((res & (res - 1)) == 0);
     }
 }
