@@ -6,8 +6,11 @@ import java.util.Objects;
 
 public class LinearMap<K, V> {
     private FlatNode<K, V>[] table;
-    private double resizeThreshold;
+    private double threshold;
     private int size;
+
+    private long totalProbes;
+    private long totalOperations;
 
     private final int INIT_CAPACITY;
     private final double LOAD_FACTOR;
@@ -16,13 +19,15 @@ public class LinearMap<K, V> {
     private static final double LINEAR_LOAD_FACTOR = 0.7;
 
     public LinearMap(int capacity, double factor) {
-        if (capacity <= 0 || (capacity & (capacity - 1)) != 0) throw new IllegalArgumentException("Capacity must be power of 2");
+        if (capacity < 0) throw new IllegalArgumentException("Illegal capacity: " + capacity);
 
-        INIT_CAPACITY = capacity;
+        INIT_CAPACITY = HashUtil.tableSize(capacity);
         LOAD_FACTOR = factor;
         table = (FlatNode<K, V>[]) new FlatNode[INIT_CAPACITY];
-        resizeThreshold = table.length * LOAD_FACTOR;
+        threshold = table.length * LOAD_FACTOR;;
         size = 0;
+        totalProbes = 0;
+        totalOperations = 0;
     }
 
     public LinearMap(int capacity) {
@@ -35,7 +40,7 @@ public class LinearMap<K, V> {
 
     public void clear() {
         table = new FlatNode[INIT_CAPACITY];
-        resizeThreshold = table.length * LOAD_FACTOR;
+        threshold = table.length * LOAD_FACTOR;;
         size = 0;
     }
 
@@ -57,15 +62,14 @@ public class LinearMap<K, V> {
             if (cur != null && !cur.deleted) probe(cur.key, cur.value, newTable);
         }
 
-        this.table = newTable;
-        this.resizeThreshold = table.length * LOAD_FACTOR;
+        table = newTable;
+        threshold = table.length * LOAD_FACTOR;;
     }
 
     public V put(K key, V value) {
-        if (size >= resizeThreshold) resize();
+        if (size >= threshold) resize();
 
         V result = probe(key, value, table);
-
         if (result == null) size++;
 
         return result;
@@ -79,12 +83,14 @@ public class LinearMap<K, V> {
         while (table[index] != null && gap <= table.length) {
             FlatNode<K, V> cur = table[index];
 
-            if (FlatUtil.isActiveKeyEqual(cur, key)) {
+            if (!cur.deleted && Objects.equals(cur.key, key)) {
                 V removed = cur.value;
                 cur.deleted = true;
                 cur.key = null;
                 cur.value = null;
+
                 size--;
+                recordProbes(gap);
 
                 return removed;
             }
@@ -92,6 +98,7 @@ public class LinearMap<K, V> {
             index = FlatUtil.linearIndex(origIndex, gap, table.length);
             gap++;
         }
+        recordProbes(gap);
 
         return null;
     }
@@ -104,11 +111,15 @@ public class LinearMap<K, V> {
         while (table[index] != null && gap <= table.length) {
             FlatNode<K, V> cur = table[index];
 
-            if (FlatUtil.isActiveKeyEqual(cur, key)) return cur.value;
+            if (!cur.deleted && Objects.equals(cur.key, key)) {
+                recordProbes(gap);
+                return cur.value;
+            }
 
             index = FlatUtil.linearIndex(origIndex, gap, table.length);
             gap++;
         }
+        recordProbes(gap);
 
         return null;
     }
@@ -121,24 +132,34 @@ public class LinearMap<K, V> {
         while (table[index] != null && gap <= table.length) {
             FlatNode<K, V> cur = table[index];
 
-            if (FlatUtil.isActiveKeyEqual(cur, key)) return true;
+            if (!cur.deleted && Objects.equals(cur.key, key)) {
+                recordProbes(gap);
+                return true;
+            }
 
             index = FlatUtil.linearIndex(origIndex, gap, table.length);
             gap++;
         }
+        recordProbes(gap);
 
         return false;
     }
 
     public boolean containsValue(V  value) {
         for (FlatNode<K, V> node : table) {
-            if (node != null && !node.deleted && Objects.equals(node.value, value)) return true;
+            if (node != null && !node.deleted && Objects.equals(node.value, value)) {
+                return true;
+            }
         }
 
         return false;
     }
 
-    protected V probe(K key, V value, FlatNode<K, V>[] table) {
+    public double probeAverage() {
+        return totalOperations == 0 ? 0 : (double) totalProbes / totalOperations;
+    }
+
+    private V probe(K key, V value, FlatNode<K, V>[] table) {
         int origIndex = HashUtil.hashIndex(key, table.length);
         int gap = 1;
 
@@ -148,24 +169,26 @@ public class LinearMap<K, V> {
         while (gap <= table.length) {
             FlatNode<K, V> cur = table[index];
 
-            // Found empty slot, stop
+            // Found empty slot
             if (cur == null) break;
 
-            // Found the key, replace data
-            if (FlatUtil.isActiveKeyEqual(cur, key)) {
+            // Found the key
+            if (!cur.deleted && Objects.equals(cur.key, key)) {
                 V prevValue = cur.value;
                 cur.value = value;
+                recordProbes(gap);
 
                 return prevValue;
             }
 
-            // Found a tombstone, save the slot for reuse
+            // Found a tombstone for reuse
             if (cur.deleted && deletedIndex == -1) deletedIndex = index;
 
             // Probe for next slot
             index = FlatUtil.linearIndex(origIndex, gap, table.length);
             gap++;
         }
+        recordProbes(gap);
 
         // Reuse the tombstone we found (Lazy Substitution)
         if (deletedIndex != -1) {
@@ -185,5 +208,10 @@ public class LinearMap<K, V> {
 
         // All slots are checked but none available
         throw new IllegalStateException("Capacity is exceeded");
+    }
+
+    private void recordProbes(int gap) {
+        totalProbes += gap;
+        totalOperations++;
     }
 }
