@@ -7,72 +7,101 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class LinearMapTest<K, V> {
-    private LinearMap<K, V> linear;
+    private LinearMap<String, String> sMap;
+    private LinearMap<Integer, Integer> iMap;
+    private Integer[] keys;
     private int initCap;
 
     @BeforeEach
     void setUp() {
         initCap = 4;
-        linear = new LinearMap<>(initCap);
+        sMap = new LinearMap<>(initCap);
     }
 
     @Test
-    @DisplayName("Should throw exception when capacity is not power of 2")
+    @DisplayName("Should throw exception when capacity is a negative number")
     void testCapacityNotPowerOf2() {
-        assertThrows(IllegalArgumentException.class, () -> new LinearMap<>(0));
-        assertThrows(IllegalArgumentException.class, () -> new LinearMap<>(3));
+        assertThrows(IllegalArgumentException.class, () -> new LinearMap<>(-2));
     }
 
     @Test
     @DisplayName("Should add data by key")
     void testAddData() {
-        assertNull(linear.put((K) "name", (V) "nelly"));
-        assertEquals("nelly", linear.get((K) "name"));
-        assertEquals(1, linear.size());
+        assertNull(sMap.put("name", "nelly"));
+        assertEquals("nelly", sMap.get("name"));
+        assertEquals(1, sMap.size());
     }
 
     @Test
     @DisplayName("Should update data by key")
     void testUpdateData() {
-        assertNull(linear.put((K) "name", (V) "nelly"));
-        assertEquals("nelly", linear.put((K) "name", (V) "molly"));
-        assertEquals("molly", linear.get((K) "name"));
+        assertNull(sMap.put("name", "nelly"));
+        assertEquals("nelly", sMap.put("name", "molly"));
+        assertEquals("molly", sMap.get("name"));
     }
 
     @Test
     @DisplayName("Should remove data by key")
     void testRemoveData() {
-        assertNull(linear.put((K) "name", (V) "molly"));
-        assertEquals("molly", linear.remove((K) "name"));
-        assertTrue(linear.isEmpty());
+        assertNull(sMap.put("name", "molly"));
+        assertNull(sMap.remove("age"));
+        assertEquals("molly", sMap.remove("name"));
+        assertTrue(sMap.isEmpty());
     }
 
     @Test
     @DisplayName("Should resize table as needed")
     void testResizeTable() {
-        linear.put((K) "name", (V) "molly");
-        linear.put((K) "age", (V) "20");
-        linear.put((K) "hobby", (V) "yoga");
-        linear.put((K) "hair", (V) "black");
-        linear.put((K) "eyes", (V) "brown");
+        sMap.put("name", "molly");
+        sMap.put("age", "20");
+        sMap.put("hobby", "yoga");
+        sMap.put("hair", "black");
+        sMap.put("eyes", "brown");
 
-        assertTrue(linear.size() > initCap);
+        assertTrue(sMap.size() > initCap);
 
-        linear.clear();
+        sMap.clear();
 
-        assertTrue(linear.isEmpty());
+        assertTrue(sMap.isEmpty());
     }
 
     @Test
     @DisplayName("Should check whether the table contains key/value")
     void testContainsKeyValue() {
-        linear.put((K) "name", (V) "nelly");
-        linear.put((K) "hair", (V) "black");
-        linear.put((K) "eyes", (V) "black");
+        sMap.put("name", "nelly");
+        sMap.put("hair", "black");
+        sMap.put("eyes", "black");
 
-        assertTrue(linear.containsKey((K) "hair"));
-        assertFalse(linear.containsKey((K) "hobby"));
-        assertTrue(linear.containsValue((V) "black"));
-        assertFalse(linear.containsValue((V) "brown"));
+        assertTrue(sMap.containsKey("hair"));
+        assertFalse(sMap.containsKey("hobby"));
+        assertTrue(sMap.containsValue("black"));
+        assertFalse(sMap.containsValue("brown"));
+    }
+
+    @Test
+    @DisplayName("Should print out the probe average")
+    void printProbeAverage() {
+        int size = 262144;
+        int i;
+        iMap = new LinearMap<>(size);
+        keys = new Integer[size];
+        
+        for (i = 0; i < size * 0.8; i++) {
+            keys[i] = i;
+            iMap.put(i, i);
+        }
+        IO.println("Put avg: " + iMap.probeAverage());
+
+        for (i = 0; i < size * 0.5; i++) {
+            iMap.remove(keys[i]);
+        }
+        IO.println("Remove avg: " + iMap.probeAverage());
+
+        for (i = (int) Math.floor(size * 0.4); i < size * 0.9; i++) {
+            keys[i] = i;
+            iMap.put(i, i);
+        }
+        
+        IO.println("Reuse avg: " + iMap.probeAverage());
     }
 }
