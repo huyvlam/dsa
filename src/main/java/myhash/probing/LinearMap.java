@@ -1,6 +1,8 @@
 package myhash.probing;
 
-public class LinearMap<K, V> extends BaseProbeMap<K, V> {
+import java.util.Objects;
+
+public class LinearMap<K, V> extends MonoFlatMap<K, V> {
     private static final int DEFAULT_CAPACITY = 16;
     private static final double LINEAR_LOAD_FACTOR = 0.7;
 

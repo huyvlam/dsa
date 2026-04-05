@@ -1,6 +1,6 @@
 package myhash.probing;
 
-public class QuadraticMap <K, V> extends BaseProbeMap<K, V> {
+public class QuadraticMap <K, V> extends MonoFlatMap<K, V> {
     private static final int DEFAULT_CAPACITY = 16;
     private static final double QUADRATIC_LOAD_FACTOR = 0.5;
 

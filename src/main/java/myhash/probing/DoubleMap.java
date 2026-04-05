@@ -2,7 +2,7 @@ package myhash.probing;
 
 import java.util.Objects;
 
-public class DoubleMap<K, V> extends BaseProbeMap<K, V> {
+public class DoubleMap<K, V> extends MonoFlatMap<K, V> {
     private static final int DEFAULT_CAPACITY = 16;
     private static final double DOUBLE_LOAD_FACTOR = 0.75;
 
