@@ -1,6 +1,7 @@
-package myhash.probing;
+package myhash.probing.mono;
 
 import myhash.HashUtil;
+import myhash.probing.FlatNode;
 
 import java.util.Objects;
 

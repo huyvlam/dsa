@@ -1,4 +1,4 @@
-package myhash.probing;
+package myhash.probing.mono;
 
 public class QuadraticMap <K, V> extends MonoFlatMap<K, V> {
     private static final int DEFAULT_CAPACITY = 16;
