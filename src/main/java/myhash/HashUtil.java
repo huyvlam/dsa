@@ -22,18 +22,6 @@ public class HashUtil {
         return hash & mask;
     }
 
-    public static int linearProbe(int orig, int gap, int mask) {
-        return (orig + gap) & mask;
-    }
-
-    public static int quadraticProbe(int orig, int gap, int mask) {
-        return (orig + gap * gap) & mask;
-    }
-
-    public static int doubleHash(int orig, int gap, int stride, int hash) {
-        return (orig + gap * stride) & hash;
-    }
-
     /**
      * Compute a positive odd number for Power of 2 table size
      *
