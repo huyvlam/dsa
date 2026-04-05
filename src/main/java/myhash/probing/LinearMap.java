@@ -17,7 +17,7 @@ public class LinearMap<K, V> extends MonoFlatMap<K, V> {
     }
 
     @Override
-    int nextIndex(int orig, int gap, int size) {
-        return (orig + gap) & (size - 1);
+    int nextIndex(int orig, int gap, int mask) {
+        return (orig + gap) & mask;
     }
 }

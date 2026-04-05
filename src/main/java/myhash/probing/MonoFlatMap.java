@@ -7,6 +7,7 @@ import java.util.Objects;
 public abstract class MonoFlatMap<K, V> {
     protected FlatNode<K, V>[] table;
     protected double threshold;
+    protected int mask;
     protected int size;
 
     private long totalOperations;
@@ -16,7 +17,7 @@ public abstract class MonoFlatMap<K, V> {
     protected final int INIT_CAPACITY;
     protected final double LOAD_FACTOR;
 
-    abstract int nextIndex(int orig, int gap, int size);
+    abstract int nextIndex(int orig, int gap, int mask);
 
     public MonoFlatMap(int capacity, double factor) {
         if (capacity < 0) throw new IllegalArgumentException("Illegal capacity: " + capacity);
@@ -24,7 +25,8 @@ public abstract class MonoFlatMap<K, V> {
         INIT_CAPACITY = HashUtil.tableSize(capacity);
         LOAD_FACTOR = factor;
         table = new FlatNode[INIT_CAPACITY];
-        threshold = resizeThreshold();
+        threshold = table.length * LOAD_FACTOR;
+        mask = table.length - 1;
         size = 0;
         totalSearches = 0;
         totalOperations = 0;
@@ -33,7 +35,8 @@ public abstract class MonoFlatMap<K, V> {
 
     public void clear() {
         table = new FlatNode[INIT_CAPACITY];
-        threshold = resizeThreshold();
+        threshold = table.length * LOAD_FACTOR;
+        mask = table.length - 1;
         size = 0;
         totalSearches = 0;
         totalOperations = 0;
@@ -59,7 +62,8 @@ public abstract class MonoFlatMap<K, V> {
             }
         }
         table = newTable;
-        threshold = resizeThreshold();;
+        threshold = table.length * LOAD_FACTOR;
+        mask = table.length - 1;
     }
 
     public V put(K key, V value) {
@@ -89,7 +93,7 @@ public abstract class MonoFlatMap<K, V> {
 
                 return removed;
             }
-            index = nextIndex(origIndex, gap, table.length);
+            index = nextIndex(origIndex, gap, mask);
             gap++;
         }
         recordMetrics(gap, gap);
@@ -109,7 +113,7 @@ public abstract class MonoFlatMap<K, V> {
                 recordMetrics(gap, gap);
                 return cur.value;
             }
-            index = nextIndex(origIndex, gap, table.length);
+            index = nextIndex(origIndex, gap, mask);
             gap++;
         }
         recordMetrics(gap, gap);
@@ -129,7 +133,7 @@ public abstract class MonoFlatMap<K, V> {
                 recordMetrics(gap, gap);
                 return true;
             }
-            index = nextIndex(origIndex, gap, table.length);
+            index = nextIndex(origIndex, gap, mask);
             gap++;
         }
         recordMetrics(gap, gap);
@@ -154,16 +158,17 @@ public abstract class MonoFlatMap<K, V> {
         return totalOperations == 0 ? 0 : (double) totalStorageDistance / totalOperations;
     }
 
-    protected V probe(K key, V value, FlatNode<K, V>[] table) {
-        int origIndex = indexFor(key);
+    protected V probe(K key, V value, FlatNode<K, V>[] hashtable) {
+        int htMask = hashtable.length - 1;
+        int origIndex = HashUtil.hashIndex(key, htMask);
         int gap = 1;
 
         int index = origIndex;
         int deletedIndex = -1;
         int deletedGap = -1;
 
-        while (gap <= table.length) {
-            FlatNode<K, V> cur = table[index];
+        while (gap <= hashtable.length) {
+            FlatNode<K, V> cur = hashtable[index];
 
             // Found empty slot
             if (cur == null) break;
@@ -184,13 +189,13 @@ public abstract class MonoFlatMap<K, V> {
             }
 
             // Probe for next slot
-            index = nextIndex(origIndex, gap, table.length);
+            index = nextIndex(origIndex, gap, htMask);
             gap++;
         }
 
         // Reuse the tombstone we found (Lazy Substitution)
         if (deletedIndex != -1) {
-            FlatNode<K, V> reuse = table[deletedIndex];
+            FlatNode<K, V> reuse = hashtable[deletedIndex];
             reuse.key = key;
             reuse.value = value;
             reuse.deleted = false;
@@ -200,8 +205,8 @@ public abstract class MonoFlatMap<K, V> {
         }
 
         // Use the slot if it is empty
-        if (table[index] == null) {
-            table[index] = new FlatNode<K, V>(key, value);
+        if (hashtable[index] == null) {
+            hashtable[index] = new FlatNode<K, V>(key, value);
             recordMetrics(gap, gap);
 
             return null;
@@ -217,11 +222,7 @@ public abstract class MonoFlatMap<K, V> {
         totalOperations++;
     }
 
-    protected double resizeThreshold() {
-        return table.length * LOAD_FACTOR;
-    }
-
     protected int indexFor(K key) {
-        return HashUtil.hashIndex(key, table.length);
+        return HashUtil.hashIndex(key, mask);
     }
 }
