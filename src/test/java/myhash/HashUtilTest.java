@@ -26,7 +26,16 @@ class HashUtilTest<K, V> {
         int res = HashUtil.tableSize(notPow2);
 
         assertEquals(pow2, HashUtil.tableSize(pow2));
-        assertTrue(res !=notPow2);
+        assertTrue(res != notPow2);
         assertTrue((res & (res - 1)) == 0);
+    }
+
+    @Test
+    @DisplayName("Should compute an odd number greater than 0")
+    void testStrideHash2() {
+        int stride = HashUtil.stride("cardamom");
+
+        assertTrue(stride > 0);
+        assertTrue((stride & (stride - 1)) != 0);
     }
 }
