@@ -1,5 +1,7 @@
 package myhash.probing;
 
+import myhash.HashUtil;
+
 import java.util.Objects;
 
 public class DoubleMap<K, V> extends MonoFlatMap<K, V> {
@@ -19,37 +21,11 @@ public class DoubleMap<K, V> extends MonoFlatMap<K, V> {
     }
 
     @Override
-    public void resize() {
-        int newCapacity = table.length * 2;
-        FlatNode<K, V>[] newTable = (FlatNode<K, V>[]) new FlatNode[newCapacity];
-
-        for (FlatNode<K, V> cur : table) {
-            // Filter out deleted nodes for garbage collection (Tombstone Purging)
-            if (cur != null && !cur.deleted) {
-                probe(cur.key, cur.value, newTable);
-            }
-        }
-
-        table = newTable;
-        threshold = resizeThreshold();;
-    }
-
-    @Override
-    public V put(K key, V value) {
-        if (size >= threshold) resize();
-
-        V result = probe(key, value, table);
-        if (result == null) size++;
-
-        return result;
-    }
-
-    @Override
     public V remove(K key) {
         int origIndex = indexFor(key);
         int gap = 1;
         int index = origIndex;
-        int stride = stride(key);
+        int stride = HashUtil.stride(key);
 
         while (table[index] != null && gap <= table.length) {
             FlatNode<K, V> cur = table[index];
@@ -79,7 +55,7 @@ public class DoubleMap<K, V> extends MonoFlatMap<K, V> {
         int origIndex = indexFor(key);
         int gap = 1;
         int index = origIndex;
-        int stride = stride(key);
+        int stride = HashUtil.stride(key);
 
         while (table[index] != null && gap <= table.length) {
             FlatNode<K, V> cur = table[index];
@@ -102,7 +78,7 @@ public class DoubleMap<K, V> extends MonoFlatMap<K, V> {
         int origIndex = indexFor(key);
         int gap = 1;
         int index = origIndex;
-        int stride = stride(key);
+        int stride = HashUtil.stride(key);
 
         while (table[index] != null && gap <= table.length) {
             FlatNode<K, V> cur = table[index];
@@ -120,10 +96,11 @@ public class DoubleMap<K, V> extends MonoFlatMap<K, V> {
         return false;
     }
 
-    private V probe(K key, V value, FlatNode<K, V>[] table) {
+    @Override
+    protected V probe(K key, V value, FlatNode<K, V>[] table) {
         int origIndex = indexFor(key);
         int gap = 1;
-        int stride = stride(key);
+        int stride = HashUtil.stride(key);
 
         int index = origIndex;
         int deletedIndex = -1;
@@ -178,20 +155,12 @@ public class DoubleMap<K, V> extends MonoFlatMap<K, V> {
         throw new IllegalStateException("Capacity is exceeded");
     }
 
-    @SuppressWarnings("unused")
-    int nextIndex(int orig, int gap, int size) {
-        return 0;
-    }
-
     private int nextIndex(int orig, int gap, int size, int stride) {
         return (orig + gap * stride) & (size - 1);
     }
 
-    private static <K> int stride(K key) {
-        int hash = key == null ? 0 : key.hashCode();
-
-        // & 0x7FFFFFFF clears sign bit and ensure positive
-        // | 1 ensure the number is odd
-        return ((hash & 0x7FFFFFFF) % 32) | 1;
+    @SuppressWarnings("unused")
+    int nextIndex(int orig, int gap, int size) {
+        return 0;
     }
 }
