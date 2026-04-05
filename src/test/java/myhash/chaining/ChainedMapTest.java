@@ -17,10 +17,9 @@ class ChainedMapTest<K, V> {
     }
 
     @Test
-    @DisplayName("Should throw exception when capacity is not power of 2")
-    void testCapacityNotPowerOf2() {
-        assertThrows(IllegalArgumentException.class, () -> new ChainedMap<>(0));
-        assertThrows(IllegalArgumentException.class, () -> new ChainedMap<>(3));
+    @DisplayName("Should throw exception when capacity is less than 0")
+    void testCapacityException() {
+        assertThrows(IllegalArgumentException.class, () -> new ChainedMap<>(-3));
     }
 
     @Test
