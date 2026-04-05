@@ -10,12 +10,13 @@ class HashUtilTest<K, V> {
     @DisplayName("Should compute a hash index within bounds of the table size")
     void testHashIndex() {
         String keyS = "address";
-        int tableSize = 4;
+        int size = 4;
+        int mask = size - 1;
 
-        int index = HashUtil.hashIndex(keyS, tableSize);
+        int index = HashUtil.hashIndex(keyS, mask);
         assertTrue(index >= 0);
-        assertTrue(index < tableSize);
-        assertEquals(0, HashUtil.hashIndex(null, tableSize));
+        assertTrue(index < size);
+        assertEquals(0, HashUtil.hashIndex(null, mask));
     }
 
     @Test
