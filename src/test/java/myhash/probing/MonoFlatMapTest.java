@@ -1,5 +1,9 @@
 package myhash.probing;
 
+import myhash.probing.mono.DoubleMap;
+import myhash.probing.mono.LinearMap;
+import myhash.probing.mono.MonoFlatMap;
+import myhash.probing.mono.QuadraticMap;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.Arguments;

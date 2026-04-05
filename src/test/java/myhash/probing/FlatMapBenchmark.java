@@ -1,5 +1,9 @@
 package myhash.probing;
 
+import myhash.probing.mono.DoubleMap;
+import myhash.probing.mono.LinearMap;
+import myhash.probing.mono.QuadraticMap;
+import myhash.probing.poly.PolyFlatMap;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
