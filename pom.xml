@@ -113,6 +113,7 @@
                     </includes>
                     <excludes>
                         <exclude>**/Abstract*.java</exclude>
+                        <exclude>**/generated/*.java</exclude>
                     </excludes>
                 </configuration>
             </plugin>
