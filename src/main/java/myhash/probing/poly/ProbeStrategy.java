@@ -1,4 +1,4 @@
-package myhash.probing;
+package myhash.probing.poly;
 
 @FunctionalInterface
 public interface ProbeStrategy {
