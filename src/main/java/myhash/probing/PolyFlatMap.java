@@ -7,13 +7,14 @@ import java.util.function.Predicate;
 
 public class PolyFlatMap<K, V> {
     public enum Probe { LINEAR, QUADRATIC, DOUBLE }
-    private static final ProbeStrategy LINEAR = (orig, gap, size, stride) -> (orig + gap) % size;
-    private static final ProbeStrategy QUADRATIC = (orig, gap, size, stride) -> (orig + gap * gap) % size;
-    private static final ProbeStrategy DOUBLE =  (orig, gap, size, stride) -> (orig + gap * stride) & (size - 1);
+    private static final ProbeStrategy LINEAR = (orig, gap, mask, stride) -> (orig + gap) & mask;
+    private static final ProbeStrategy QUADRATIC = (orig, gap, mask, stride) -> (orig + gap * gap) & mask;
+    private static final ProbeStrategy DOUBLE =  (orig, gap, mask, stride) -> (orig + gap * stride) & mask;
 
     private final ProbeStrategy strategy;
     private FlatNode<K, V>[] table;
     private double threshold;
+    private int mask;
     private int size;
 
     private long totalOperations;
@@ -32,7 +33,8 @@ public class PolyFlatMap<K, V> {
         LOAD_FACTOR = factor > 0 ? factor : getLoadFactor(probe);
         this.strategy = getProbeStrategy(probe);
         table = new FlatNode[INIT_CAPACITY];
-        threshold = resizeThreshold();
+        threshold = table.length * LOAD_FACTOR;
+        mask = table.length - 1;
         size = 0;
         totalSearches = 0;
         totalOperations = 0;
@@ -49,7 +51,8 @@ public class PolyFlatMap<K, V> {
 
     public void clear() {
         table = new FlatNode[INIT_CAPACITY];
-        threshold = resizeThreshold();
+        threshold = table.length * LOAD_FACTOR;
+        mask = table.length - 1;
         size = 0;
         totalSearches = 0;
         totalOperations = 0;
@@ -77,7 +80,8 @@ public class PolyFlatMap<K, V> {
         }
 
         table = newTable;
-        threshold = resizeThreshold();
+        threshold = table.length * LOAD_FACTOR;
+        mask = table.length - 1;
     }
 
     public V put(K key, V value) {
@@ -92,9 +96,9 @@ public class PolyFlatMap<K, V> {
     public V remove(K key) {
         final V[] removed = (V[]) new Object[]{null};
 
-        probe(key, table, (node) -> {
+        probe(key, (node) -> {
             if (!node.deleted && Objects.equals(node.key, key)) {
-                removed[0] = node.value;
+                removed[0] = (V) node.value;
                 node.key = null;
                 node.value = null;
                 node.deleted = true;
@@ -112,9 +116,9 @@ public class PolyFlatMap<K, V> {
     public V get(K key) {
         final V[] result = (V[]) new Object[]{null};
 
-        probe(key, table, (node) -> {
+        probe(key, (node) -> {
             if (!node.deleted && Objects.equals(node.key, key)) {
-                result[0] = node.value;
+                result[0] = (V) node.value;
                 return false;
             };
             return true;
@@ -126,7 +130,7 @@ public class PolyFlatMap<K, V> {
     public boolean containsKey(K key) {
         final boolean[] found = {false};
 
-        probe(key, table, (node) -> {
+        probe(key, (node) -> {
             if (!node.deleted && Objects.equals(node.key, key)) {
                 found[0] = true;
                 return false; // stop the loop
@@ -155,8 +159,9 @@ public class PolyFlatMap<K, V> {
         return totalOperations == 0 ? 0 : (double) totalStorageDistance / totalOperations;
     }
 
-    private <K, V> V probe(K key, V value, FlatNode<K, V>[] table) {
-        int origIndex = HashUtil.hashIndex(key, table.length);
+    private <K, V> V probe(K key, V value, FlatNode<K, V>[] hashtable) {
+        int htMask = hashtable.length - 1;
+        int origIndex = HashUtil.hashIndex(key, htMask);
         int gap = 1;
         int stride = strategy == DOUBLE ? HashUtil.stride(key) : 0;
 
@@ -164,8 +169,8 @@ public class PolyFlatMap<K, V> {
         int deletedIndex = -1;
         int deletedGap = -1;
 
-        while (gap <= table.length) {
-            FlatNode<K, V> node = table[index];
+        while (gap <= hashtable.length) {
+            FlatNode<K, V> node = hashtable[index];
 
             // Found empty slot, stop
             if (node == null) break;
@@ -186,13 +191,13 @@ public class PolyFlatMap<K, V> {
             }
 
             // Probe for next slot
-            index = strategy.nextIndex(origIndex, gap, table.length, stride);
+            index = strategy.nextIndex(origIndex, gap, htMask, stride);
             gap++;
         }
 
         // Reuse the tombstone we found (Lazy Substitution)
         if (deletedIndex != -1) {
-            FlatNode<K, V> reuse = table[deletedIndex];
+            FlatNode<K, V> reuse = hashtable[deletedIndex];
             reuse.key = key;
             reuse.value = value;
             reuse.deleted = false;
@@ -202,8 +207,8 @@ public class PolyFlatMap<K, V> {
         }
 
         // Use the slot if it is empty
-        if (table[index] == null) {
-            table[index] = new FlatNode<K, V>(key, value);
+        if (hashtable[index] == null) {
+            hashtable[index] = new FlatNode<K, V>(key, value);
             recordMetrics(gap, gap);
 
             return null;
@@ -213,19 +218,18 @@ public class PolyFlatMap<K, V> {
         throw new IllegalStateException("Capacity is exceeded");
     }
 
-    private <K, V> void probe(K key, FlatNode<K, V>[] table, Predicate<FlatNode<K, V>> action) {
-        int origIndex = HashUtil.hashIndex(key, table.length);
+    private <K, V> void probe(K key, Predicate<FlatNode<K, V>> action) {
+        int origIndex = HashUtil.hashIndex(key, mask);
         int gap = 1;
         int stride = strategy == DOUBLE ? HashUtil.stride(key) : 0;
         int index = origIndex;
 
         while (table[index] != null && gap <= table.length) {
-            if (!action.test(table[index])) return;
+            if (!action.test((FlatNode<K, V>) table[index])) return;
 
-            index = strategy.nextIndex(origIndex, gap, table.length, stride);
+            index = strategy.nextIndex(origIndex, gap, mask, stride);
             gap++;
         }
-
         recordMetrics(gap, gap);
     }
 
@@ -233,10 +237,6 @@ public class PolyFlatMap<K, V> {
         totalSearches += searchGap;
         totalStorageDistance += storageGap;
         totalOperations++;
-    }
-
-    private double resizeThreshold() {
-        return table.length * LOAD_FACTOR;
     }
 
     private static ProbeStrategy getProbeStrategy(Probe probe) {
