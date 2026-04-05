@@ -1,17 +1,15 @@
 package myhash;
 
-import java.util.HashMap;
-
 public class HashUtil {
     /**
      * Compute the hashcode index using mod table size
      *
      * @param key   key to be converted
-     * @param size  table size must be a Power of 2
+     * @param mask  table size - 1 (* this allows caller to cache the subtraction)
      * @return      an index within legal bounds of table size
      * @param <K>   key type
      */
-    public static <K> int hashIndex(K key, int size) {
+    public static <K> int hashIndex(K key, int mask) {
         int hash = key == null ? 0 : key.hashCode();
 
         // mix up bits for even distribution (minimize clustering)
@@ -21,19 +19,19 @@ public class HashUtil {
 //        return (hash & 0x7FFFFFFF) % size;
 
         // & (size - 1) optimize mod % size (MUST be a power of 2)
-        return hash & (size - 1);
+        return hash & mask;
     }
 
-    public static int linearProbe(int orig, int gap, int size) {
-        return (orig + gap) & (size - 1);
+    public static int linearProbe(int orig, int gap, int mask) {
+        return (orig + gap) & mask;
     }
 
-    public static int quadraticProbe(int orig, int gap, int size) {
-        return (orig + gap * gap) & (size - 1);
+    public static int quadraticProbe(int orig, int gap, int mask) {
+        return (orig + gap * gap) & mask;
     }
 
-    public static int doubleHash(int orig, int gap, int size, int stride) {
-        return (orig + gap * stride) & (size - 1);
+    public static int doubleHash(int orig, int gap, int stride, int hash) {
+        return (orig + gap * stride) & hash;
     }
 
     /**
