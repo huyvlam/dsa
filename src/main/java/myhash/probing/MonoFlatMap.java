@@ -58,7 +58,6 @@ public abstract class MonoFlatMap<K, V> {
                 probe(cur.key, cur.value, newTable);
             }
         }
-
         table = newTable;
         threshold = resizeThreshold();;
     }
@@ -90,7 +89,6 @@ public abstract class MonoFlatMap<K, V> {
 
                 return removed;
             }
-
             index = nextIndex(origIndex, gap, table.length);
             gap++;
         }
@@ -111,7 +109,6 @@ public abstract class MonoFlatMap<K, V> {
                 recordMetrics(gap, gap);
                 return cur.value;
             }
-
             index = nextIndex(origIndex, gap, table.length);
             gap++;
         }
@@ -132,7 +129,6 @@ public abstract class MonoFlatMap<K, V> {
                 recordMetrics(gap, gap);
                 return true;
             }
-
             index = nextIndex(origIndex, gap, table.length);
             gap++;
         }
@@ -147,7 +143,6 @@ public abstract class MonoFlatMap<K, V> {
                 return true;
             }
         }
-
         return false;
     }
 
@@ -159,7 +154,7 @@ public abstract class MonoFlatMap<K, V> {
         return totalOperations == 0 ? 0 : (double) totalStorageDistance / totalOperations;
     }
 
-    private V probe(K key, V value, FlatNode<K, V>[] table) {
+    protected V probe(K key, V value, FlatNode<K, V>[] table) {
         int origIndex = indexFor(key);
         int gap = 1;
 
