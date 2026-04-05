@@ -4,7 +4,7 @@ import myhash.HashUtil;
 
 import java.util.Objects;
 
-public abstract class BaseProbeMap<K, V> {
+public abstract class MonoFlatMap<K, V> {
     protected FlatNode<K, V>[] table;
     protected double threshold;
     protected int size;
@@ -18,7 +18,7 @@ public abstract class BaseProbeMap<K, V> {
 
     abstract int nextIndex(int orig, int gap, int size);
 
-    public BaseProbeMap(int capacity, double factor) {
+    public MonoFlatMap(int capacity, double factor) {
         if (capacity < 0) throw new IllegalArgumentException("Illegal capacity: " + capacity);
 
         INIT_CAPACITY = HashUtil.tableSize(capacity);
@@ -28,6 +28,7 @@ public abstract class BaseProbeMap<K, V> {
         size = 0;
         totalSearches = 0;
         totalOperations = 0;
+        totalStorageDistance = 0;
     }
 
     public void clear() {
@@ -36,6 +37,7 @@ public abstract class BaseProbeMap<K, V> {
         size = 0;
         totalSearches = 0;
         totalOperations = 0;
+        totalStorageDistance = 0;
     }
 
     public boolean isEmpty() {
@@ -83,7 +85,6 @@ public abstract class BaseProbeMap<K, V> {
                 cur.deleted = true;
                 cur.key = null;
                 cur.value = null;
-
                 size--;
                 recordMetrics(gap, gap);
 
