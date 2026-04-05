@@ -6,12 +6,12 @@ public class HashUtil {
     /**
      * Compute the hashcode index using mod table size
      *
-     * @param key       key to be converted
-     * @param tableSize table size must be a Power of 2
-     * @return          a valid index in the range 0 - tableSize
-     * @param <K>       key type
+     * @param key   key to be converted
+     * @param size  table size must be a Power of 2
+     * @return      an index within legal bounds of table size
+     * @param <K>   key type
      */
-    public static <K> int hashIndex(K key, int tableSize) {
+    public static <K> int hashIndex(K key, int size) {
         int hash = key == null ? 0 : key.hashCode();
 
         // mix up bits for even distribution (minimize clustering)
@@ -21,7 +21,7 @@ public class HashUtil {
 //        return (hash & 0x7FFFFFFF) % size;
 
         // & (size - 1) optimize mod % size (MUST be a power of 2)
-        return hash & (tableSize - 1);
+        return hash & (size - 1);
     }
 
     public static int linearProbe(int orig, int gap, int size) {
@@ -54,13 +54,13 @@ public class HashUtil {
     /**
      * Check and return a Power of 2 table size
      *
-     * @param tableSize the original table size
-     * @return          Power of 2 table size
+     * @param size  the original table size
+     * @return      a Power of 2 table size
      */
-    public static int tableSize(int tableSize) {
-        if ((tableSize & (tableSize - 1)) == 0) return tableSize;
+    public static int tableSize(int size) {
+        if ((size & (size - 1)) == 0) return size;
 
-        int cap = tableSize - 1;
+        int cap = size - 1;
         cap |= cap >>> 1;
         cap |= cap >>> 2;
         cap |= cap >>> 4;
