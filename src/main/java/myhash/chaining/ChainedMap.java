@@ -6,7 +6,8 @@ import java.util.Objects;
 
 public class ChainedMap<K, V> {
     private Entry<K, V>[] entries;
-    private double resizeThreshold;
+    private double threshold;
+    private int mask;
     private int size;
 
     private final int INIT_CAPACITY;
@@ -16,12 +17,13 @@ public class ChainedMap<K, V> {
     private static final double DEFAULT_LOAD_FACTOR = 0.75;
 
     public ChainedMap(int capacity, double factor) {
-        if (capacity <= 0 || (capacity & (capacity - 1)) != 0) throw new IllegalArgumentException("Capacity must be power of 2");
+        if (capacity < 0) throw new IllegalArgumentException("Illegal capacity: " + capacity);
 
-        INIT_CAPACITY = capacity;
+        INIT_CAPACITY = HashUtil.tableSize(capacity);
         LOAD_FACTOR = factor;
         entries = (Entry<K, V>[]) new Entry[INIT_CAPACITY];
-        resizeThreshold = entries.length * LOAD_FACTOR;
+        threshold = entries.length * LOAD_FACTOR;
+        mask = entries.length - 1;
         size = 0;
     }
 
@@ -35,7 +37,8 @@ public class ChainedMap<K, V> {
 
     public void clear() {
         entries = (Entry<K, V>[]) new Entry[INIT_CAPACITY];
-        resizeThreshold = entries.length * LOAD_FACTOR;
+        threshold = entries.length * LOAD_FACTOR;
+        mask = entries.length - 1;
         size = 0;
     }
 
@@ -50,6 +53,7 @@ public class ChainedMap<K, V> {
     @SuppressWarnings("unchecked")
     public void resize() {
         int newCapacity = entries.length * 2;
+        int newMask = newCapacity - 1;
         Entry<K, V>[] newEntries = (Entry<K, V>[]) new Entry[newCapacity];
 
         for (int i = 0; i < entries.length; i++) {
@@ -58,7 +62,7 @@ public class ChainedMap<K, V> {
             while (cur != null) {
                 Entry<K, V> next = cur.next;
 
-                int index = HashUtil.hashIndex(cur.key, newCapacity);
+                int index = HashUtil.hashIndex(cur.key, newMask);
 
                 cur.next = newEntries[index];
                 newEntries[index] = cur;
@@ -67,12 +71,13 @@ public class ChainedMap<K, V> {
             }
         }
 
-        this.entries = newEntries;
-        this.resizeThreshold = entries.length * LOAD_FACTOR;
+        entries = newEntries;
+        threshold = entries.length * LOAD_FACTOR;
+        mask = entries.length - 1;
     }
 
     public V put(K key, V value) {
-        int index = HashUtil.hashIndex(key, entries.length);
+        int index = HashUtil.hashIndex(key, mask);
 
         Entry<K, V> head = entries[index];
         Entry<K, V> cur = head;
@@ -90,13 +95,13 @@ public class ChainedMap<K, V> {
         entries[index] = node;
         size++;
 
-        if (size >= resizeThreshold) resize();
+        if (size >= threshold) resize();
 
         return null;
     }
 
     public V get(K key) {
-        int index = HashUtil.hashIndex(key, entries.length);
+        int index = HashUtil.hashIndex(key, mask);
         Entry<K, V> cur = entries[index];
 
         while (cur != null) {
@@ -109,7 +114,7 @@ public class ChainedMap<K, V> {
     }
 
     public V remove(K key) {
-        int index = HashUtil.hashIndex(key, entries.length);
+        int index = HashUtil.hashIndex(key, mask);
         Entry<K, V> cur = entries[index];
         Entry<K, V> prev = null;
 
@@ -130,7 +135,7 @@ public class ChainedMap<K, V> {
     }
 
     public boolean containsKey(K key) {
-        int index = HashUtil.hashIndex(key, entries.length);
+        int index = HashUtil.hashIndex(key, mask);
         Entry<K, V> cur = entries[index];
 
         while (cur != null) {
