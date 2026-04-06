@@ -4,6 +4,7 @@ import myhash.probing.mono.DoubleMap;
 import myhash.probing.mono.LinearMap;
 import myhash.probing.mono.QuadraticMap;
 import myhash.probing.poly.PolyFlatMap;
+import org.junit.jupiter.api.Disabled;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
@@ -15,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @State(Scope.Thread)
+@Disabled
 public class FlatMapBenchmark {
     @Param({"65536", "131072", "262144"})
     private int size;
