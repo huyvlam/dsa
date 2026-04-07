@@ -4,14 +4,14 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 public class LongLinearMap {
-    private ByteBuffer buffer;
+    private ByteBuffer buffer; // data storage space
     private int capacity; // Must be power of 2
-    private int mask; // Cache to avoid repeated computation
+    private int mask; // Cache mod size to avoid repetitive computing
     private int size;
 
     private static final int ENTRY_SIZE = 16; // (K) 8 bytes + (V) 8 bytes
     private static final long EMPTY_SLOT = 0L;
-    private static final double LOAD_FACTOR = 0.7;
+    private static final double LOAD_FACTOR = 0.6;
 
     public LongLinearMap(int capacity) {
         this.capacity = tableSize(capacity);
@@ -75,7 +75,7 @@ public class LongLinearMap {
                 return;
             }
 
-            index = (index + 1) & mask;
+            index = linearProbe(index);
             offset = index * ENTRY_SIZE;
         }
     }
@@ -90,7 +90,7 @@ public class LongLinearMap {
             if (curKey == EMPTY_SLOT) return -1L;
             if (curKey == key) return buffer.getLong(offset + 8);
 
-            index = (index + 1) & mask;
+            index = linearProbe(index);
             offset = index * ENTRY_SIZE;
         }
     }
@@ -106,7 +106,7 @@ public class LongLinearMap {
             if (curKey == EMPTY_SLOT) return -1L;
             if (curKey == key) break;
 
-            index = (index + 1) & mask;
+            index = linearProbe(index);
             offset = index * ENTRY_SIZE;
         }
 
@@ -116,14 +116,14 @@ public class LongLinearMap {
 
         while (true) {
             // Check the next slot to see if it can move forward
-            index = (index + 1) & mask;
+            index = linearProbe(index);
             offset = index * ENTRY_SIZE;
             curKey = buffer.getLong(offset);
 
             // Next slot if empty, stop searching
             if (curKey == EMPTY_SLOT) break;
 
-            // This index is where the current key likes to be
+            // The current key ideally likes to take this slot
             int ideal = hash(curKey) & mask;
 
             // If the vacant slot is NOT between current index and ideal, move the current key into vacant slot
@@ -135,7 +135,7 @@ public class LongLinearMap {
             }
         }
 
-        // Finally set vacant slot to empty
+        // Finally free up the vacant slot
         offset = vacant * ENTRY_SIZE;
         buffer.putLong(offset, EMPTY_SLOT);
         buffer.putLong(offset + 8, EMPTY_SLOT);
@@ -144,8 +144,12 @@ public class LongLinearMap {
         return removedValue;
     }
 
+    private int linearProbe(int index) {
+        return (index + 1) & mask;
+    }
+
     // Cyclical check if ideal lies between vacant and current spot
-    private boolean isBetween(int vacant, int cur, int ideal) {
+    private static boolean isBetween(int vacant, int cur, int ideal) {
         if (vacant <= cur) {
             return vacant < ideal && ideal <= cur;
         } else {
@@ -153,7 +157,7 @@ public class LongLinearMap {
         }
     }
 
-    private int hash(long key) {
+    private static int hash(long key) {
         // Mixer for longs ensuring even distribution
         key ^= key >>> 33;
         key *= 0xff51afd7ed558ccdL;
@@ -161,7 +165,7 @@ public class LongLinearMap {
         return (int) key;
     }
 
-    private int tableSize(int n) {
+    private static int tableSize(int n) {
         int cap = 1;
         while (cap < n) cap <<= 1;
         return cap;
