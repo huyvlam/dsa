@@ -76,8 +76,9 @@ public abstract class MonoFlatMap<K, V> {
         return result;
     }
 
+    // Tombstone is well-suited to quadratic probe and double hash
     public V remove(K key) {
-        int origIndex = indexFor(key);
+        int origIndex = hashIndex(key);
         int gap = 1;
         int index = origIndex;
 
@@ -103,7 +104,7 @@ public abstract class MonoFlatMap<K, V> {
     }
 
     public V get(K key) {
-        int origIndex = indexFor(key);
+        int origIndex = hashIndex(key);
         int gap = 1;
         int index = origIndex;
 
@@ -123,7 +124,7 @@ public abstract class MonoFlatMap<K, V> {
     }
 
     public boolean containsKey(K key) {
-        int origIndex = indexFor(key);
+        int origIndex = hashIndex(key);
         int gap = 1;
         int index = origIndex;
 
@@ -223,7 +224,7 @@ public abstract class MonoFlatMap<K, V> {
         totalOperations++;
     }
 
-    protected int indexFor(K key) {
+    protected int hashIndex(K key) {
         return HashUtil.hashIndex(key, mask);
     }
 }
