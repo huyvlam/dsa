@@ -23,10 +23,10 @@ public class DoubleMap<K, V> extends MonoFlatMap<K, V> {
 
     @Override
     public V remove(K key) {
-        int origIndex = indexFor(key);
+        int origIndex = hashIndex(key);
         int gap = 1;
         int index = origIndex;
-        int stride = HashUtil.stride(key);
+        int stride = HashUtil.stride(key); // Cache to avoid repetitive computing
 
         while (table[index] != null && gap <= table.length) {
             FlatNode<K, V> cur = table[index];
@@ -53,7 +53,7 @@ public class DoubleMap<K, V> extends MonoFlatMap<K, V> {
 
     @Override
     public V get(K key) {
-        int origIndex = indexFor(key);
+        int origIndex = hashIndex(key);
         int gap = 1;
         int index = origIndex;
         int stride = HashUtil.stride(key);
@@ -76,7 +76,7 @@ public class DoubleMap<K, V> extends MonoFlatMap<K, V> {
 
     @Override
     public boolean containsKey(K key) {
-        int origIndex = indexFor(key);
+        int origIndex = hashIndex(key);
         int gap = 1;
         int index = origIndex;
         int stride = HashUtil.stride(key);
