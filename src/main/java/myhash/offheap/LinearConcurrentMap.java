@@ -136,6 +136,29 @@ public class LinearConcurrentMap {
         this.table = new Table(buffer, tabSize);
     }
 
+    // Clean up buffer stored data
+    public void clear() {
+        Table curTab = this.table;
+
+        // Zero out the size in the header
+        unsafe.putLongVolatile(null, curTab.baseAddress + SIZE_INDEX, 0L);
+
+        // 2. Zero out all Key/Value slots
+        long dataStart = curTab.baseAddress + HEADER_SIZE;
+        long dataLength = (long) curTab.capacity * ENTRY_SIZE;
+
+        // setMemory is MUCH faster by clearing all data within a range
+        unsafe.setMemory(dataStart, dataLength, (byte) 0);
+    }
+
+    // Manual Memory Management
+    public void destroy() {
+        Table tab = this.table;
+
+        // Manually free the memory
+         ((sun.nio.ch.DirectBuffer)tab.buffer).cleaner().clean();
+    }
+
     public long get(long key) {
         if (key == EMPTY || key == REMOVED) throw new IllegalArgumentException("Illegal key: " + key);
 
@@ -257,7 +280,7 @@ public class LinearConcurrentMap {
 
             // Claim the current table for resizing
             // If other threads took it already then move to help transfer
-            unsafe.compareAndSwapObject(curTab, tableNextOffset, null, newTab)
+            unsafe.compareAndSwapObject(curTab, tableNextOffset, null, newTab);
         }
 
         // Every threads help move data to new table
@@ -307,6 +330,9 @@ public class LinearConcurrentMap {
 
                 // Zero out the size in old table to prevent double counting
                 unsafe.putOrderedLong(null, curTab.baseAddress + SIZE_INDEX, 0L);
+
+                // Unlink the the old table from new one
+                curTab.next = null;
             }
         }
     }
@@ -337,11 +363,6 @@ public class LinearConcurrentMap {
         }
     }
 
-    private void updateSize(int delta) {
-        // Always update to the 'latest' table
-        Table curTab = (table.next != null) ? table.next : table;
-        unsafe.getAndAddLong(null, curTab.baseAddress + SIZE_INDEX, (long) delta);
-    }
     public long size() {
         Table curTab = this.table;
         Table nextTab = curTab.next;
@@ -355,6 +376,12 @@ public class LinearConcurrentMap {
         }
 
         return size;
+    }
+
+    private void updateSize(int delta) {
+        // Always update to the 'latest' table
+        Table curTab = (table.next != null) ? table.next : table;
+        unsafe.getAndAddLong(null, curTab.baseAddress + SIZE_INDEX, (long) delta);
     }
 
     // Compute the raw memory address of ByteBuffer
@@ -374,30 +401,6 @@ public class LinearConcurrentMap {
         int cap = 1;
         while (cap < n) cap <<= 1;
         return cap;
-    }
-
-    static void main(String[] args) {
-        int size = 1_000_000;
-        LinearConcurrentMap beast = new LinearConcurrentMap(size);
-        Random random = new Random(42);
-        long[] keys = new long[size];
-        int i;
-        for (i = 0; i < keys.length; i++) keys[i] = random.nextLong();
-
-        long start = System.nanoTime();
-        for (i = 1; i < size; i++) {
-            beast.put(keys[i], keys[i] << 1);
-        }
-        long end = System.nanoTime();
-        System.out.printf("The Beast took: %.2f ms\n", (end - start) / (double) size);
-
-        ConcurrentHashMap<Long, Long> chm = new ConcurrentHashMap<>(size);
-        start = System.nanoTime();
-        for (i = 1; i < size; i++) {
-            chm.put(keys[i], keys[i] << 1);
-        }
-        end = System.nanoTime();
-        System.out.printf("CHM took: %.2f ms\n", (end - start) / (double) size);
     }
 }
 
