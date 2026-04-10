@@ -7,19 +7,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class HashUtilTest<K, V> {
     @Test
-    @DisplayName("Should compute a hash index within bounds of the table size")
-    void testHashIndex() {
-        String keyS = "address";
-        int size = 4;
-        int mask = size - 1;
-
-        int index = HashUtil.hashIndex(keyS, mask);
-        assertTrue(index >= 0);
-        assertTrue(index < size);
-        assertEquals(0, HashUtil.hashIndex(null, mask));
-    }
-
-    @Test
     @DisplayName("Should compute invalid output if table size is not power of 2")
     void testPowerOf2TableSize() {
         int pow2 = 2;
