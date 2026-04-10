@@ -41,7 +41,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.13.0</version>
                 <configuration>
-                    <release>${java.version}</release>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.openjdk.jmh</groupId>
@@ -49,6 +50,12 @@
                             <version>${jmh.version}</version>
                         </path>
                     </annotationProcessorPaths>
+                    <compilerArgs>
+                        <arg>--add-exports=java.base/java.nio=ALL-UNNAMED</arg>
+                        <arg>--add-exports=java.base/sun.nio.ch=ALL-UNNAMED</arg>
+                        <arg>--add-exports=java.base/jdk.internal.ref=ALL-UNNAMED</arg>
+                        <arg>--add-exports=java.base/jdk.internal.access=ALL-UNNAMED</arg>
+                    </compilerArgs>
                 </configuration>
                 <executions>
                     <execution>
@@ -80,7 +87,6 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-<!--                            <includeTests>true</includeTests>-->
                             <finalName>benchmarks</finalName>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
@@ -115,6 +121,13 @@
                         <exclude>**/Abstract*.java</exclude>
                         <exclude>**/generated/*.java</exclude>
                     </excludes>
+                    <argLine>
+                        --enable-native-access=ALL-UNNAMED
+                        --add-opens=java.base/java.nio=ALL-UNNAMED
+                        --add-opens=java.base/sun.nio.ch=ALL-UNNAMED
+                        --add-opens=java.base/jdk.internal.ref=ALL-UNNAMED
+                        --add-opens=java.base/jdk.internal.access=ALL-UNNAMED
+                    </argLine>
                 </configuration>
             </plugin>
         </plugins>
