@@ -167,9 +167,4 @@ public class LinearOffHeapMap {
         while (cap < n) cap <<= 1;
         return cap;
     }
-
-    static void main() {
-        IO.println((double) 48/80);
-        IO.println(8 << 2);
-    }
 }
