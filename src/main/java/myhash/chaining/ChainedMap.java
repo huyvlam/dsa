@@ -62,7 +62,7 @@ public class ChainedMap<K, V> {
             while (cur != null) {
                 Entry<K, V> next = cur.next;
 
-                int index = HashUtil.hashIndex(cur.key, newMask);
+                int index = HashUtil.hash(cur.key) & newMask;
 
                 cur.next = newEntries[index];
                 newEntries[index] = cur;
@@ -77,7 +77,7 @@ public class ChainedMap<K, V> {
     }
 
     public V put(K key, V value) {
-        int index = HashUtil.hashIndex(key, mask);
+        int index = HashUtil.hash(key) & mask;
 
         Entry<K, V> head = entries[index];
         Entry<K, V> cur = head;
@@ -101,7 +101,7 @@ public class ChainedMap<K, V> {
     }
 
     public V get(K key) {
-        int index = HashUtil.hashIndex(key, mask);
+        int index = HashUtil.hash(key) & mask;
         Entry<K, V> cur = entries[index];
 
         while (cur != null) {
@@ -114,7 +114,7 @@ public class ChainedMap<K, V> {
     }
 
     public V remove(K key) {
-        int index = HashUtil.hashIndex(key, mask);
+        int index = HashUtil.hash(key) & mask;
         Entry<K, V> cur = entries[index];
         Entry<K, V> prev = null;
 
@@ -135,7 +135,7 @@ public class ChainedMap<K, V> {
     }
 
     public boolean containsKey(K key) {
-        int index = HashUtil.hashIndex(key, mask);
+        int index = HashUtil.hash(key) & mask;
         Entry<K, V> cur = entries[index];
 
         while (cur != null) {

@@ -23,9 +23,9 @@ public class DoubleMap<K, V> extends MonoFlatMap<K, V> {
 
     @Override
     public V remove(K key) {
-        int origIndex = hashIndex(key);
+        int orig = HashUtil.hash(key) & mask;
         int gap = 1;
-        int index = origIndex;
+        int index = orig;
         int stride = HashUtil.stride(key); // Cache to avoid repetitive computing
 
         while (table[index] != null && gap <= table.length) {
@@ -43,7 +43,7 @@ public class DoubleMap<K, V> extends MonoFlatMap<K, V> {
                 return removed;
             }
 
-            index = nextIndex(origIndex, gap, mask, stride);
+            index = nextIndex(orig, gap, mask, stride);
             gap++;
         }
         recordMetrics(gap, gap);
@@ -53,9 +53,9 @@ public class DoubleMap<K, V> extends MonoFlatMap<K, V> {
 
     @Override
     public V get(K key) {
-        int origIndex = hashIndex(key);
+        int orig = HashUtil.hash(key) & mask;
         int gap = 1;
-        int index = origIndex;
+        int index = orig;
         int stride = HashUtil.stride(key);
 
         while (table[index] != null && gap <= table.length) {
@@ -66,7 +66,7 @@ public class DoubleMap<K, V> extends MonoFlatMap<K, V> {
                 return cur.value;
             }
 
-            index = nextIndex(origIndex, gap, mask, stride);
+            index = nextIndex(orig, gap, mask, stride);
             gap++;
         }
         recordMetrics(gap, gap);
@@ -76,9 +76,9 @@ public class DoubleMap<K, V> extends MonoFlatMap<K, V> {
 
     @Override
     public boolean containsKey(K key) {
-        int origIndex = hashIndex(key);
+        int orig = HashUtil.hash(key) & mask;
         int gap = 1;
-        int index = origIndex;
+        int index = orig;
         int stride = HashUtil.stride(key);
 
         while (table[index] != null && gap <= table.length) {
@@ -89,7 +89,7 @@ public class DoubleMap<K, V> extends MonoFlatMap<K, V> {
                 return true;
             }
 
-            index = nextIndex(origIndex, gap, mask, stride);
+            index = nextIndex(orig, gap, mask, stride);
             gap++;
         }
         recordMetrics(gap, gap);
@@ -98,18 +98,18 @@ public class DoubleMap<K, V> extends MonoFlatMap<K, V> {
     }
 
     @Override
-    protected V probe(K key, V value, FlatNode<K, V>[] hashtable) {
-        int htMask = hashtable.length - 1;
-        int origIndex = HashUtil.hashIndex(key, htMask);
+    protected V probe(K key, V value, FlatNode<K, V>[] tab) {
+        int tabMask = tab.length - 1;
+        int orig = HashUtil.hash(key) & tabMask;
         int stride = HashUtil.stride(key);
         int gap = 1;
 
-        int index = origIndex;
+        int index = orig;
         int deletedIndex = -1;
         int deletedGap = -1;
 
-        while (gap <= hashtable.length) {
-            FlatNode<K, V> cur = hashtable[index];
+        while (gap <= tab.length) {
+            FlatNode<K, V> cur = tab[index];
 
             // Found empty slot
             if (cur == null) break;
@@ -130,13 +130,13 @@ public class DoubleMap<K, V> extends MonoFlatMap<K, V> {
             }
 
             // Probe for next slot
-            index = nextIndex(origIndex, gap, htMask, stride);
+            index = nextIndex(orig, gap, tabMask, stride);
             gap++;
         }
 
         // Reuse the tombstone we found (Lazy Substitution)
         if (deletedIndex != -1) {
-            FlatNode<K, V> reuse = hashtable[deletedIndex];
+            FlatNode<K, V> reuse = tab[deletedIndex];
             reuse.key = key;
             reuse.value = value;
             reuse.deleted = false;
@@ -146,8 +146,8 @@ public class DoubleMap<K, V> extends MonoFlatMap<K, V> {
         }
 
         // Use the slot if it is empty
-        if (hashtable[index] == null) {
-            hashtable[index] = new FlatNode<K, V>(key, value);
+        if (tab[index] == null) {
+            tab[index] = new FlatNode<K, V>(key, value);
             recordMetrics(gap, gap);
 
             return null;

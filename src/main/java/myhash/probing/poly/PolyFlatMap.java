@@ -160,9 +160,9 @@ public class PolyFlatMap<K, V> {
         return totalOperations == 0 ? 0 : (double) totalStorageDistance / totalOperations;
     }
 
-    private <K, V> V probe(K key, V value, FlatNode<K, V>[] hashtable) {
-        int htMask = hashtable.length - 1;
-        int origIndex = HashUtil.hashIndex(key, htMask);
+    private <K, V> V probe(K key, V value, FlatNode<K, V>[] tab) {
+        int tabMask = tab.length - 1;
+        int origIndex = HashUtil.hash(key) & tabMask;
         int gap = 1;
         int stride = strategy == DOUBLE ? HashUtil.stride(key) : 0;
 
@@ -170,8 +170,8 @@ public class PolyFlatMap<K, V> {
         int deletedIndex = -1;
         int deletedGap = -1;
 
-        while (gap <= hashtable.length) {
-            FlatNode<K, V> node = hashtable[index];
+        while (gap <= tab.length) {
+            FlatNode<K, V> node = tab[index];
 
             // Found empty slot, stop
             if (node == null) break;
@@ -192,13 +192,13 @@ public class PolyFlatMap<K, V> {
             }
 
             // Probe for next slot
-            index = strategy.nextIndex(origIndex, gap, htMask, stride);
+            index = strategy.nextIndex(origIndex, gap, tabMask, stride);
             gap++;
         }
 
         // Reuse the tombstone we found (Lazy Substitution)
         if (deletedIndex != -1) {
-            FlatNode<K, V> reuse = hashtable[deletedIndex];
+            FlatNode<K, V> reuse = tab[deletedIndex];
             reuse.key = key;
             reuse.value = value;
             reuse.deleted = false;
@@ -208,8 +208,8 @@ public class PolyFlatMap<K, V> {
         }
 
         // Use the slot if it is empty
-        if (hashtable[index] == null) {
-            hashtable[index] = new FlatNode<K, V>(key, value);
+        if (tab[index] == null) {
+            tab[index] = new FlatNode<K, V>(key, value);
             recordMetrics(gap, gap);
 
             return null;
@@ -220,7 +220,7 @@ public class PolyFlatMap<K, V> {
     }
 
     private <K, V> void probe(K key, Predicate<FlatNode<K, V>> action) {
-        int origIndex = HashUtil.hashIndex(key, mask);
+        int origIndex = HashUtil.hash(key) & mask;
         int gap = 1;
         int stride = strategy == DOUBLE ? HashUtil.stride(key) : 0;
         int index = origIndex;

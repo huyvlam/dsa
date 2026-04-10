@@ -2,14 +2,13 @@ package myhash;
 
 public class HashUtil {
     /**
-     * Compute the hashcode index using mod table size
+     * Compute a hashcode index
      *
      * @param key   key to be converted
-     * @param mask  table size - 1 (* this allows caller to cache the subtraction)
-     * @return      an index within legal bounds of table size
+     * @return      an index well spread out to minimize clustering
      * @param <K>   key type
      */
-    public static <K> int hashIndex(K key, int mask) {
+    public static <K> int hash(K key) {
         int hash = key == null ? 0 : key.hashCode();
 
         // mix up bits for even distribution (minimize clustering)
@@ -19,7 +18,7 @@ public class HashUtil {
 //        return (hash & 0x7FFFFFFF) % size;
 
         // & (size - 1) optimize mod % size (MUST be a power of 2)
-        return hash & mask;
+        return hash;
     }
 
     /**
