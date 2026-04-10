@@ -10,7 +10,7 @@ public class LinearOffHeapMap {
     private int size;
 
     private static final int ENTRY_SIZE = 16; // (K) 8 bytes + (V) 8 bytes
-    private static final long EMPTY_SLOT = 0L;
+    private static final long EMPTY = 0L;
     private static final double LOAD_FACTOR = 0.6;
 
     public LinearOffHeapMap(int capacity) {
@@ -31,11 +31,11 @@ public class LinearOffHeapMap {
             int offset = i * ENTRY_SIZE;
             long key = buffer.getLong(offset);
 
-            if (key != EMPTY_SLOT) {
+            if (key != EMPTY) {
                 int newIndex = hash(key) & newMask;
                 int newOffset = newIndex * ENTRY_SIZE;
 
-                while (newBuffer.getLong(newOffset) != EMPTY_SLOT) {
+                while (newBuffer.getLong(newOffset) != EMPTY) {
                     newIndex = (newIndex + 1) & newMask;
                     newOffset = newIndex * ENTRY_SIZE;
                 }
@@ -51,9 +51,9 @@ public class LinearOffHeapMap {
     }
 
     public void put(long key, long value) {
-        if (key == EMPTY_SLOT) throw new IllegalArgumentException("Key cannot be 0");
+        if (key == EMPTY) throw new IllegalArgumentException("Key cannot be 0");
 
-        if ((size << 2) > (capacity * 3)) {
+        if (size >= capacity * LOAD_FACTOR) {
             resize();
         }
 
@@ -68,7 +68,7 @@ public class LinearOffHeapMap {
                 return;
             }
 
-            if (curKey == EMPTY_SLOT) {
+            if (curKey == EMPTY) {
                 buffer.putLong(offset, key);
                 buffer.putLong(offset + 8, value);
                 size++;
@@ -87,7 +87,7 @@ public class LinearOffHeapMap {
         while (true) {
             long curKey = buffer.getLong(offset);
 
-            if (curKey == EMPTY_SLOT) return -1L;
+            if (curKey == EMPTY) return -1L;
             if (curKey == key) return buffer.getLong(offset + 8);
 
             index = (index + 1) & mask;
@@ -103,7 +103,7 @@ public class LinearOffHeapMap {
         while (true) {
             curKey = buffer.getLong(offset);
 
-            if (curKey == EMPTY_SLOT) return -1L;
+            if (curKey == EMPTY) return -1L;
             if (curKey == key) break;
 
             index = (index + 1) & mask;
@@ -121,7 +121,7 @@ public class LinearOffHeapMap {
             curKey = buffer.getLong(offset);
 
             // Next slot if empty, stop searching
-            if (curKey == EMPTY_SLOT) break;
+            if (curKey == EMPTY) break;
 
             // The ideal slot that current key likes to occupy
             int ideal = hash(curKey) & mask;
@@ -138,8 +138,8 @@ public class LinearOffHeapMap {
 
         // Finally free up the vacant slot
         offset = vacant * ENTRY_SIZE;
-        buffer.putLong(offset, EMPTY_SLOT);
-        buffer.putLong(offset + 8, EMPTY_SLOT);
+        buffer.putLong(offset, EMPTY);
+        buffer.putLong(offset + 8, EMPTY);
         size--;
 
         return removedValue;
@@ -166,5 +166,10 @@ public class LinearOffHeapMap {
         int cap = 1;
         while (cap < n) cap <<= 1;
         return cap;
+    }
+
+    static void main() {
+        IO.println((double) 48/80);
+        IO.println(8 << 2);
     }
 }
