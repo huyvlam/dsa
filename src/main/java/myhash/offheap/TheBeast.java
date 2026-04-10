@@ -4,41 +4,49 @@ import sun.misc.Unsafe;
 import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class LinearConcurrentMap {
+public class TheBeast {
     private static class Table {
         private static final long ADDRESS_OFFSET;
         static {
             try {
+                // Requires --add-opens=java.base/java.nio=ALL-UNNAMED
                 Field addressField = java.nio.Buffer.class.getDeclaredField("address");
                 addressField.setAccessible(true);
                 ADDRESS_OFFSET = unsafe.objectFieldOffset(addressField);
             } catch (Exception e) {
-                throw new Error(e);
+                throw new Error("The Beast cannot see into java.nio. Check your --add-opens flags.", e);
             }
         }
 
-        final ByteBuffer buffer; // Bytes data storage
+        final ByteBuffer buffer;
         final int capacity;
         final int mask;
         final long baseAddress;
-        volatile Table next; // Only non-null during resize
+        volatile Table next;
 
-        // Track the next chunk to be moved (count downwards from capacity)
         final AtomicInteger transferIndex;
-        // Track how many threads are currently helping
         final AtomicInteger activeTransferThreads;
 
         Table(ByteBuffer buffer, int capacity) {
             this.buffer = buffer;
             this.capacity = capacity;
-            mask = capacity - 1;
-            baseAddress = unsafe.getLong(buffer, ADDRESS_OFFSET);
-            transferIndex = new AtomicInteger(this.capacity);
-            activeTransferThreads = new AtomicInteger(0);
+            this.mask = capacity - 1;
+            this.transferIndex = new AtomicInteger(capacity);
+            this.activeTransferThreads = new AtomicInteger(0);
+
+            // 1. Get the raw memory address
+            this.baseAddress = unsafe.getLong(buffer, ADDRESS_OFFSET);
+
+            // 2. Safety Check: Ensure we aren't zeroing memory at address 0
+            if (baseAddress == 0) {
+                throw new IllegalStateException("Buffer address is 0. Is the buffer direct?");
+            }
+
+            // 3. ZERO FILL: Use 'null' for absolute address and cast to long for safety
+            long totalSize = HEADER_SIZE + ((long) capacity * ENTRY_SIZE);
+            unsafe.setMemory(null, baseAddress, totalSize, (byte) 0);
         }
 
         static void moveSlot(Table curTab, Table newTab, int index) {
@@ -123,16 +131,10 @@ public class LinearConcurrentMap {
     private static final long MOVED = Long.MAX_VALUE;
     private static final double LOAD_FACTOR = 0.6;
 
-    public LinearConcurrentMap(int capacity) {
+    public TheBeast(int capacity) {
         int tabSize = tableSize(capacity);
         ByteBuffer buffer = ByteBuffer.allocateDirect(HEADER_SIZE + (tabSize * ENTRY_SIZE))
                 .order(ByteOrder.nativeOrder());
-
-        // Explicitly zero-fill the header and slots if necessary.
-        // Most OSs do this, but we leave nothing to chance.
-        unsafe.setMemory(((sun.nio.ch.DirectBuffer)buffer).address(),
-                HEADER_SIZE + (tabSize * ENTRY_SIZE), (byte) 0);
-
         this.table = new Table(buffer, tabSize);
     }
 
@@ -156,7 +158,27 @@ public class LinearConcurrentMap {
         Table tab = this.table;
 
         // Manually free the memory
-         ((sun.nio.ch.DirectBuffer)tab.buffer).cleaner().clean();
+        freeBuffer(tab.buffer);
+    }
+
+    private static void freeBuffer(ByteBuffer buffer) {
+        if (buffer instanceof sun.nio.ch.DirectBuffer) {
+            try {
+                // JDK 25 safe approach
+                ((sun.nio.ch.DirectBuffer) buffer).cleaner().clean();
+            } catch (Exception e) {
+                // If the above fails due to module restrictions, use this fallback:
+                try {
+                    java.lang.reflect.Method cleanerMethod = buffer.getClass().getMethod("cleaner");
+                    cleanerMethod.setAccessible(true);
+                    Object cleaner = cleanerMethod.invoke(buffer);
+                    java.lang.reflect.Method cleanMethod = cleaner.getClass().getMethod("clean");
+                    cleanMethod.invoke(cleaner);
+                } catch (Exception ex) {
+                    throw new Error(ex);
+                }
+            }
+        }
     }
 
     public long get(long key) {
