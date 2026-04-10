@@ -24,52 +24,44 @@ public class LinearMap<K, V> extends MonoFlatMap<K, V> {
     // Backshifting enables faster 'put' for linear probe
     @Override
     public V remove(K key) {
-        int origIndex = indexFor(key);
-        int gap = 1;
+        int origIndex = hashIndex(key);
         int index = origIndex;
+        int gap = 1;
 
-        while (table[index] != null && gap <= table.length) {
+        while (true) {
             FlatNode<K, V> cur = table[index];
 
-            // Found the key
-            if (Object.equals(cur.key, key)) {
-                V removed = cur.value;
-                int vacant = index;
-
-                // Backshift
-                while (true) {
-                    index = (index + 1) & mask;
-                    cur = table[index];
-
-                    if (cur == null) break;
-
-                    int ideal = indexFor(cur.key);
-
-                    // Move current forward
-                    if (!isBetween(vacant, index, ideal)) {
-                        table[vacant] = table[index];
-                        vacant = index;
-                    }
-                }
-                // Release the vacant spot
-                table[vacant] = null;
-                size--;
-                recordMetrics(gap, gap);
-
-                return removed;
-            }
+            if (cur == null) return -1L;
+            if (Objects.equals(cur.key, key)) break;
 
             index = nextIndex(origIndex, gap, mask);
-            gap++;
         }
-        recordMetrics(gap, gap);
 
-        return null;
+        V removed = cur.value;
+        int vacant = index;
+
+        while (true) {
+            index = (index + 1) & mask;
+            cur = table[index];
+
+            if (cur == null) break;
+
+            int ideal = hashIndex(cur.key);
+
+            if (!isBetween(vacant, index, ideal)) {
+                table[vacant] = table[index];
+                vacant = index;
+            }
+        }
+
+        table[vacant] = null;
+        size--;
+
+        return removed;
     }
 
     private boolean isBetween(int vacant, int cur, int ideal) {
         if (vacant <= cur) return vacant < ideal && ideal <= cur;
-
-        return vacant < ideal || ideal <= cur;
+        return vacant < ideal && ideal <= cur;
     }
 }
