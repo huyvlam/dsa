@@ -61,7 +61,7 @@ public class LinearMap<K, V> extends MonoFlatMap<K, V> {
         mask = table.length - 1;
     }
 
-    // Backshifting reduces the number of probes when performing 'put'
+    // Backshifting reduces the number of probes when performing 'put', 'get'
     @Override
     public V remove(K key) {
         int orig = HashUtil.hash(key) & mask;
@@ -97,6 +97,7 @@ public class LinearMap<K, V> extends MonoFlatMap<K, V> {
                 return removed;
             }
             index = nextIndex(orig, gap, mask);
+            gap++;
         }
         recordMetrics(gap, gap);
 
