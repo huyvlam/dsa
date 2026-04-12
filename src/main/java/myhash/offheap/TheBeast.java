@@ -175,6 +175,7 @@ public class TheBeast {
     static final long MOVED = Long.MAX_VALUE;
     private static final double LOAD_FACTOR = 0.6;
     private static final int TRANSFER_STRIDE = 64; // Number of slots to transfer. Use 64 to minimize contention on 'transferIndex'
+    private static final int MAX_CAPACITY = 1 << 30;
 
     public TheBeast(int capacity) {
         this.table = new Table(tableSize(capacity));
@@ -182,14 +183,12 @@ public class TheBeast {
 
     // Clean up buffer stored data
     public void clear() {
-        Table tab = this.table;
-        tab.clear();
+        this.table.clear();
     }
 
     // Manual Memory Management: close out everything
     public void destroy() {
-        Table tab = this.table;
-        tab.destroy();
+        this.table.destroy();
     }
 
     public long get(long key) {
@@ -299,6 +298,8 @@ public class TheBeast {
 
     private void resize() {
         Table curTab = this.table;
+
+        if (curTab.capacity == MAX_CAPACITY) return;
 
         // If a resize already occurs, move to transfer
         if (curTab.next != null) {
@@ -429,9 +430,13 @@ public class TheBeast {
     }
 
     private static int tableSize(int n) {
-        int cap = 1;
-        while (cap < n) cap <<= 1;
-        return cap;
+        int cap = n - 1;
+        cap |= cap >>> 1;
+        cap |= cap >>> 2;
+        cap |= cap >>> 4;
+        cap |= cap >>> 8;
+        cap |= cap >>> 16;
+        return (cap < 0) ? 1 : (cap >= MAX_CAPACITY) ? MAX_CAPACITY : cap + 1;
     }
 }
 
