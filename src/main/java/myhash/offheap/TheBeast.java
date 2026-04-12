@@ -193,7 +193,7 @@ public class TheBeast {
     }
 
     public long get(long key) {
-        if (key == EMPTY || key == REMOVED) throw new IllegalArgumentException("Illegal key: " + key);
+        if (key == EMPTY || key == REMOVED) return -1L;
 
         Table curTab = this.table;
         final int hash = hash(key);
@@ -236,84 +236,82 @@ public class TheBeast {
         Table curTab = this.table;
         final int hash = hash(key);
 
-        if (size() >= curTab.capacity * LOAD_FACTOR) {
-            resize();
-            curTab = this.table;
-        }
-
-        int index = hash & curTab.mask;
-        long tombstoneAddress = -1L;
-
         while (true) {
-            // Buffer raw memory address of this key
-            long keyAddress = slotAddress(index, curTab.baseAddress);
-            // Read the key currently at this address
-            long curKey = unsafe.getLongVolatile(null, keyAddress);
-
-            // Key is being moved to new buffer
-            if (curKey == MOVED) {
-                transfer(curTab); // Help with the resize
-                curTab = this.table; // Switch to new table
-                index = hash & curTab.mask; // Rehash using new table mask
-                tombstoneAddress = -1L; // Reset the tombstone since it is now the new table
-                continue; // Start the loop over
+            if (size() >= curTab.capacity * LOAD_FACTOR) {
+                resize();
+                curTab = this.table;
             }
 
-            // Key found, update value
-            if (curKey == key) {
-                // `putOrderedLong` ensures other threads see the change immediately
-                unsafe.putOrderedLong(null, keyAddress + VALUE_OFFSET, value);
-                return;
-            }
+            int index = hash & curTab.mask;
+            long tombstoneAddress = -1L;
 
-            // Found a tombstone, save the address for reuse
-            if (curKey == REMOVED && tombstoneAddress == -1L) {
-                tombstoneAddress = keyAddress;
-            }
+            while (true) {
+                long keyAddress = slotAddress(index, curTab.baseAddress);
+                long curKey = unsafe.getLongVolatile(null, keyAddress);
 
-            // Found an empty slot
-            if (curKey == EMPTY) {
-                long address, slot;
-
-                if (tombstoneAddress != -1L) {
-                    // We have a tombstone, use it
-                    address = tombstoneAddress;
-                    slot = REMOVED;
-                } else {
-                    address = keyAddress;
-                    slot = EMPTY;
+                // Key is being moved to new buffer
+                if (curKey == MOVED) {
+                    transfer(curTab); // Help with the resize
+                    curTab = this.table; // Switch to new table
+                    break; // Stop inner loop to start over on new table
                 }
 
-                // We claim the slot by swapping w/ the key
-                if (unsafe.compareAndSwapLong(null, address, slot, key)) {
-                    // `putOrderedLong` handles CAS failure by starting a new probe
-                    unsafe.putOrderedLong(null, address + VALUE_OFFSET, value);
-                    updateSize(1);
+                // Key found, update value
+                if (curKey == key) {
+                    // Ensures the change is seen immediately
+                    unsafe.putLongVolatile(null, keyAddress + VALUE_OFFSET, value);
                     return;
                 }
 
-                // If CAS fails, other threads took the slot.
-                // We must stay on this index to see what is put there.
-                continue;
-            }
+                // Found a tombstone, save the address for reuse
+                if (curKey == REMOVED && tombstoneAddress == -1L) {
+                    tombstoneAddress = keyAddress;
+                }
 
-            index = (index + 1) & curTab.mask;
+                // Found an empty slot, insert
+                if (curKey == EMPTY) {
+                    long address, slot;
+
+                    if (tombstoneAddress != -1L) {
+                        // We have a tombstone, use it
+                        address = tombstoneAddress;
+                        slot = REMOVED;
+                    } else {
+                        address = keyAddress;
+                        slot = EMPTY;
+                    }
+
+                    // We claim the slot by swapping w/ the key
+                    if (unsafe.compareAndSwapLong(null, address, slot, key)) {
+                        unsafe.putLongVolatile(null, address + VALUE_OFFSET, value);
+                        updateSize(1);
+                        return;
+                    }
+
+                    // If CAS fails, restart on this index to see what is put there.
+                    break;
+                }
+
+                index = (index + 1) & curTab.mask;
+            }
         }
     }
 
     private void resize() {
         Table curTab = this.table;
 
-        // Ensure only ONE thread creates the new table
-        if (curTab.next == null) {
-            Table newTab = new Table(curTab.capacity * 2);
-
-            // Claim the current table for resizing, assign new table to 'next'
-            // However, if other threads took it already then move onto transfer
-            unsafe.compareAndSwapObject(curTab, tableNextOffset, null, newTab);
+        // If a resize already occurs, move to transfer
+        if (curTab.next != null) {
+            transfer(curTab);
+            return;
         }
 
-        // Every threads help move data to new table
+        Table newTab = new Table(curTab.capacity * 2);
+        // If we can't claim the current table
+        if (!unsafe.compareAndSwapObject(curTab, tableNextOffset, null, newTab)) {
+            newTab.destroy(); // Destroy the new table and move to transfer
+        };
+
         transfer(curTab);
     }
 
@@ -359,27 +357,40 @@ public class TheBeast {
 
     // Tombstone
     public long remove(long key) {
-        if (key == EMPTY || key == REMOVED) throw new IllegalArgumentException("Illegal key: " + key);
+        if (key == EMPTY || key == REMOVED) return -1L;
 
         Table curTab = this.table;
-        int index = hash(key) & curTab.mask;
+        final int hash = hash(key);
 
         while (true) {
-            long keyAddress = slotAddress(index, curTab.baseAddress);
-            long curKey = unsafe.getLongVolatile(null, keyAddress);
+            int index = hash & curTab.mask;
 
-            if (curKey == EMPTY) return -1L;
+            while (true) {
+                long keyAddress = slotAddress(index, curTab.baseAddress);
+                long curKey = unsafe.getLongVolatile(null, keyAddress);
 
-            if (curKey == key) {
-                if (unsafe.compareAndSwapLong(null, keyAddress, key, REMOVED)) {
+                if (curKey == EMPTY) return -1L;
+
+                if (curKey == key) {
                     long removedValue = unsafe.getLongVolatile(null, keyAddress + VALUE_OFFSET);
-                    unsafe.putOrderedLong(null, keyAddress + VALUE_OFFSET, REMOVED);
-                    updateSize(-1);
-                    return removedValue;
-                }
-            }
 
-            index = (index + 1) & curTab.mask;
+                    if (unsafe.compareAndSwapLong(null, keyAddress, key, REMOVED)) {
+                        unsafe.putLongVolatile(null, keyAddress + VALUE_OFFSET, EMPTY);
+                        updateSize(-1);
+                        return removedValue;
+                    }
+                    // CAS fail, rehash on new table
+                    break;
+                }
+
+                if (curKey == MOVED) {
+                    transfer(curTab);
+                    curTab = this.table;
+                    break; // Rehash on new table
+                }
+
+                index = (index + 1) & curTab.mask;
+            }
         }
     }
 
