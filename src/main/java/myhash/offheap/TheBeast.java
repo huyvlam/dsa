@@ -100,13 +100,13 @@ public class TheBeast {
                 // Slot already moved
                 if (curKey == MOVED) return;
 
-                // Grab the current data
+                // 1. Grab the current data
                 long val = unsafe.getLongVolatile(null, curAddress + VALUE_OFFSET);
 
-                // Move the current data into new table
+                // 2. Move the current data into new table
                 insert(newTab, curKey, val);
 
-                // Seal the current slot as MOVED
+                // 3. Seal the current slot as MOVED
                 if (unsafe.compareAndSwapLong(null, curAddress, curKey, MOVED)) {
                     return; // CAS successful, DONE
                 }
@@ -127,7 +127,7 @@ public class TheBeast {
                         return;
                     }
                 } else if (curKey == key) {
-                    // Though this should not happen, we still have it for safety
+                    // This should not happen, but we still have it for safety
                     unsafe.putOrderedLong(null, keyAddress + VALUE_OFFSET, value);
                     return;
                 }
@@ -164,17 +164,17 @@ public class TheBeast {
         }
     }
 
-    volatile Table table; // Holds current buffer and newly created buffer during resize
+    volatile Table table; // Current buffer and newly created buffer for resize
 
-    static final int HEADER_SIZE = 64; // Storage reserved for counting number of entries (size)
+    static final int HEADER_SIZE = 64; // Store number of entries count (size)
     static final int ENTRY_SIZE = 16; // (K) 8 bytes + (V) 8 bytes
     static final int VALUE_OFFSET = 8;
-    static final int SIZE_OFFSET = 0; // The position where size is stored
+    static final int SIZE_OFFSET = 0; // Slot where size is stored
     static final long EMPTY = 0L;
     static final long REMOVED = -1L;
     static final long MOVED = Long.MAX_VALUE;
     private static final double LOAD_FACTOR = 0.6;
-    private static final int TRANSFER_STRIDE = 64; // Transfer 64 slots at a time to reduce counter contention
+    private static final int TRANSFER_STRIDE = 64; // Number of slots to transfer. Use 64 to minimize contention on 'transferIndex'
 
     public TheBeast(int capacity) {
         this.table = new Table(tableSize(capacity));
@@ -319,47 +319,40 @@ public class TheBeast {
 
     private void transfer(Table curTab) {
         Table newTab = curTab.next;
+        if (newTab == null) return; // Resize has not started yet
 
-        // Resize has not started yet
-        if (newTab == null) return;
+        int oldCap = curTab.capacity;
+        int stride = (oldCap > TRANSFER_STRIDE) ? TRANSFER_STRIDE : oldCap;
 
         // Register as an active helper
         curTab.activeTransferThreads.incrementAndGet();
 
         try {
-            while (true) {
-                // 1. Grab a stride of 64 slots at a time to move
-                // Threads count from capacity down to zero
-                int end = curTab.transferIndex.getAndAdd(-TRANSFER_STRIDE);
+            int end;
 
-                // No more slot to move
-                if (end <= 0) break;
+            // 1. Grab a stride of 64 slots at a time to move
+            // Threads count from capacity down to zero
+            while ((end = curTab.transferIndex.get()) > 0) {
+                int start = Math.max(0, end - stride);
 
-                int start = Math.max(0, end - TRANSFER_STRIDE);
-
-                // 2. Start moving the slots we grabbed
-                // Iterate right to left
-                for (int i = end - 1; i >= start; i--) {
-                    Table.moveSlot(curTab, newTab, i);
+                // 2. Claim the range we will work on
+                if (curTab.transferIndex.compareAndSet(end, start)) {
+                    // 3. Start moving the slots (right to left)
+                    for (int i = end - 1; i >= start; i--) {
+                        Table.moveSlot(curTab, newTab, i);
+                    }
                 }
             }
         } finally {
-            // 3. Last one out turns off the lights
+            // 4. Update pointer and clean up old table memory
             if (curTab.activeTransferThreads.decrementAndGet() == 0) {
                 // Capture the size of current table
-                long curSize = unsafe.getLongVolatile(null, curTab.baseAddress + SIZE_OFFSET);
+                long size = unsafe.getLongVolatile(null, curTab.baseAddress + SIZE_OFFSET);
+                // Update the new table with the captured size
+                unsafe.getAndAddLong(null, newTab.baseAddress + SIZE_OFFSET, size);
 
-                // Update the new table with current table size
-                unsafe.getAndAddLong(null, newTab.baseAddress + SIZE_OFFSET, curSize);
-
-                // Swap the new table w/ current
+                // Set the global pointer to new table
                 this.table = newTab;
-
-                // Zero out the size in old table to prevent double counting
-                unsafe.putOrderedLong(null, curTab.baseAddress + SIZE_OFFSET, 0L);
-
-                // Unlink the the old table from new one
-                curTab.next = null;
             }
         }
     }
