@@ -1,6 +1,7 @@
 package myhash.offheap;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -15,7 +16,8 @@ class TheBeastTest {
     }
 
     @Test
-    void testQuietMoveSlot() {
+    @DisplayName("Should move slot from old table to new table")
+    void testMoveSlot() {
         capacity = 2;
         beast = new TheBeast(capacity);
         TheBeast.Table newTab = new TheBeast.Table(capacity * 2);
@@ -43,7 +45,7 @@ class TheBeastTest {
         long newEmptySlot = TheBeast.slotAddress(newEmptyIndex, newTab.baseAddress);
         assertEquals(TheBeast.EMPTY, TheBeast.unsafe.getLongVolatile(null, newEmptySlot));
 
-        // Case 2. Test original data love
+        // Case 2. Test slot filled with original data
         int origIndex = TheBeast.hash(keys[0]) & beast.table.mask;
         long origSlot = TheBeast.slotAddress(origIndex, beast.table.baseAddress);
 
@@ -61,29 +63,64 @@ class TheBeastTest {
         long newSlot = TheBeast.slotAddress(newIndex, newTab.baseAddress);
         assertEquals(value, TheBeast.unsafe.getLongVolatile(null, newSlot + TheBeast.VALUE_OFFSET));
 
-        beast.clear();
         beast.destroy();
-        newTab.clear();
         newTab.destroy();
     }
 
-//    @Test
-//    void verifyTransferIndexMath() {
-//        // Force a key into the last slot (index 7)
-//        long keyThatHashesToSeven = 7L; // Simplified for the test
-//        beast.put(keyThatHashesToSeven, 12345L);
-//
-//        Table oldTab = beast.table;
-//        Table newTab = new Table(ByteBuffer.allocateDirect(...), 16);
-//
-//        // Simulate one stride execution
-//        int startIdx = oldTab.transferIndex.get(); // Should be 8
-//        beast.moveSlot(startIdx - 1, oldTab, newTab); // Move index 7
-//
-//        // Assertions
-//        long keyAtOld = unsafe.getLongVolatile(null, oldTab.baseAddress + HEADER_SIZE + (7 * ENTRY_SIZE));
-//        assertEquals(MOVED_SENTINEL, keyAtOld, "Old slot should be marked MOVED");
-//
-//        assertEquals(12345L, beast.getFromTable(keyThatHashesToSeven, newTab), "Value should be in new table");
-//    }
+    @Test
+    @DisplayName("Should return the starting position for the range of transfer slots")
+    void verifyTransferIndexMath() {
+        int cap = 16;
+        TheBeast.Table oldTab = new TheBeast.Table(cap);
+        TheBeast.Table newTab = new TheBeast.Table(cap * 2);
+
+        long[] keys = {
+                10L,  // Bottom boundary
+                7L,  // Middle
+                15L  // Top boundary
+        };
+        for (long k : keys) {
+            TheBeast.Table.insert(oldTab, k, k + 100);
+        }
+
+        // Mocking the transfer loop
+        int stride = 4;
+        while (true) {
+            int currentIdx = oldTab.transferIndex.get();
+            if (currentIdx <= 0) break;
+
+            int nextIdx = Math.max(0, currentIdx - stride);
+            if (oldTab.transferIndex.compareAndSet(currentIdx, nextIdx)) {
+                for (int i = currentIdx - 1; i >= nextIdx; i--) {
+                    TheBeast.Table.moveSlot(oldTab, newTab, i);
+                }
+            }
+        }
+
+        for (long k : keys) {
+            // Verify old table is sealed
+            int idx = TheBeast.hash(k) & oldTab.mask;
+            assertEquals(TheBeast.MOVED, TheBeast.unsafe.getLongVolatile(null, TheBeast.slotAddress(idx, oldTab.baseAddress)));
+
+            // Verify data is in new table
+            long foundVal = -1;
+            int probeIdx = TheBeast.hash(k) & newTab.mask;
+            while (true) {
+                long probeAddress = TheBeast.slotAddress(probeIdx, newTab.baseAddress);
+                long probeKey = TheBeast.unsafe.getLongVolatile(null, probeAddress);
+
+                if (probeKey == k) {
+                    foundVal = TheBeast.unsafe.getLongVolatile(null, probeAddress + TheBeast.VALUE_OFFSET);
+                    break;
+                }
+
+                if (probeKey == TheBeast.EMPTY) break;
+
+                probeIdx = (probeIdx + 1) & newTab.mask;
+            }
+            assertEquals(k + 100, foundVal, "Value not found for key: " + k);
+        }
+
+        assertEquals(0, oldTab.transferIndex.get(), "Transfer index should be exactly 0");
+    }
 }
