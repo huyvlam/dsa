@@ -2,6 +2,7 @@ package myhash.offheap;
 
 import sun.misc.Unsafe;
 import java.lang.reflect.Field;
+import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -231,6 +232,9 @@ public class TheBeast {
 
     public void put(long key, long value) {
         if (key == EMPTY || key == REMOVED) throw new IllegalArgumentException("Illegal key: " + key);
+
+        // The Beast cannot go over this limit
+        if (this.table.capacity >= MAX_CAPACITY) throw new Error("Maximum capacity reached.");
 
         Table curTab = this.table;
         final int hash = hash(key);
