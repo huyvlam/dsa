@@ -146,6 +146,7 @@ public class TheBeast {
     }
 
     static final Unsafe unsafe; // Enable access of ByteBuffer raw memory address
+    private static final long tableOffset;
     private static final long tableNextOffset;
 
     static {
@@ -154,13 +155,19 @@ public class TheBeast {
             unsafeField.setAccessible(true);
             unsafe = (Unsafe) unsafeField.get(null);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Cannot find field 'unsafe': " + e);
+        }
+
+        try {
+            tableOffset = unsafe.objectFieldOffset(TheBeast.class.getDeclaredField("table"));
+        } catch (Exception e) {
+            throw new Error("Cannot find field 'table': " + e);
         }
 
         try {
             tableNextOffset = unsafe.objectFieldOffset(Table.class.getDeclaredField("next"));
         } catch (Exception e) {
-            throw new Error(e);
+            throw new Error("Cannot find field 'next': " + e);
         }
     }
 
@@ -175,7 +182,7 @@ public class TheBeast {
     static final long MOVED = Long.MAX_VALUE;
     private static final double LOAD_FACTOR = 0.6;
     private static final int TRANSFER_STRIDE = 64; // Number of slots to transfer. Use 64 to minimize contention on 'transferIndex'
-    private static final int MAX_CAPACITY = 1 << 30;
+    private static final int MAX_CAPACITY = 1 << 27; // Keep the buffer limit under 2GB
 
     public TheBeast(int capacity) {
         this.table = new Table(tableSize(capacity));
@@ -354,7 +361,7 @@ public class TheBeast {
                 unsafe.getAndAddLong(null, newTab.baseAddress + SIZE_OFFSET, size);
 
                 // Set the global pointer to new table
-                this.table = newTab;
+                unsafe.putObjectVolatile(this, tableOffset, newTab);
             }
         }
     }
@@ -399,18 +406,8 @@ public class TheBeast {
     }
 
     public long size() {
-        Table curTab = this.table;
-        Table nextTab = curTab.next;
-
-        // Get size of current table
-        long size = unsafe.getLongVolatile(null, curTab.baseAddress + SIZE_OFFSET);
-
-        // If a resize is happening, combine size of both current and new table
-        if (nextTab != null) {
-            size += unsafe.getLongVolatile(null, nextTab.baseAddress + SIZE_OFFSET);
-        }
-
-        return size;
+        Table activeTab = (Table) unsafe.getObjectVolatile(this, tableOffset);
+        return unsafe.getLongVolatile(null, activeTab.baseAddress + SIZE_OFFSET);
     }
 
     private void updateSize(int delta) {
