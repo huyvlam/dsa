@@ -2,7 +2,6 @@ package myhash.offheap;
 
 import sun.misc.Unsafe;
 import java.lang.reflect.Field;
-import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -188,7 +187,7 @@ public class TheBeast {
     }
 
     // Manual Memory Management: close out everything
-    public void destroy() {
+    public void close() {
         this.table.destroy();
     }
 
