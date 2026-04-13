@@ -301,7 +301,7 @@ public class TheBeast {
                 long slotAddress = (tombstoneAddress == -1L) ? keyAddress : tombstoneAddress;
                 long slotKey = (tombstoneAddress == -1L) ? EMPTY: REMOVED;
 
-                // We claim the slot by swapping w/ the key
+                // Seal the empty slot then insert the value
                 if (unsafe.compareAndSwapLong(null, slotAddress, slotKey, key)) {
                     unsafe.putLongVolatile(null, slotAddress + VALUE_OFFSET, value);
                     curTab.updateSize(1);
@@ -365,15 +365,15 @@ public class TheBeast {
         } finally {
             // 4. Swap table pointer and count
             if (curTab.activeTransferThreads.decrementAndGet() == 0) {
-                // Set the global pointer to new table
-                unsafe.putObjectVolatile(this, tableOffset, newTab);
-
-                // Capture the size of current table
-                // We use getAndSetLong to clear size after reading and avoid duplicate count by concurrent threads
+                // Step 1: Capture the size of current table
+                // We use getAndSetLong to drain size after reading and avoid duplicate count by concurrent threads
                 long size = unsafe.getAndSetLong(null, curTab.baseAddress + SIZE_OFFSET, 0L);
 
-                // Update the new table with the captured size
+                // Step 2: Update the new table with the captured size
                 newTab.updateSize((int) size);
+
+                // Step 3: Set the global pointer to new table
+                unsafe.putObjectVolatile(this, tableOffset, newTab);
             }
         }
     }
