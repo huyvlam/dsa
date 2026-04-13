@@ -1,8 +1,15 @@
 package myhash.offheap;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -63,7 +70,7 @@ class TheBeastTest {
         long newSlot = TheBeast.slotAddress(newIndex, newTab.baseAddress);
         assertEquals(value, TheBeast.unsafe.getLongVolatile(null, newSlot + TheBeast.VALUE_OFFSET));
 
-        beast.destroy();
+        beast.close();
         newTab.destroy();
     }
 
@@ -122,5 +129,56 @@ class TheBeastTest {
         }
 
         assertEquals(0, oldTab.transferIndex.get(), "Transfer index should be exactly 0");
+
+        oldTab.destroy();
+        newTab.destroy();
+    }
+
+    @Test
+    @DisplayName("Should print the stress test result for 8 concurrent threads")
+    void theBeastSafeSpotlight() throws InterruptedException {
+        final int THREAD_COUNT = 8;
+        // 100k items per thread = 800k total.
+        // This is small enough to run fast, but large enough to trigger multiple resizes.
+        final int ITEMS_PER_THREAD = 100_000;
+        final int TOTAL_ITEMS = THREAD_COUNT * ITEMS_PER_THREAD;
+
+        // Start small to force the resize logic to trigger immediately
+        TheBeast beast = new TheBeast(16);
+
+        ExecutorService executor = Executors.newFixedThreadPool(THREAD_COUNT);
+        CountDownLatch latch = new CountDownLatch(1);
+
+        for (int t = 0; t < THREAD_COUNT; t++) {
+            final int threadId = t;
+            executor.submit(() -> {
+                try {
+                    latch.await();
+                    for (int i = 0; i < ITEMS_PER_THREAD; i++) {
+                        long key = (threadId * ITEMS_PER_THREAD) + i + 1;
+                        beast.put(key, key + 100);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+        }
+
+        long start = System.nanoTime();
+        latch.countDown();
+        executor.shutdown();
+        boolean finished = executor.awaitTermination(1, TimeUnit.MINUTES);
+        long end = System.nanoTime();
+
+        assertTrue(finished, "Test timed out - potential livelock!");
+        assertEquals(TOTAL_ITEMS, beast.size(), "Final size mismatch!");
+
+        // Integrity Check
+        for (int i = 1; i <= TOTAL_ITEMS; i++) {
+            assertEquals(i + 100, beast.get(i), "Corruption at key " + i);
+        }
+
+        System.out.printf("Success! 800k puts + resizes in %.2f ms%n", (end - start) / 1_000_000.0);
+        beast.close();
     }
 }
