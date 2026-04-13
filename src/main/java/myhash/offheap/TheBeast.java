@@ -30,14 +30,20 @@ public class TheBeast {
         final AtomicInteger activeTransferThreads;
 
         Table(int capacity) {
+            if (capacity < 0) throw new IllegalArgumentException("Illegal Capacity: " + capacity);
+
             this.capacity = capacity;
-            this.mask = capacity - 1;
+            this.mask = this.capacity - 1;
             this.transferIndex = new AtomicInteger(this.capacity);
             this.activeTransferThreads = new AtomicInteger(0);
 
+            long bufferSize = bufferSize(this.capacity);
+            if (bufferSize > Integer.MAX_VALUE) {
+                throw new IllegalArgumentException("Beast exceeds 2GB limit");
+            }
+
             // Create bytes buffer for storing data
-            this.buffer = ByteBuffer.allocateDirect(bufferSize(this.capacity))
-                    .order(ByteOrder.nativeOrder());
+            this.buffer = ByteBuffer.allocateDirect((int) bufferSize).order(ByteOrder.nativeOrder());
 
             // Get the raw memory address
             this.baseAddress = directBufferAddress(buffer);
@@ -83,6 +89,14 @@ public class TheBeast {
                     }
                 }
             }
+        }
+
+        long size() {
+            return unsafe.getLongVolatile(null, this.baseAddress + SIZE_OFFSET);
+        }
+
+        void updateSize(int delta) {
+            unsafe.getAndAddLong(null, this.baseAddress + SIZE_OFFSET, (long) delta);
         }
 
         static void moveSlot(Table curTab, Table newTab, int index) {
@@ -136,8 +150,8 @@ public class TheBeast {
             }
         }
 
-        static int bufferSize(int capacity) {
-            return HEADER_SIZE + (capacity * ENTRY_SIZE);
+        static long bufferSize(int capacity) {
+            return HEADER_SIZE + ((long) capacity * ENTRY_SIZE);
         }
 
         static long directBufferAddress(ByteBuffer buffer) {
@@ -182,7 +196,7 @@ public class TheBeast {
     static final long MOVED = Long.MAX_VALUE;
     private static final double LOAD_FACTOR = 0.6;
     private static final int TRANSFER_STRIDE = 64; // Number of slots to transfer. Use 64 to minimize contention on 'transferIndex'
-    private static final int MAX_CAPACITY = 1 << 27; // Keep the buffer limit under 2GB
+    private static final int MAX_CAPACITY = 1 << 26; // Keep the buffer limit under 2GB
 
     public TheBeast(int capacity) {
         this.table = new Table(tableSize(capacity));
@@ -196,6 +210,11 @@ public class TheBeast {
     // Manual Memory Management: close out everything
     public void close() {
         this.table.destroy();
+    }
+
+    public long size() {
+        Table activeTab = (Table) unsafe.getObjectVolatile(this, tableOffset);
+        return activeTab.size();
     }
 
     public long get(long key) {
@@ -239,77 +258,65 @@ public class TheBeast {
     public void put(long key, long value) {
         if (key == EMPTY || key == REMOVED) throw new IllegalArgumentException("Illegal key: " + key);
 
-        // The Beast cannot go over this limit
-        if (this.table.capacity >= MAX_CAPACITY) throw new Error("Maximum capacity reached.");
-
         Table curTab = this.table;
+
+        if (size() >= curTab.capacity * LOAD_FACTOR && curTab.next == null) {
+            resize();
+            curTab = this.table;
+        }
+
         final int hash = hash(key);
+        int index = hash & curTab.mask;
+        long tombstoneAddress = -1L;
 
         while (true) {
-            if (size() >= curTab.capacity * LOAD_FACTOR) {
-                resize();
-                curTab = this.table;
+            long keyAddress = slotAddress(index, curTab.baseAddress);
+            long curKey = unsafe.getLongVolatile(null, keyAddress);
+
+            // Key is being moved to new buffer
+            if (curKey == MOVED) {
+                transfer(curTab); // Help with the resize
+                curTab = this.table; // Switch to new table
+
+                // Reset index and tombstone since we are now in the new table
+                index = hash & curTab.mask;
+                tombstoneAddress = -1L;
+                continue; // Start over w/ everything new
             }
 
-            int index = hash & curTab.mask;
-            long tombstoneAddress = -1L;
+            // Key found, update value
+            if (curKey == key) {
+                // Ensures the change is seen immediately
+                unsafe.putLongVolatile(null, keyAddress + VALUE_OFFSET, value);
+                return;
+            }
 
-            while (true) {
-                long keyAddress = slotAddress(index, curTab.baseAddress);
-                long curKey = unsafe.getLongVolatile(null, keyAddress);
+            // Found a tombstone, save the address for reuse
+            if (curKey == REMOVED && tombstoneAddress == -1L) {
+                tombstoneAddress = keyAddress;
+            }
 
-                // Key is being moved to new buffer
-                if (curKey == MOVED) {
-                    transfer(curTab); // Help with the resize
-                    curTab = this.table; // Switch to new table
-                    break; // Stop inner loop to start over on new table
-                }
+            // Found an empty slot, insert
+            if (curKey == EMPTY) {
+                long slotAddress = (tombstoneAddress == -1L) ? keyAddress : tombstoneAddress;
+                long slotKey = (tombstoneAddress == -1L) ? EMPTY: REMOVED;
 
-                // Key found, update value
-                if (curKey == key) {
-                    // Ensures the change is seen immediately
-                    unsafe.putLongVolatile(null, keyAddress + VALUE_OFFSET, value);
+                // We claim the slot by swapping w/ the key
+                if (unsafe.compareAndSwapLong(null, slotAddress, slotKey, key)) {
+                    unsafe.putLongVolatile(null, slotAddress + VALUE_OFFSET, value);
+                    curTab.updateSize(1);
                     return;
                 }
 
-                // Found a tombstone, save the address for reuse
-                if (curKey == REMOVED && tombstoneAddress == -1L) {
-                    tombstoneAddress = keyAddress;
-                }
-
-                // Found an empty slot, insert
-                if (curKey == EMPTY) {
-                    long address, slot;
-
-                    if (tombstoneAddress != -1L) {
-                        // We have a tombstone, use it
-                        address = tombstoneAddress;
-                        slot = REMOVED;
-                    } else {
-                        address = keyAddress;
-                        slot = EMPTY;
-                    }
-
-                    // We claim the slot by swapping w/ the key
-                    if (unsafe.compareAndSwapLong(null, address, slot, key)) {
-                        unsafe.putLongVolatile(null, address + VALUE_OFFSET, value);
-                        updateSize(1);
-                        return;
-                    }
-
-                    // If CAS fails, restart on this index to see what is put there.
-                    break;
-                }
-
-                index = (index + 1) & curTab.mask;
+                // If CAS fails, restart on this index to see what is put there.
+                continue;
             }
+            index = (index + 1) & curTab.mask;
         }
     }
 
     private void resize() {
         Table curTab = this.table;
-
-        if (curTab.capacity == MAX_CAPACITY) return;
 
         // If a resize already occurs, move to transfer
         if (curTab.next != null) {
@@ -317,7 +324,10 @@ public class TheBeast {
             return;
         }
 
-        Table newTab = new Table(curTab.capacity * 2);
+        long newCap = (long) curTab.capacity * 2;
+        if (newCap <= 0 || newCap > MAX_CAPACITY) return;
+
+        Table newTab = new Table((int) newCap);
         // If we can't claim the current table
         if (!unsafe.compareAndSwapObject(curTab, tableNextOffset, null, newTab)) {
             newTab.destroy(); // Destroy the new table and move to transfer
@@ -353,15 +363,14 @@ public class TheBeast {
                 }
             }
         } finally {
-            // 4. Update pointer and clean up old table memory
+            // 4. Swap table pointer and count
             if (curTab.activeTransferThreads.decrementAndGet() == 0) {
-                // Capture the size of current table
-                long size = unsafe.getLongVolatile(null, curTab.baseAddress + SIZE_OFFSET);
-                // Update the new table with the captured size
-                unsafe.getAndAddLong(null, newTab.baseAddress + SIZE_OFFSET, size);
-
                 // Set the global pointer to new table
                 unsafe.putObjectVolatile(this, tableOffset, newTab);
+                // Capture the size of current table and clear it to avoid duplicate count by other threads
+                long size = unsafe.getAndSetLong(null, curTab.baseAddress + SIZE_OFFSET, 0L);
+                // Update the new table with the captured size
+                newTab.updateSize((int) size);
             }
         }
     }
@@ -387,7 +396,7 @@ public class TheBeast {
 
                     if (unsafe.compareAndSwapLong(null, keyAddress, key, REMOVED)) {
                         unsafe.putLongVolatile(null, keyAddress + VALUE_OFFSET, EMPTY);
-                        updateSize(-1);
+                        curTab.updateSize(-1);
                         return removedValue;
                     }
                     // CAS fail, rehash on new table
@@ -405,20 +414,9 @@ public class TheBeast {
         }
     }
 
-    public long size() {
-        Table activeTab = (Table) unsafe.getObjectVolatile(this, tableOffset);
-        return unsafe.getLongVolatile(null, activeTab.baseAddress + SIZE_OFFSET);
-    }
-
-    private void updateSize(int delta) {
-        // Always update to the 'latest' table
-        Table curTab = (table.next != null) ? table.next : table;
-        unsafe.getAndAddLong(null, curTab.baseAddress + SIZE_OFFSET, (long) delta);
-    }
-
     // Compute the raw memory address of ByteBuffer
     static long slotAddress(int index, long base) {
-        return base + HEADER_SIZE + (index * (long) ENTRY_SIZE);
+        return base + HEADER_SIZE + ((long) index * ENTRY_SIZE);
     }
 
     static int hash(long key) {
