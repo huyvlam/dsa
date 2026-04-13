@@ -367,8 +367,11 @@ public class TheBeast {
             if (curTab.activeTransferThreads.decrementAndGet() == 0) {
                 // Set the global pointer to new table
                 unsafe.putObjectVolatile(this, tableOffset, newTab);
-                // Capture the size of current table and clear it to avoid duplicate count by other threads
+
+                // Capture the size of current table
+                // We use getAndSetLong to clear size after reading and avoid duplicate count by concurrent threads
                 long size = unsafe.getAndSetLong(null, curTab.baseAddress + SIZE_OFFSET, 0L);
+
                 // Update the new table with the captured size
                 newTab.updateSize((int) size);
             }
