@@ -97,6 +97,10 @@ public class TheBeast {
 
         void updateSize(int delta) {
             unsafe.getAndAddLong(null, this.baseAddress + SIZE_OFFSET, (long) delta);
+
+//            int cell = (int) (Thread.currentThread().getId() & 7);
+//            long address = cellBaseAddress + (cell * 8);
+//            unsafe.getAndAddLong(null, address, (long) delta);
         }
 
         static void moveSlot(Table curTab, Table newTab, int index) {
@@ -107,7 +111,9 @@ public class TheBeast {
 
                 // Seal the empty/tombstone slot before other threads grab it
                 if (curKey == EMPTY || curKey == REMOVED) {
-                    if (unsafe.compareAndSwapLong(null, curAddress, curKey, MOVED)) return;
+                    if (unsafe.compareAndSwapLong(null, curAddress, curKey, MOVED)) {
+                        return;
+                    }
                     continue; // Retry if CAS failed
                 }
 
@@ -318,7 +324,7 @@ public class TheBeast {
     private void resize() {
         Table curTab = this.table;
 
-        // If a resize already occurs, move to transfer
+        // Resize already happens, move onto transfer
         if (curTab.next != null) {
             transfer(curTab);
             return;
@@ -328,10 +334,11 @@ public class TheBeast {
         if (newCap <= 0 || newCap > MAX_CAPACITY) return;
 
         Table newTab = new Table((int) newCap);
-        // If we can't claim the current table
+
+        // If we can't claim the current table for a resize
         if (!unsafe.compareAndSwapObject(curTab, tableNextOffset, null, newTab)) {
-            newTab.destroy(); // Destroy the new table and move to transfer
-        };
+            newTab.destroy(); // Destroy the new table and move onto transfer
+        }
 
         transfer(curTab);
     }
@@ -363,17 +370,25 @@ public class TheBeast {
                 }
             }
         } finally {
-            // 4. Swap table pointer and count
+            // 4. Last one out flip the switch and wake up the originator
             if (curTab.activeTransferThreads.decrementAndGet() == 0) {
-                // Step 1: Capture the size of current table
-                // We use getAndSetLong to drain size after reading and avoid duplicate count by concurrent threads
+                // Set the global pointer to new table
+                unsafe.putObjectVolatile(this, tableOffset, newTab);
+                // Capture the size of current table then set it to 0
                 long size = unsafe.getAndSetLong(null, curTab.baseAddress + SIZE_OFFSET, 0L);
-
-                // Step 2: Update the new table with the captured size
+                // Transfer the captured size over to the new table
                 newTab.updateSize((int) size);
 
-                // Step 3: Set the global pointer to new table
-                unsafe.putObjectVolatile(this, tableOffset, newTab);
+                // Comment out since this check degrade performance
+//                while (true) {
+//                    // Check for any late entry into the old table after it has been swapped
+//                    long straggler = unsafe.getAndSetLong(null, curTab.baseAddress + SIZE_OFFSET, 0L);
+//                    if (straggler == 0) {
+//                        newTab.updateSize((int) size);
+//                        return;
+//                    }
+//                    size += straggler;
+//                }
             }
         }
     }
@@ -438,6 +453,26 @@ public class TheBeast {
         cap |= cap >>> 8;
         cap |= cap >>> 16;
         return (cap < 0) ? 1 : (cap >= MAX_CAPACITY) ? MAX_CAPACITY : cap + 1;
+    }
+
+    // Call this method right after transfer to diagnose table mismatch
+    private void ghostHunter(Table oldTab) {
+        int ghosts = 0;
+        for (long i = 0; i < oldTab.capacity; i++) {
+            long addr = oldTab.baseAddress + (i * ENTRY_SIZE);
+            long key = unsafe.getLongVolatile(null, addr);
+
+            // If a key is NOT Moved/Empty/Removed, it's a Ghost.
+            // It exists here but was never migrated to the new table.
+            if (key != EMPTY && key != REMOVED && key != MOVED) {
+                ghosts++;
+                IO.println("Ghost Found at index " + i + " | Key: " + key);
+            }
+        }
+
+        if (ghosts > 0) {
+            IO.println("CRITICAL: Found " + ghosts + " ghost keys in the old table!");
+        }
     }
 }
 

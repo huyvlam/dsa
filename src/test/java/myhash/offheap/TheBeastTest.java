@@ -144,7 +144,7 @@ class TheBeastTest {
         final int TOTAL_ITEMS = THREAD_COUNT * ITEMS_PER_THREAD;
 
         // Start small to force the resize logic to trigger immediately
-        TheBeast beast = new TheBeast(16);
+        beast = new TheBeast(16);
 
         ExecutorService executor = Executors.newFixedThreadPool(THREAD_COUNT);
         CountDownLatch latch = new CountDownLatch(1);
