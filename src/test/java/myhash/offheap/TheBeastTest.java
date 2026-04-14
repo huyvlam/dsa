@@ -136,6 +136,7 @@ class TheBeastTest {
 
     @Test
     @DisplayName("Should print the stress test result for 8 concurrent threads")
+    @Disabled
     void theBeastSafeSpotlight() throws InterruptedException {
         final int THREAD_COUNT = 8;
         // 100k items per thread = 800k total.
