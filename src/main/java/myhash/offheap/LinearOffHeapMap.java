@@ -154,7 +154,7 @@ public class LinearOffHeapMap {
         }
     }
 
-    private static int hash(long key) {
+    static int hash(long key) {
         // Mixer for longs ensuring even distribution
         key ^= key >>> 33;
         key *= 0xff51afd7ed558ccdL;
@@ -162,9 +162,13 @@ public class LinearOffHeapMap {
         return (int) key;
     }
 
-    private static int tableSize(int n) {
-        int cap = 1;
-        while (cap < n) cap <<= 1;
-        return cap;
+    static int tableSize(int n) {
+        int cap = n - 1;
+        cap |= cap >>> 1;
+        cap |= cap >>> 2;
+        cap |= cap >>> 4;
+        cap |= cap >>> 8;
+        cap |= cap >>> 16;
+        return (cap < 0) ? 1 : cap + 1;
     }
 }
