@@ -97,10 +97,6 @@ public class TheBeast {
 
         void updateSize(int delta) {
             unsafe.getAndAddLong(null, this.baseAddress + SIZE_OFFSET, (long) delta);
-
-//            int cell = (int) (Thread.currentThread().getId() & 7);
-//            long address = cellBaseAddress + (cell * 8);
-//            unsafe.getAndAddLong(null, address, (long) delta);
         }
 
         static void moveSlot(Table curTab, Table newTab, int index) {
