@@ -38,20 +38,35 @@ public class MyArrayList<E> {
         return size;
     }
 
+    public int capacity() {
+        return dataList.length;
+    }
+
+    public void ensureCapacity(int capacity) {
+        grow(capacity);
+    }
+
     private void grow() {
         int curCap = dataList.length;
-        if (size < curCap) return;
-
-        // Capacity grow by 1.5
+        // Grow capacity by 1.5
         int newCap = curCap + (curCap >> 1);
-        // Ensure new capacity grow by at least 1 for edge case (old cap = 0 or 1)
+        // Ensure capacity grow by at least 1 for edge case, where initial cap is 0 or 1
         newCap = (newCap <= curCap) ? curCap + 1 : newCap;
+        grow(newCap);
+    }
 
-        dataList = Arrays.copyOf(dataList, newCap);
+    private void grow(int capacity) {
+        if (capacity <= dataList.length) return;
+
+        Object[] newList = new Object[capacity];
+        System.arraycopy(dataList, 0, newList, 0, size);
+        dataList = newList;
     }
 
     public boolean add(E data) {
-        grow();
+        if (size == dataList.length) {
+            grow();
+        }
         dataList[size++] = data;
 
         return true;
