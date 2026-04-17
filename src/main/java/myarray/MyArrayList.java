@@ -28,17 +28,23 @@ public class MyArrayList<E> {
         this(10);
     }
 
+    public void clear() {
+        dataList = new Object[DEFAULT_CAPACITY];
+        size = 0;
+        sorted = false;
+    }
+
     public int size() {
         return size;
     }
 
     private void grow() {
         int curCap = dataList.length;
-
         if (size < curCap) return;
 
+        // Capacity grow by 1.5
         int newCap = curCap + (curCap >> 1);
-        // ensure new capacity grow by at least 1 for edge case
+        // Ensure new capacity grow by at least 1 for edge case (old cap = 0 or 1)
         newCap = (newCap <= curCap) ? curCap + 1 : newCap;
 
         dataList = Arrays.copyOf(dataList, newCap);
@@ -66,8 +72,12 @@ public class MyArrayList<E> {
     }
 
     public void trimToSize() {
-        if (size < dataList.length)
-            dataList = (size == 0) ? new Object[DEFAULT_CAPACITY] : Arrays.copyOf(dataList, size);
+        if (size < dataList.length) {
+            int newCap = size > DEFAULT_CAPACITY ? size : DEFAULT_CAPACITY;
+            Object[] newList = new Object[newCap];
+            System.arraycopy(dataList, 0, newList, 0, size);
+            dataList = newList;
+        }
     }
 
     public E get(int index) {
