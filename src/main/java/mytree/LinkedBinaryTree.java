@@ -1,6 +1,6 @@
 package mytree;
 
-import myqueue.Queue;
+import myqueue.CircularArrayQueue;
 
 import java.util.Random;
 
@@ -29,6 +29,10 @@ public class LinkedBinaryTree {
         return size;
     }
 
+    public boolean isEmpty() {
+        return size == 0;
+    }
+
     public int height() {
         return (size == 0) ? -1 : 31 - Integer.numberOfLeadingZeros(size);
     }
@@ -38,7 +42,7 @@ public class LinkedBinaryTree {
         if (root == null) {
             root = node;
         } else {
-            Queue<BTNode> queue = new Queue<>(height == 0 ? 1 : height << 1);
+            CircularArrayQueue<BTNode> queue = new CircularArrayQueue<>(height == 0 ? 1 : height << 1);
             queue.add(root);
 
             while (!queue.isEmpty()) {
@@ -85,7 +89,7 @@ public class LinkedBinaryTree {
         BTNode cur = null;
         BTNode prev = null;
 
-        Queue<BTNode> queue = new Queue<>(height == 0 ? 1 : height << 1);
+        CircularArrayQueue<BTNode> queue = new CircularArrayQueue<>(height == 0 ? 1 : height << 1);
         queue.add(root);
 
         while (!queue.isEmpty()) {
@@ -110,7 +114,7 @@ public class LinkedBinaryTree {
         deletingNode.value = cur.value;
 
         if (prev != null) {
-            if (prev.right = cur) prev.right = null;
+            if (prev.right == cur) prev.right = null;
             else prev.left = null;
         }
         size--;
@@ -119,7 +123,7 @@ public class LinkedBinaryTree {
     }
 
     public int getMaxPathSum() {
-        if (computed) {
+        if (!computed) {
             maxPathSum = getMaxPathSum(root);
             computed = true;
         }

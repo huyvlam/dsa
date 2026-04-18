@@ -88,7 +88,7 @@ public class ArrayBinaryTree {
     }
 
     public int getMaxPathSum() {
-        if (computed) {
+        if (!computed) {
             maxPathSum = getMaxPathSum(0);
             computed = true;
         }
@@ -124,17 +124,12 @@ public class ArrayBinaryTree {
     }
 
     static void main() {
-        ArrayBinaryTree tree = new ArrayBinaryTree(8);
-        Random rand = new Random();
-        int n = 7;
-        int[] vals = new int[n];
-        for (int i = 0; i < n; i++) {
-            vals[i] = rand.nextInt(16);
-            tree.insert(vals[i]);
-            IO.println("Size: " + tree.size() + " Height: " + tree.height());
-        }
-        IO.println("Root Max Path Sum: " + tree.getMaxPathSum());
-        IO.println("Subtree Max Path Sum: " + tree.getMaxPathSum(3));
-        tree.delete(vals[0]);
+        ArrayBinaryTree abt = new ArrayBinaryTree(8);
+        abt.insert(-10);
+        abt.insert(5);
+        abt.insert(24);
+        abt.insert(13);
+        IO.println("Root Max Path Sum: " + abt.getMaxPathSum());
+        IO.println("Subtree Max Path Sum: " + abt.getMaxPathSum(3));
     }
 }
