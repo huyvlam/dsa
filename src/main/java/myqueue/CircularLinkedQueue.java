@@ -60,6 +60,6 @@ public class CircularLinkedQueue<E> {
     }
 
     public boolean contains(E data) {
-        return scList.indexOf(data) != -1;
+        return sclist.indexOf(data) != -1;
     }
 }
