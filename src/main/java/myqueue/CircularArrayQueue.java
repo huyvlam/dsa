@@ -60,7 +60,7 @@ public class CircularArrayQueue<E> {
     }
 
     public E remove() {
-        if (front == 0) throw new NoSuchElementException("Queue is empty");
+        if (size == 0) throw new NoSuchElementException("Queue is empty");
 
         E removed = queue[front];
         front = (front + 1) % queue.length;
