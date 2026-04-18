@@ -5,61 +5,61 @@ import mylinked.singly.SinglyCircularLinkedList;
 import java.util.NoSuchElementException;
 
 public class CircularLinkedQueue<E> {
-    private final SinglyCircularLinkedList<E> sclist;
+    private final SinglyCircularLinkedList<E> sclQueue;
     private final int capacity;
 
     public CircularLinkedQueue(int capacity) {
-        sclist = new SinglyCircularLinkedList<>();
+        sclQueue = new SinglyCircularLinkedList<>();
         this.capacity = capacity;
     }
 
     public void clear() {
-        sclist.clear();
+        sclQueue.clear();
     }
 
     public int size() {
-        return sclist.size();
+        return sclQueue.size();
     }
 
     public boolean isEmpty() {
-        return sclist.size() == 0;
+        return sclQueue.size() == 0;
     }
 
     public boolean add(E data) {
-        if (sclist.size() == capacity) throw new IllegalStateException("Capacity is reached");
+        if (sclQueue.size() == capacity) throw new IllegalStateException("Capacity is reached");
 
-        sclist.addLast(data);
+        sclQueue.addLast(data);
         return true;
     }
 
     public boolean offer(E data) {
-        if (sclist.size() == capacity) return false;
+        if (sclQueue.size() == capacity) return false;
 
-        sclist.addLast(data);
+        sclQueue.addLast(data);
         return true;
     }
 
     public E poll() {
-        return sclist.pollFirst();
+        return sclQueue.pollFirst();
     }
 
     public E remove() {
-        if (sclist.size() == 0) throw new NoSuchElementException("Queue is empty");
+        if (sclQueue.size() == 0) throw new NoSuchElementException("Queue is empty");
 
-        return sclist.pollFirst();
+        return sclQueue.pollFirst();
     }
 
     public E peek() {
-        return sclist.peekFirst();
+        return sclQueue.peekFirst();
     }
 
     public E element() {
-        if (sclist.size() == 0) throw new NoSuchElementException("Queue is empty");
+        if (sclQueue.size() == 0) throw new NoSuchElementException("Queue is empty");
 
-        return sclist.peekFirst();
+        return sclQueue.peekFirst();
     }
 
     public boolean contains(E data) {
-        return sclist.indexOf(data) != -1;
+        return sclQueue.indexOf(data) != -1;
     }
 }
