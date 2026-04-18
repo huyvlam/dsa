@@ -8,14 +8,14 @@ import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class QueueTest {
-    private Queue<Integer> queue;
+class CircularLinkedQueueTest {
+    private CircularLinkedQueue<Integer> queue;
     private int capacity;
 
     @BeforeEach
     void setUp() {
         capacity = 3;
-        queue = new Queue<>(capacity);
+        queue = new CircularLinkedQueue<>(capacity);
     }
 
     @Test
