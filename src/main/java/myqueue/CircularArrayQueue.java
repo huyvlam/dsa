@@ -4,7 +4,7 @@ import java.util.NoSuchElementException;
 
 public class CircularArrayQueue<E> {
     private E[] queue;
-    private int capacity;
+    private final int capacity;
     private int size;
     private int front;
     private int end;
@@ -24,16 +24,16 @@ public class CircularArrayQueue<E> {
         end = -1;
     }
 
-    public int size() {
-        return size;
-    }
-
     public boolean isEmpty() {
         return size == 0;
     }
 
+    public int size() {
+        return size;
+    }
+
     public boolean add(E value) {
-        if (size == queue.length) throw new IllegalStateException("Capacity is reached");
+        if (size == queue.length) throw new IllegalStateException("Queue is full");
 
         end = (end + 1) % queue.length;
         queue[end] = value;
