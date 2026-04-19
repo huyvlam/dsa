@@ -84,6 +84,12 @@ public class OffHeapBenchmark {
         return (end - start) / (double) keysSize;
     }
 
+    @TearDown
+    public void tearDown() {
+        beast.close();
+        concurrent.clear();
+    }
+
     public static void main(String[] args) throws RunnerException {
         Options opt = new OptionsBuilder()
                 .include(OffHeapBenchmark.class.getSimpleName())
