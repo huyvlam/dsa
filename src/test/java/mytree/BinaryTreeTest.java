@@ -41,8 +41,8 @@ public class BinaryTreeTest {
     @DisplayName("The height of a complete tree should equate to log2 of its size")
     void testTreeHeight() {
         int[] sizes = {3, 7, 8};
-        for (int i = 0; i < sizes.length; i++) {
-            for (int j = 0; j < sizes[i]; j++) {
+        for (int s : sizes) {
+            for (int i = 0; i < s; i++) {
                 int num = rand.nextInt(13);
                 abt.insert(num);
                 lbt.insert(num);
