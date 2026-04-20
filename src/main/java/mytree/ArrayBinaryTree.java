@@ -9,7 +9,7 @@ public class ArrayBinaryTree {
     private int maxPathSum;
     private boolean computed;
     public ArrayBinaryTree(int capacity) {
-        if (capacity < 4) throw new IllegalArgumentException("Capacity must be 4 or greater");
+        if (capacity < 2) throw new IllegalArgumentException("Capacity must be 2 or greater");
 
         initCapacity = capacity;
         tree = new int[this.initCapacity];
@@ -28,7 +28,7 @@ public class ArrayBinaryTree {
     }
 
     public boolean isFull() {
-        return size == tree.length;
+        return size == (1 << (height() + 1)) - 1;
     }
 
     public int size() {
@@ -76,14 +76,14 @@ public class ArrayBinaryTree {
     }
 
     public void delete(int value) {
-        for (int i = 0; i < size; i++) {
-            if (tree[i] == value) {
-                tree[i] = tree[size - 1];
-                tree[size - 1] = 0;
-                size--;
-                computed = false;
-                return;
-            }
+        int i = findIndex(value);
+        if (i == -1) return;
+
+        if (tree[i] == value) {
+            tree[i] = tree[size - 1];
+            tree[size - 1] = 0;
+            size--;
+            computed = false;
         }
     }
 
@@ -117,19 +117,78 @@ public class ArrayBinaryTree {
     }
 
     public int findIndex(int value) {
-        for (int i = 0; i < size; i++) {
+        if (size == 0) return -1;
+
+        int i = 0;
+        if (size % 2 == 1) {
             if (tree[i] == value) return i;
+            i = 1;
         }
+
+        while (i < size - 1) {
+            if (tree[i] == value) return i;
+            if (tree[i + 1] == value) return i + 1;
+            i += 2;
+        }
+
         return -1;
     }
 
-    static void main() {
-        ArrayBinaryTree abt = new ArrayBinaryTree(8);
-        abt.insert(-10);
-        abt.insert(5);
-        abt.insert(24);
-        abt.insert(13);
-        IO.println("Root Max Path Sum: " + abt.getMaxPathSum());
-        IO.println("Subtree Max Path Sum: " + abt.getMaxPathSum(3));
+//    public int getDepth(int value) {
+//        if (size == 0) return -1;
+//
+//        int match = findIndex(value);
+//        int nodeDepth = 0;
+//
+//        while (match > 0) {
+//            match = (match - 1) >> 1;
+//            nodeDepth++;
+//        }
+//
+//        return nodeDepth;
+//    }
+
+    // Optimize by calculating depth = log2(i + 1)
+    public int getDepth(int value) {
+        int index = findIndex(value);
+        if (index == -1) return -1;
+
+        // 31 - number of leading zeros is the floor(log2)
+        return 31 - Integer.numberOfLeadingZeros(index + 1);
+    }
+
+//    public int getHeight(int value) {
+//        if (size == 0) return -1;
+//
+//        int match = findIndex(value);
+//        int nodeHeight = 0;
+//        int bottom = size - 1;
+//
+//        while (bottom > match) {
+//            bottom = (bottom - 1) >> 1;
+//            nodeHeight++;
+//        }
+//
+//        return nodeHeight;
+//    }
+
+    // Optimize by calculating height(i) = log2(n) - log2(i + 1)
+    public int getHeight(int value) {
+        if (size == 0) return -1;
+
+        int match = -1;
+        for (int i = 0; i < size; i++) {
+            if (tree[i] == value) {
+                match = i;
+                break;
+            }
+        }
+
+        if (match == -1) return -1;
+
+        // Calculate the level of the matching element using log2(match + 1)
+        int matchLevel = 31 - Integer.numberOfLeadingZeros(match + 1);
+        // Subtract the match level from total tree height
+        return height() - matchLevel;
     }
 }

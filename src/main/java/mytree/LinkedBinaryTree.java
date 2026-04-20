@@ -2,8 +2,10 @@ package mytree;
 
 import myqueue.CircularArrayQueue;
 
+import java.util.function.Predicate;
+
 public class LinkedBinaryTree {
-    private BTNode root;
+    BTNode root;
     private int size;
     private int height;
     private int maxPathSum;
@@ -23,12 +25,35 @@ public class LinkedBinaryTree {
         computed = false;
     }
 
-    public int size() {
-        return size;
-    }
-
     public boolean isEmpty() {
         return size == 0;
+    }
+
+    public boolean isFull() {
+        boolean[] res = {true};
+        levelOrderScan((node) -> {
+            if ((node.left == null || node.right == null) && node.left != node.right) {
+                res[0] = false;
+                return false;
+            }
+            return true;
+        });
+        return res[0];
+//        CircularArrayQueue<BTNode> queue = new CircularArrayQueue<>(1 << (height + 1));
+//        queue.add(root);
+//
+//        while (!queue.isEmpty()) {
+//            BTNode cur = queue.remove();
+//
+//            if ((cur.left == null || cur.right == null) && cur.left != cur.right) return false;
+//            if (cur.left != null) queue.add(cur.left);
+//            if (cur.right != null) queue.add(cur.right);
+//        }
+//        return true;
+    }
+
+    public int size() {
+        return size;
     }
 
     public int height() {
@@ -147,5 +172,83 @@ public class LinkedBinaryTree {
         if (curSum > res[0]) res[0] = curSum;
 
         return subroot.value + (leftVal > rightVal ? leftVal : rightVal);
+    }
+
+    public BTNode find(int value) {
+        if (root == null) return null;
+
+        BTNode[] res = {null};
+        levelOrderScan((node) -> {
+            if (node.value == value) {
+                res[0] = node;
+                return false;
+            }
+            return true;
+        });
+        return res[0];
+    }
+
+    public int getDepth(int value) {
+        if (root == null) return -1;
+        int nodeDepth = 0;
+
+        CircularArrayQueue<BTNode> queue = new CircularArrayQueue<>(1 << (height + 1));
+        queue.add(root);
+
+        while (!queue.isEmpty()) {
+            int n = queue.size();
+            for (int i = 0; i < n; i++) {
+                BTNode cur = queue.remove();
+
+                if (cur.value == value) return nodeDepth;
+                if (cur.left != null) queue.add(cur.left);
+                if (cur.right != null) queue.add(cur.right);
+            }
+            nodeDepth++;
+        }
+        return -1;
+    }
+
+    public int getHeight(int value) {
+        if (root == null) return -1;
+
+        int nodeHeight = -1;
+        boolean found = false;
+        CircularArrayQueue<BTNode> queue = new CircularArrayQueue<>(1 << (height + 1));
+        queue.add(root);
+
+        while (!queue.isEmpty()) {
+            int n = queue.size();
+
+            for (int i = 0; i < n; i++) {
+                BTNode cur = queue.remove();
+
+                if (cur.value == value) found = true;
+                if (cur.left != null) queue.add(cur.left);
+                if (cur.right != null) queue.add(cur.right);
+            }
+
+            if (found) nodeHeight++;
+        }
+        return nodeHeight;
+    }
+
+    private void levelOrderScan(Predicate<BTNode> action) {
+        CircularArrayQueue<BTNode> queue = new CircularArrayQueue<>(1 << (height + 1));
+        queue.add(root);
+
+        while (!queue.isEmpty()) {
+            int n = queue.size();
+
+            for (int i = 0; i < n; i++) {
+                BTNode cur = queue.remove();
+                if (!action.test(cur)) {
+                    queue.clear();
+                    return;
+                }
+                if (cur.left != null) queue.add(cur.left);
+                if (cur.right != null) queue.add(cur.right);
+            }
+        }
     }
 }
