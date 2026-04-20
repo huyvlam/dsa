@@ -31,7 +31,7 @@ public class BinaryTreeBenchmark {
 
     @Setup(Level.Invocation)
     public void setupTrees() {
-        // Start @ 1024 capacity to force grow
+        // Start @ 1024 capacity to force grow during insert
         abt = new ArrayBinaryTree(1024);
         lbt = new LinkedBinaryTree();
     }
@@ -72,7 +72,54 @@ public class BinaryTreeBenchmark {
         return sum1 + sum2;
     }
 
-    public static void main(String[] args) throws RunnerException {
+    @State(Scope.Thread)
+    public static class FullTree {
+        @Param({"32768"})
+        public int capacity;
+
+        public ArrayBinaryTree abt;
+        public LinkedBinaryTree lbt;
+        public int[] data;
+        public int targetVal;
+
+        @Setup(Level.Trial)
+        public void setup() {
+            abt = new ArrayBinaryTree(capacity);
+            lbt = new LinkedBinaryTree();
+            data = new int[capacity];
+
+            // Populate with unique data
+            for (int i = 0; i < capacity; i++) {
+                data[i] = i * 31; // Consistent data
+                abt.insert(data[i]);
+                lbt.insert(data[i]);
+            }
+
+            targetVal = data[capacity - 500];
+        }
+    }
+
+    @Benchmark
+    public int testDepthABT(FullTree ft) {
+        return ft.abt.getDepth(ft.targetVal);
+    }
+
+    @Benchmark
+    public int testDepthLBT(FullTree ft) {
+        return ft.lbt.getDepth(ft.targetVal);
+    }
+
+    @Benchmark
+    public int testHeightABT(FullTree ft) {
+        return ft.abt.getHeight(ft.targetVal);
+    }
+
+    @Benchmark
+    public int testHeightLBT(FullTree ft) {
+        return ft.lbt.getHeight(ft.targetVal);
+    }
+
+    static void main(String[] args) throws RunnerException {
         Options opt = new OptionsBuilder()
                 .include(BinaryTreeBenchmark.class.getSimpleName())
                 .forks(1)            // Use 1 fork for faster local testing
