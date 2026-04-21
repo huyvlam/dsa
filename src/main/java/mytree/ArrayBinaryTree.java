@@ -28,7 +28,9 @@ public class ArrayBinaryTree {
     }
 
     public boolean isFull() {
-        return size == (1 << (height() + 1)) - 1;
+        if (size == 0) return true;
+        // If next element start a new level, then tree is full
+        return (size & (size + 1)) == 0;
     }
 
     public int size() {

@@ -7,21 +7,18 @@ import java.util.function.Predicate;
 public class LinkedBinaryTree {
     BTNode root;
     private int size;
-    private int height;
     private int maxPathSum;
     private boolean computed;
 
     public LinkedBinaryTree() {
         root = null;
         size = 0;
-        height = -1;
         computed = false;
     }
 
     public void clear() {
         root = null;
         size = 0;
-        height = -1;
         computed = false;
     }
 
@@ -30,26 +27,18 @@ public class LinkedBinaryTree {
     }
 
     public boolean isFull() {
-        boolean[] res = {true};
-        levelOrderScan((node) -> {
-            if ((node.left == null || node.right == null) && node.left != node.right) {
-                res[0] = false;
-                return false;
-            }
-            return true;
-        });
-        return res[0];
-//        CircularArrayQueue<BTNode> queue = new CircularArrayQueue<>(1 << (height + 1));
-//        queue.add(root);
-//
-//        while (!queue.isEmpty()) {
-//            BTNode cur = queue.remove();
-//
-//            if ((cur.left == null || cur.right == null) && cur.left != cur.right) return false;
-//            if (cur.left != null) queue.add(cur.left);
-//            if (cur.right != null) queue.add(cur.right);
-//        }
-//        return true;
+        // If size is odd, then tree is full
+        return size == (1 << (height() + 1)) - 1;
+
+//        boolean[] res = {true};
+//        levelOrderScan((node) -> {
+//            if ((node.left == null || node.right == null) && node.left != node.right) {
+//                res[0] = false;
+//                return false;
+//            }
+//            return true;
+//        });
+//        return res[0];
     }
 
     public int size() {
@@ -65,7 +54,7 @@ public class LinkedBinaryTree {
         if (root == null) {
             root = node;
         } else {
-            CircularArrayQueue<BTNode> queue = new CircularArrayQueue<>(1 << (height + 1));
+            CircularArrayQueue<BTNode> queue = new CircularArrayQueue<>(1 << (height() + 1));
             queue.add(root);
 
             while (!queue.isEmpty()) {
@@ -91,7 +80,6 @@ public class LinkedBinaryTree {
             }
         }
         size++;
-        height = height();
         computed = false;
     }
 
@@ -102,7 +90,6 @@ public class LinkedBinaryTree {
             if (root.value == value) {
                 root = null;
                 size = 0;
-                height = -1;
                 computed = false;
             }
             return;
@@ -112,7 +99,7 @@ public class LinkedBinaryTree {
         BTNode cur = null;
         BTNode prev = null;
 
-        CircularArrayQueue<BTNode> queue = new CircularArrayQueue<>(1 << (height + 1));
+        CircularArrayQueue<BTNode> queue = new CircularArrayQueue<>(1 << (height() + 1));
         queue.add(root);
 
         while (!queue.isEmpty()) {
@@ -141,7 +128,6 @@ public class LinkedBinaryTree {
             else prev.left = null;
         }
         size--;
-        height = height();
         computed = false;
     }
 
@@ -192,7 +178,7 @@ public class LinkedBinaryTree {
         if (root == null) return -1;
         int nodeDepth = 0;
 
-        CircularArrayQueue<BTNode> queue = new CircularArrayQueue<>(1 << (height + 1));
+        CircularArrayQueue<BTNode> queue = new CircularArrayQueue<>(1 << (height() + 1));
         queue.add(root);
 
         while (!queue.isEmpty()) {
@@ -214,7 +200,7 @@ public class LinkedBinaryTree {
 
         int nodeHeight = -1;
         boolean found = false;
-        CircularArrayQueue<BTNode> queue = new CircularArrayQueue<>(1 << (height + 1));
+        CircularArrayQueue<BTNode> queue = new CircularArrayQueue<>(1 << (height() + 1));
         queue.add(root);
 
         while (!queue.isEmpty()) {
@@ -234,7 +220,7 @@ public class LinkedBinaryTree {
     }
 
     private void levelOrderScan(Predicate<BTNode> action) {
-        CircularArrayQueue<BTNode> queue = new CircularArrayQueue<>(1 << (height + 1));
+        CircularArrayQueue<BTNode> queue = new CircularArrayQueue<>(1 << (height() + 1));
         queue.add(root);
 
         while (!queue.isEmpty()) {
