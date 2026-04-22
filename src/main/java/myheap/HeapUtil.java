@@ -5,11 +5,11 @@ public class HeapUtil {
         if (size <= 1) return;
 
         for (int i = (size >> 1) - 1; i >= 0; i--) {
-            maxSink(arr, i, size);
+            sinkMax(arr, i, size);
         }
     }
 
-    public static void maxSink(int[] arr, int index, int size) {
+    public static void sinkMax(int[] arr, int index, int size) {
         int target = arr[index];
         int cur = index;
 
@@ -31,7 +31,7 @@ public class HeapUtil {
         arr[cur] = target;
     }
 
-    public static void maxBubble(int[] arr, int index) {
+    public static void bubbleMax(int[] arr, int index) {
         int target = arr[index];
         int cur = index;
 
@@ -49,11 +49,11 @@ public class HeapUtil {
         if (size <= 1) return;
 
         for (int i = (size >> 1) - 1; i >= 0; i--) {
-            minSink(arr, i, size);
+            sinkMin(arr, i, size);
         }
     }
 
-    public static void minSink(int[] arr, int index, int size) {
+    public static void sinkMin(int[] arr, int index, int size) {
         int target = arr[index];
         int cur = index;
 
@@ -75,7 +75,7 @@ public class HeapUtil {
         arr[cur] = target;
     }
 
-    public static void minBubble(int[] arr, int index) {
+    public static void bubbleMin(int[] arr, int index) {
         int target = arr[index];
         int cur = index;
 
