@@ -19,7 +19,9 @@ public class HeapUtil {
             if (left >= size) break;
 
             int max = left;
-            if (right < size && arr[right] > arr[left]) max = right;
+            if (right < size && arr[right] > arr[left]) {
+                max = right;
+            }
 
             if (target >= arr[max]) break;
 
@@ -61,7 +63,9 @@ public class HeapUtil {
             if (left >= size) break;
 
             int min = left;
-            if (right < size && arr[right] < arr[left]) min = right;
+            if (right < size && arr[right] < arr[left]) {
+                min = right;
+            }
 
             if (target <= arr[min]) break;
 
