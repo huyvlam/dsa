@@ -8,18 +8,26 @@ public class LinkedBinaryTree {
     BTNode root;
     private int size;
     private int maxPathSum;
-    private boolean computed;
+    private boolean mpsCompute;
 
     public LinkedBinaryTree() {
         root = null;
         size = 0;
-        computed = false;
+        mpsCompute = false;
     }
 
     public void clear() {
         root = null;
         size = 0;
-        computed = false;
+        mpsCompute = false;
+    }
+
+    public int size() {
+        return size;
+    }
+
+    public int height() {
+        return (size == 0) ? -1 : 31 - Integer.numberOfLeadingZeros(size);
     }
 
     public boolean isEmpty() {
@@ -39,14 +47,6 @@ public class LinkedBinaryTree {
 //            return true;
 //        });
 //        return res[0];
-    }
-
-    public int size() {
-        return size;
-    }
-
-    public int height() {
-        return (size == 0) ? -1 : 31 - Integer.numberOfLeadingZeros(size);
     }
 
     public void insert(int value) {
@@ -80,7 +80,7 @@ public class LinkedBinaryTree {
             }
         }
         size++;
-        computed = false;
+        mpsCompute = false;
     }
 
     public void delete(int value) {
@@ -90,7 +90,7 @@ public class LinkedBinaryTree {
             if (root.value == value) {
                 root = null;
                 size = 0;
-                computed = false;
+                mpsCompute = false;
             }
             return;
         }
@@ -128,13 +128,13 @@ public class LinkedBinaryTree {
             else prev.left = null;
         }
         size--;
-        computed = false;
+        mpsCompute = false;
     }
 
     public int getMaxPathSum() {
-        if (!computed) {
+        if (!mpsCompute) {
             maxPathSum = getMaxPathSum(root);
-            computed = true;
+            mpsCompute = true;
         }
         return maxPathSum;
     }
@@ -217,6 +217,28 @@ public class LinkedBinaryTree {
             if (found) nodeHeight++;
         }
         return nodeHeight;
+    }
+
+    public BTNode getSibling(int value) {
+        if (size <= 1 || root.value == value) return null;
+
+        CircularArrayQueue<BTNode> queue = new CircularArrayQueue<>(1 << (height() + 1));
+        queue.add(root);
+
+        while (!queue.isEmpty()) {
+            BTNode cur = queue.remove();
+
+            if (cur.left != null) {
+                if (cur.left.value == value) return cur.right;
+                queue.add(cur.left);
+            }
+            if (cur.right != null) {
+                if (cur.right.value == value) return cur.left;
+                queue.add(cur.right);
+            }
+        }
+
+        return null;
     }
 
     private void levelOrderScan(Predicate<BTNode> action) {

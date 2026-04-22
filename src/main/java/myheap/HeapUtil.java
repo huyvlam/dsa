@@ -10,6 +10,8 @@ public class HeapUtil {
     }
 
     public static void sinkMax(int[] arr, int index, int size) {
+        if (size <= 1) return;
+
         int target = arr[index];
         int cur = index;
 
@@ -32,6 +34,8 @@ public class HeapUtil {
     }
 
     public static void bubbleMax(int[] arr, int index) {
+        if (index < 0 || index >= arr.length) throw new IndexOutOfBoundsException("Index is out of bounds");
+
         int target = arr[index];
         int cur = index;
 
@@ -54,6 +58,8 @@ public class HeapUtil {
     }
 
     public static void sinkMin(int[] arr, int index, int size) {
+        if (size <= 1) return;
+
         int target = arr[index];
         int cur = index;
 
@@ -76,6 +82,8 @@ public class HeapUtil {
     }
 
     public static void bubbleMin(int[] arr, int index) {
+        if (index < 0 || index >= arr.length) throw new IndexOutOfBoundsException("Index is out of bounds");
+
         int target = arr[index];
         int cur = index;
 

@@ -97,9 +97,9 @@ public class ArrayBinaryTree {
         modCount++;
 
         if (activeMaxView != null) {
-            HeapUtil.maxBubble(tree, i);
+            HeapUtil.bubbleMax(tree, i);
         } else if (activeMinView != null) {
-            HeapUtil.minBubble(tree, i);
+            HeapUtil.bubbleMin(tree, i);
         }
     }
 
@@ -116,18 +116,18 @@ public class ArrayBinaryTree {
         if (i == size) return;
 
         if (activeMaxView != null) {
-            // If the swapped value is greater than parent, bubble up
+            // The swapped value is greater than its parent then bubble up
             if (i > 0 && tree[i] > tree[(i - 1) >> 1]) {
-                HeapUtil.maxBubble(tree, i);
+                HeapUtil.bubbleMax(tree, i);
             } else {
-                HeapUtil.maxSink(tree, i, size);
+                HeapUtil.sinkMax(tree, i, size);
             }
         } else if (activeMinView != null) {
-            // If the swapped value is less than parent, bubble up
+            // The swapped value is less than its parent then bubble up
             if (i > 0 && tree[i] < tree[(i - 1) >> 1]) {
-                HeapUtil.minBubble(tree, i);
+                HeapUtil.bubbleMin(tree, i);
             } else {
-                HeapUtil.minSink(tree, i, size);
+                HeapUtil.sinkMin(tree, i, size);
             }
         }
     }
@@ -270,7 +270,6 @@ public class ArrayBinaryTree {
             HeapUtil.buildMinHeap(tree, size);
             activeMinView = new MinHeapView(this);
         }
-
         return Optional.of(activeMinView);
     }
 
