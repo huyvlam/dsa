@@ -1,26 +1,40 @@
 package mytree;
 
-import java.util.Random;
+import myheap.HeapUtil;
+
+import java.util.Optional;
 
 public class ArrayBinaryTree {
-    private int[] tree;
-    private int initCapacity;
-    private int size;
+    private final int initCapacity;
     private int maxPathSum;
-    private boolean computed;
+    private boolean mpsCompute;
+
+    int[] tree;
+    int size;
+    int modCount;
+
+    MaxHeapView activeMaxView;
+    MinHeapView activeMinView;
+
     public ArrayBinaryTree(int capacity) {
         if (capacity < 2) throw new IllegalArgumentException("Capacity must be 2 or greater");
 
         initCapacity = capacity;
         tree = new int[this.initCapacity];
         size = 0;
-        computed = false;
+        mpsCompute = false;
+        modCount = 0;
+        activeMaxView = null;
+        activeMinView = null;
     }
 
     public void clear() {
         tree = new int[this.initCapacity];
         size = 0;
-        computed = false;
+        mpsCompute = false;
+        modCount++;
+        activeMaxView = null;
+        activeMinView = null;
     }
 
     public boolean isEmpty() {
@@ -59,6 +73,7 @@ public class ArrayBinaryTree {
         int[] newTree = new int[capacity];
         System.arraycopy(tree, 0, newTree, 0, size);
         tree = newTree;
+        modCount++;
     }
 
     public void trimToSize() {
@@ -68,31 +83,59 @@ public class ArrayBinaryTree {
 
             System.arraycopy(tree, 0, newTree, 0, size);
             tree = newTree;
+            modCount++;
         }
     }
 
     public void insert(int value) {
         if (size == tree.length) grow();
-        tree[size++] = value;
-        computed = false;
+
+        int i = size;
+        tree[i] = value;
+        size++;
+        mpsCompute = false;
+        modCount++;
+
+        if (activeMaxView != null) {
+            HeapUtil.maxBubble(tree, i);
+        } else if (activeMinView != null) {
+            HeapUtil.minBubble(tree, i);
+        }
     }
 
     public void delete(int value) {
         int i = findIndex(value);
         if (i == -1) return;
 
-        if (tree[i] == value) {
-            tree[i] = tree[size - 1];
-            tree[size - 1] = 0;
-            size--;
-            computed = false;
+        tree[i] = tree[size - 1];
+        tree[size - 1] = 0;
+        size--;
+        mpsCompute = false;
+        modCount++;
+
+        if (i == size) return;
+
+        if (activeMaxView != null) {
+            // If the swapped value is greater than parent, bubble up
+            if (i > 0 && tree[i] > tree[(i - 1) >> 1]) {
+                HeapUtil.maxBubble(tree, i);
+            } else {
+                HeapUtil.maxSink(tree, i, size);
+            }
+        } else if (activeMinView != null) {
+            // If the swapped value is less than parent, bubble up
+            if (i > 0 && tree[i] < tree[(i - 1) >> 1]) {
+                HeapUtil.minBubble(tree, i);
+            } else {
+                HeapUtil.minSink(tree, i, size);
+            }
         }
     }
 
     public int getMaxPathSum() {
-        if (!computed) {
+        if (!mpsCompute) {
             maxPathSum = getMaxPathSum(0);
-            computed = true;
+            mpsCompute = true;
         }
         return maxPathSum;
     }
@@ -192,5 +235,48 @@ public class ArrayBinaryTree {
         int matchLevel = 31 - Integer.numberOfLeadingZeros(match + 1);
         // Subtract the match level from total tree height
         return height() - matchLevel;
+    }
+
+    public int getSibling(int value) {
+        int i = findIndex(value);
+
+        // Root or not found
+        if (i <= 0 || i >= size) return -1;
+
+        // If i is odd (left child), sibling is i + 1
+        // If i is even (right child), sibling is i - 1
+        int sibling = (i % 2 != 0) ? i + 1 : i - 1;
+
+        // Must check if the sibling actually exists in the current size
+        return (sibling < size) ? tree[sibling] : -1;
+    }
+
+    public Optional<MaxHeapView> createMaxHeap() {
+        if (activeMinView != null)
+            throw new IllegalStateException("Cannot create Max Heap while an active Min Heap exists.");
+
+        if (activeMaxView == null) {
+            HeapUtil.buildMaxHeap(tree, size);
+            activeMaxView = new MaxHeapView(this);
+        }
+        return Optional.of(activeMaxView);
+    }
+
+    public Optional<MinHeapView> createMinHeap() {
+        if (activeMaxView != null)
+            throw new IllegalStateException("Cannot create Min Heap while an active Max Heap exists.");
+
+        if (activeMinView == null) {
+            HeapUtil.buildMinHeap(tree, size);
+            activeMinView = new MinHeapView(this);
+        }
+
+        return Optional.of(activeMinView);
+    }
+
+    void clearView() {
+        activeMaxView = null;
+        activeMinView = null;
+        modCount++;
     }
 }
