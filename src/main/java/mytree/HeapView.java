@@ -86,7 +86,7 @@ public abstract class HeapView implements AutoCloseable {
 
         for (int i = 0; i < abt.size; i++) {
             if (prints == 0) {
-                sb.append("Level ").append(level).append(" [ ");
+                sb.append("Level ").append(level).append(" [");
             }
 
             sb.append(String.format("%4d", abt.tree[i]));
