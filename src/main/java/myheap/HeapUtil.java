@@ -16,8 +16,8 @@ public class HeapUtil {
         int cur = index;
 
         while (true) {
-            int left = (index << 1) + 1;
-            int right = (index << 1) + 2;
+            int left = (cur << 1) + 1;
+            int right = (cur << 1) + 2;
             if (left >= size) break;
 
             int max = left;
@@ -25,7 +25,7 @@ public class HeapUtil {
                 max = right;
             }
 
-            if (target >= arr[max]) break;
+            if (arr[max] <= target) break;
 
             arr[cur] = arr[max];
             cur = max;
@@ -64,8 +64,8 @@ public class HeapUtil {
         int cur = index;
 
         while (true) {
-            int left = (index << 1) + 1;
-            int right = (index << 1) + 2;
+            int left = (cur << 1) + 1;
+            int right = (cur << 1) + 2;
             if (left >= size) break;
 
             int min = left;
@@ -73,7 +73,7 @@ public class HeapUtil {
                 min = right;
             }
 
-            if (target <= arr[min]) break;
+            if (arr[min] >= target) break;
 
             arr[cur] = arr[min];
             cur = min;
