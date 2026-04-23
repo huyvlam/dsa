@@ -241,14 +241,14 @@ public class ArrayBinaryTree {
         int i = findIndex(value);
 
         // Root or not found
-        if (i <= 0 || i >= size) return -1;
+        if (i <= 0 || i >= size) return Integer.MIN_VALUE;
 
         // If i is odd (left child), sibling is i + 1
         // If i is even (right child), sibling is i - 1
         int sibling = (i % 2 != 0) ? i + 1 : i - 1;
 
         // Must check if the sibling actually exists in the current size
-        return (sibling < size) ? tree[sibling] : -1;
+        return (sibling < size) ? tree[sibling] : Integer.MIN_VALUE;
     }
 
     public Optional<MaxHeapView> createMaxHeap() {
