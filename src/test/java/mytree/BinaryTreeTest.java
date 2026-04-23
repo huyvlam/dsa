@@ -3,6 +3,7 @@ package mytree;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.ConcurrentModificationException;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -139,5 +140,108 @@ public class BinaryTreeTest {
             } else {
                 assertEquals(0, abt.getHeight(data[i]));
             }
+        }
+    }
+
+    @Test
+    @DisplayName("Should return the sibling of a given node")
+    void testGetSibling() {
+        ArrayBinaryTree abt = new ArrayBinaryTree(4);
+        LinkedBinaryTree lbt = new LinkedBinaryTree();
+
+        abt.insert(-10);
+        abt.insert(5);
+        abt.insert(24);
+
+        assertEquals(Integer.MIN_VALUE, abt.getSibling(-10));
+        assertEquals(24, abt.getSibling(5));
+        assertEquals(5, abt.getSibling(24));
+
+        lbt.insert(5);
+        lbt.insert(36);
+        lbt.insert(7);
+
+        assertNull(lbt.getSibling(5));
+        assertEquals(7, lbt.getSibling(36).value);
+        assertEquals(36, lbt.getSibling(7).value);
+    }
+
+    @Test
+    @DisplayName("Should convert array binary tree into a Max Heap")
+    void testMaxHeapView() {
+        int n = 16;
+        ArrayBinaryTree abt = new ArrayBinaryTree(n);
+        Random rand = new Random();
+
+        for (int i = 0; i < n; i++) {
+            abt.insert(rand.nextInt());
+        }
+
+        try (MaxHeapView maxHeap = abt.createMaxHeap().get()) {
+            int root = maxHeap.pop();
+
+            while (abt.size() > n / 2) {
+                int cur = maxHeap.pop();
+                assertTrue(cur < root);
+                root = cur;
+            }
+
+            maxHeap.insert(root + 3);
+            assertTrue(maxHeap.peek() > root);
+
+            maxHeap.replace(root);
+            assertEquals(root, maxHeap.peek());
+
+            abt.insert(46);
+            assertThrows(ConcurrentModificationException.class, maxHeap::sort);
+
+            maxHeap.sync();
+            String str = maxHeap.toString();
+            assertTrue(str.contains("Heap View (size"));
+
+            maxHeap.sort();
+            assertTrue(abt.tree[0] < abt.tree[5]);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    @DisplayName("Should convert array binary tree into a Min Heap")
+    void testMinHeapView() {
+        int n = 16;
+        ArrayBinaryTree abt = new ArrayBinaryTree(n);
+        Random rand = new Random();
+
+        for (int i = 0; i < n; i++) {
+            abt.insert(rand.nextInt());
+        }
+
+        try (MinHeapView minHeap = abt.createMinHeap().get()) {
+            int root = minHeap.pop();
+
+            while (abt.size() > n / 2) {
+                int cur = minHeap.pop();
+                assertTrue(cur > root);
+                root = cur;
+            }
+
+            minHeap.insert(root - 3);
+            assertTrue(minHeap.peek() < root);
+
+            minHeap.replace(root);
+            assertEquals(root, minHeap.peek());
+
+            abt.insert(25);
+            assertThrows(ConcurrentModificationException.class, minHeap::sort);
+
+            minHeap.sync();
+            String str = minHeap.toString();
+            assertTrue(str.contains("Heap View (size"));
+
+            minHeap.sort();
+            assertTrue(abt.tree[0] > abt.tree[5]);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }}
