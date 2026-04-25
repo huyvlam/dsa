@@ -35,6 +35,7 @@ public abstract class HeapView implements AutoCloseable {
         abt.tree[0] = abt.tree[abt.size - 1];
         abt.tree[abt.size - 1] = 0;
         abt.size--;
+        expectedModCount = ++abt.modCount;
 
         if (abt.size > 1) {
             sink(abt.size);
@@ -42,7 +43,6 @@ public abstract class HeapView implements AutoCloseable {
             close();
         }
 
-        expectedModCount = ++abt.modCount;
         return top;
     }
 
