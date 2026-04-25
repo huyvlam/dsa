@@ -1,5 +1,6 @@
 package myhash.offheap;
 
+import org.junit.jupiter.api.Disabled;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
@@ -17,6 +18,7 @@ import java.util.concurrent.TimeUnit;
         "--add-opens", "java.base/sun.nio.ch=ALL-UNNAMED"
 })
 @State(Scope.Thread)
+@Disabled
 public class OffHeapBenchmark {
 //    @Param({"131072", "262144", "524288"})
     @Param({"524288"})
