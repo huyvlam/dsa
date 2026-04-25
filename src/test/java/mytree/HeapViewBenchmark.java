@@ -11,7 +11,6 @@ import java.util.PriorityQueue;
 import java.util.Random;
 
 @State(Scope.Benchmark)
-@Disabled
 public class HeapViewBenchmark {
     @Param({"1000000", "10000000"})
     private int capacity;
