@@ -55,6 +55,10 @@ public class ArrayBinaryTree {
         return (size == 0) ? -1 : 31 - Integer.numberOfLeadingZeros(size);
     }
 
+    public int leafCount() {
+        return size == 0 ? 0 : (size + 1) >> 1;
+    }
+
     public int capacity() {
         return tree.length;
     }
@@ -132,15 +136,15 @@ public class ArrayBinaryTree {
         }
     }
 
-    public int getMaxPathSum() {
+    public int maxPathSum() {
         if (!mpsCompute) {
-            maxPathSum = getMaxPathSum(0);
+            maxPathSum = maxPathSum(0);
             mpsCompute = true;
         }
         return maxPathSum;
     }
 
-    public int getMaxPathSum(int i) {
+    public int maxPathSum(int i) {
         int[] res = {Integer.MIN_VALUE};
         computeMaxPathSum(i, res);
         return res[0];
@@ -159,6 +163,10 @@ public class ArrayBinaryTree {
         if (curSum > res[0]) res[0] = curSum;
 
         return tree[i] + (leftVal > rightVal ? leftVal : rightVal);
+    }
+
+    public int minDepth() {
+        return 31 - Integer.numberOfLeadingZeros((size >> 1) + 1);
     }
 
     public int findIndex(int value) {
