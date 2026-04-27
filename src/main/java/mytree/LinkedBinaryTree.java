@@ -30,6 +30,10 @@ public class LinkedBinaryTree {
         return (size == 0) ? -1 : 31 - Integer.numberOfLeadingZeros(size);
     }
 
+    public int leafCount() {
+        return size == 0 ? 0 : (size + 1) >> 1;
+    }
+
     public boolean isEmpty() {
         return size == 0;
     }
@@ -54,7 +58,7 @@ public class LinkedBinaryTree {
         if (root == null) {
             root = node;
         } else {
-            CircularArrayQueue<BTNode> queue = new CircularArrayQueue<>(1 << (height() + 1));
+            CircularArrayQueue<BTNode> queue = new CircularArrayQueue<>(leafCount());
             queue.add(root);
 
             while (!queue.isEmpty()) {
@@ -99,7 +103,7 @@ public class LinkedBinaryTree {
         BTNode cur = null;
         BTNode prev = null;
 
-        CircularArrayQueue<BTNode> queue = new CircularArrayQueue<>(1 << (height() + 1));
+        CircularArrayQueue<BTNode> queue = new CircularArrayQueue<>(leafCount());
         queue.add(root);
 
         while (!queue.isEmpty()) {
@@ -131,15 +135,15 @@ public class LinkedBinaryTree {
         mpsCompute = false;
     }
 
-    public int getMaxPathSum() {
+    public int maxPathSum() {
         if (!mpsCompute) {
-            maxPathSum = getMaxPathSum(root);
+            maxPathSum = maxPathSum(root);
             mpsCompute = true;
         }
         return maxPathSum;
     }
 
-    public int getMaxPathSum(BTNode subroot) {
+    public int maxPathSum(BTNode subroot) {
         int[] res = {Integer.MIN_VALUE};
         computeMaxPathSum(subroot, res);
         return res[0];
@@ -160,6 +164,28 @@ public class LinkedBinaryTree {
         return subroot.value + (leftVal > rightVal ? leftVal : rightVal);
     }
 
+    public int minDepth() {
+        if (size == 0) return -1;
+
+        int depth = 0;
+        CircularArrayQueue<BTNode> queue = new CircularArrayQueue<>(leafCount());
+        queue.add(root);
+
+        while (!queue.isEmpty()) {
+            int n = queue.size();
+
+            for (int i = 0; i < n; i++) {
+                BTNode cur = queue.remove();
+
+                if (cur.left == null && cur.right == null) return depth;
+                if (cur.left != null) queue.add(cur.left);
+                if (cur.right != null) queue.add(cur.right);
+            }
+            depth++;
+        }
+        return -1;
+    }
+
     public BTNode find(int value) {
         if (root == null) return null;
 
@@ -178,7 +204,7 @@ public class LinkedBinaryTree {
         if (root == null) return -1;
         int nodeDepth = 0;
 
-        CircularArrayQueue<BTNode> queue = new CircularArrayQueue<>(1 << (height() + 1));
+        CircularArrayQueue<BTNode> queue = new CircularArrayQueue<>(leafCount());
         queue.add(root);
 
         while (!queue.isEmpty()) {
@@ -200,7 +226,7 @@ public class LinkedBinaryTree {
 
         int nodeHeight = -1;
         boolean found = false;
-        CircularArrayQueue<BTNode> queue = new CircularArrayQueue<>(1 << (height() + 1));
+        CircularArrayQueue<BTNode> queue = new CircularArrayQueue<>(leafCount());
         queue.add(root);
 
         while (!queue.isEmpty()) {
@@ -222,7 +248,7 @@ public class LinkedBinaryTree {
     public BTNode getSibling(int value) {
         if (size <= 1 || root.value == value) return null;
 
-        CircularArrayQueue<BTNode> queue = new CircularArrayQueue<>(1 << (height() + 1));
+        CircularArrayQueue<BTNode> queue = new CircularArrayQueue<>(leafCount());
         queue.add(root);
 
         while (!queue.isEmpty()) {
@@ -242,7 +268,7 @@ public class LinkedBinaryTree {
     }
 
     private void levelOrderScan(Predicate<BTNode> action) {
-        CircularArrayQueue<BTNode> queue = new CircularArrayQueue<>(1 << (height() + 1));
+        CircularArrayQueue<BTNode> queue = new CircularArrayQueue<>(leafCount());
         queue.add(root);
 
         while (!queue.isEmpty()) {
@@ -250,10 +276,7 @@ public class LinkedBinaryTree {
 
             for (int i = 0; i < n; i++) {
                 BTNode cur = queue.remove();
-                if (!action.test(cur)) {
-                    queue.clear();
-                    return;
-                }
+                if (!action.test(cur)) return;
                 if (cur.left != null) queue.add(cur.left);
                 if (cur.right != null) queue.add(cur.right);
             }
