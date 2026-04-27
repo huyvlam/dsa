@@ -60,13 +60,13 @@ public class BinaryTreeTest {
         abt.insert(5);
         abt.insert(24);
         abt.insert(13);
-        assertEquals(32, abt.getMaxPathSum());
+        assertEquals(32, abt.maxPathSum());
 
         lbt.insert(-10);
         lbt.insert(5);
         lbt.insert(24);
         lbt.insert(13);
-        assertEquals(32, lbt.getMaxPathSum());
+        assertEquals(32, lbt.maxPathSum());
 
         abt.clear();
         lbt.clear();
@@ -75,13 +75,13 @@ public class BinaryTreeTest {
         abt.insert(5);
         abt.insert(2);
         abt.insert(13);
-        assertEquals(18, abt.getMaxPathSum());
+        assertEquals(18, abt.maxPathSum());
 
         lbt.insert(-10);
         lbt.insert(5);
         lbt.insert(2);
         lbt.insert(13);
-        assertEquals(18, lbt.getMaxPathSum());
+        assertEquals(18, lbt.maxPathSum());
     }
 
     @Test
@@ -141,6 +141,21 @@ public class BinaryTreeTest {
                 assertEquals(0, abt.getHeight(data[i]));
             }
         }
+    }
+
+    @Test
+    @DisplayName("Should compute the minimum depth of a tree")
+    void testMinDepth() {
+        int n = 13;
+        ArrayBinaryTree abt = new ArrayBinaryTree(n);
+        LinkedBinaryTree lbt = new LinkedBinaryTree();
+        Random rand = new Random();
+        for (int i = 0; i < n; i++) {
+            int val = rand.nextInt();
+            abt.insert(val);
+            lbt.insert(val);
+        }
+        assertEquals(abt.minDepth(), lbt.minDepth());
     }
 
     @Test
