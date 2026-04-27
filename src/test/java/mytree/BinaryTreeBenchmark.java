@@ -44,14 +44,14 @@ public class BinaryTreeBenchmark {
             abt.insert(value);
         }
 
-        int sum1 = abt.getMaxPathSum();
+        int sum1 = abt.maxPathSum();
 
         int limit = capacity / 2;
         for (int i = capacity / 4; i < limit; i++) {
             abt.delete(data[i]);
         }
 
-        int sum2 = abt.getMaxPathSum();
+        int sum2 = abt.maxPathSum();
 
         return sum1 + sum2;
     }
@@ -62,14 +62,14 @@ public class BinaryTreeBenchmark {
             lbt.insert(value);
         }
 
-        int sum1 = lbt.getMaxPathSum();
+        int sum1 = lbt.maxPathSum();
 
         int limit = capacity / 2;
         for (int i = capacity / 4; i < limit; i++) {
             lbt.delete(data[i]);
         }
 
-        int sum2 = lbt.getMaxPathSum();
+        int sum2 = lbt.maxPathSum();
 
         return sum1 + sum2;
     }
