@@ -16,7 +16,7 @@ class BinaryHeapUtilTest {
 
     @BeforeEach
     void setUp() {
-        n = 15;
+        n = 50;
         arr = new int[n];
         rand = new Random();
     }
@@ -68,5 +68,53 @@ class BinaryHeapUtilTest {
         assertEquals(27, arr[1]);
         assertEquals(6, arr[4]);
         assertEquals(13, arr[9]);
+    }
+
+    @Test
+    @DisplayName("Should merge two arrays into a max/min heap")
+    void testMergeHeap() {
+        int[] arr2 = new int[n];
+
+        for (int i = 0; i < n; i++) {
+            arr[i] = rand.nextInt();
+            arr2[i] = rand.nextInt();
+        }
+
+        int[] mergedMax = BinaryHeapUtil.mergeMaxHeap(arr, arr2);
+        int[] mergedMin = BinaryHeapUtil.mergeMinHeap(arr, arr2);
+
+        for (int i = n - 1; i >= 0; i--) {
+            int maxChild = mergedMax[i];
+            int minChild = mergedMin[i];
+            int maxPar = mergedMax[(i - 1) / 2];
+            int minPar = mergedMin[(i - 1) / 2];
+
+            assertTrue(maxPar >= maxChild);
+            assertTrue(minPar <= minChild);
+        }
+    }
+
+    @Test
+    @DisplayName("Should sort the given array in max/min heap order")
+    void testSort() {
+        for (int i = 0; i < n; i++) {
+            arr[i] = rand.nextInt();
+        }
+
+        BinaryHeapUtil.sortMaxHeap(arr, n);
+
+        int prev = arr[0];
+        for (int num : arr) {
+            assertTrue(prev <= num);
+            prev = num;
+        }
+
+        BinaryHeapUtil.sortMinHeap(arr, n);
+
+        prev = arr[0];
+        for (int num : arr) {
+            assertTrue(prev >= num);
+            prev = num;
+        }
     }
 }
