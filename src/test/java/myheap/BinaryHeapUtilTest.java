@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.Random;
 
 
-class HeapUtilTest {
+class BinaryHeapUtilTest {
     Random rand;
     int[] arr;
     int n;
@@ -28,7 +28,7 @@ class HeapUtilTest {
             arr[i] = rand.nextInt(30);
         }
 
-        HeapUtil.buildMaxHeap(arr, n);
+        BinaryHeapUtil.buildMaxHeap(arr, n);
         int i = n - 1;
         while (true) {
             int p = (i - 1) / 2;
@@ -37,7 +37,7 @@ class HeapUtilTest {
             i = p;
         }
 
-        HeapUtil.buildMinHeap(arr, n);
+        BinaryHeapUtil.buildMinHeap(arr, n);
         int j = n - 1;
         while (true) {
             int p = (j - 1) / 2;
@@ -55,14 +55,14 @@ class HeapUtilTest {
         arr[4] = 13;
         arr[9] = 27;
 
-        HeapUtil.bubbleMax(arr, 9);
+        BinaryHeapUtil.bubbleMax(arr, 9);
 
         assertEquals(27, arr[0]);
         assertEquals(-5, arr[1]);
         assertEquals(6, arr[4]);
         assertEquals(13, arr[9]);
 
-        HeapUtil.bubbleMin(arr, 1);
+        BinaryHeapUtil.bubbleMin(arr, 1);
 
         assertEquals(-5, arr[0]);
         assertEquals(27, arr[1]);

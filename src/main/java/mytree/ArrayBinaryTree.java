@@ -1,6 +1,6 @@
 package mytree;
 
-import myheap.HeapUtil;
+import myheap.BinaryHeapUtil;
 
 import java.util.Optional;
 
@@ -94,16 +94,15 @@ public class ArrayBinaryTree {
     public void insert(int value) {
         if (size == tree.length) grow();
 
-        int i = size;
+        int i = size++;
         tree[i] = value;
-        size++;
         mpsCompute = false;
         modCount++;
 
         if (activeMaxView != null) {
-            HeapUtil.bubbleMax(tree, i);
+            BinaryHeapUtil.bubbleMax(tree, i);
         } else if (activeMinView != null) {
-            HeapUtil.bubbleMin(tree, i);
+            BinaryHeapUtil.bubbleMin(tree, i);
         }
     }
 
@@ -117,21 +116,21 @@ public class ArrayBinaryTree {
         mpsCompute = false;
         modCount++;
 
-        if (i == size) return;
+        if (i == size || size <= 1) return;
 
         if (activeMaxView != null) {
             // The swapped value is greater than its parent then bubble up
             if (i > 0 && tree[i] > tree[(i - 1) >> 1]) {
-                HeapUtil.bubbleMax(tree, i);
+                BinaryHeapUtil.bubbleMax(tree, i);
             } else {
-                HeapUtil.sinkMax(tree, i, size);
+                BinaryHeapUtil.sinkMax(tree, i, size);
             }
         } else if (activeMinView != null) {
             // The swapped value is less than its parent then bubble up
             if (i > 0 && tree[i] < tree[(i - 1) >> 1]) {
-                HeapUtil.bubbleMin(tree, i);
+                BinaryHeapUtil.bubbleMin(tree, i);
             } else {
-                HeapUtil.sinkMin(tree, i, size);
+                BinaryHeapUtil.sinkMin(tree, i, size);
             }
         }
     }
@@ -264,7 +263,7 @@ public class ArrayBinaryTree {
             throw new IllegalStateException("Cannot create Max Heap while an active Min Heap exists.");
 
         if (activeMaxView == null) {
-            HeapUtil.buildMaxHeap(tree, size);
+            BinaryHeapUtil.buildMaxHeap(tree, size);
             activeMaxView = new MaxHeapView(this);
         }
         return Optional.of(activeMaxView);
@@ -275,7 +274,7 @@ public class ArrayBinaryTree {
             throw new IllegalStateException("Cannot create Min Heap while an active Max Heap exists.");
 
         if (activeMinView == null) {
-            HeapUtil.buildMinHeap(tree, size);
+            BinaryHeapUtil.buildMinHeap(tree, size);
             activeMinView = new MinHeapView(this);
         }
         return Optional.of(activeMinView);

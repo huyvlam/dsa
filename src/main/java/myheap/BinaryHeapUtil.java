@@ -1,11 +1,36 @@
 package myheap;
 
-public class HeapUtil {
+public class BinaryHeapUtil {
     public static void buildMaxHeap(int[] arr, int size) {
         if (size <= 1) return;
 
         for (int i = (size >> 1) - 1; i >= 0; i--) {
             sinkMax(arr, i, size);
+        }
+    }
+
+    public static int[] mergeMaxHeap(int[] a, int[] b) {
+        int n = a.length;
+        int m = b.length;
+        int[] combined = new int[n + m];
+
+        System.arraycopy(a, 0, combined, 0, n);
+        System.arraycopy(b, 0, combined, n, m);
+        buildMaxHeap(combined, n + m);
+
+        return combined;
+    }
+
+    public static void sortMaxHeap(int[] arr, int size) {
+        if (size <= 1) return;
+
+        buildMaxHeap(arr, size);
+
+        for (int i = size - 1; i > 0; i--) {
+            int temp = arr[0];
+            arr[0] = arr[i];
+            arr[i] = temp;
+            sinkMax(arr, 0, i);
         }
     }
 
@@ -54,6 +79,31 @@ public class HeapUtil {
 
         for (int i = (size >> 1) - 1; i >= 0; i--) {
             sinkMin(arr, i, size);
+        }
+    }
+
+    public static int[] mergeMinHeap(int[] a, int[] b) {
+        int n = a.length;
+        int m = b.length;
+        int[] combined = new int[n + m];
+
+        System.arraycopy(a, 0, combined, 0, n);
+        System.arraycopy(b, 0, combined, n, m);
+        buildMinHeap(combined, n + m);
+
+        return combined;
+    }
+
+    public static void sortMinHeap(int[] arr, int size) {
+        if (size <= 1) return;
+
+        buildMinHeap(arr, size);
+
+        for (int i = size - 1; i > 0; i--) {
+            int temp = arr[0];
+            arr[0] = arr[i];
+            arr[i] = temp;
+            sinkMin(arr, 0, i);
         }
     }
 

@@ -1,6 +1,6 @@
 package mytree;
 
-import myheap.HeapUtil;
+import myheap.BinaryHeapUtil;
 
 import java.util.ConcurrentModificationException;
 
@@ -139,11 +139,11 @@ class MaxHeapView extends HeapView {
     }
 
     void sink(int n) {
-        HeapUtil.sinkMax(abt.tree, 0, n);
+        BinaryHeapUtil.sinkMax(abt.tree, 0, n);
     }
 
     void build(int n) {
-        HeapUtil.buildMaxHeap(abt.tree, n);
+        BinaryHeapUtil.buildMaxHeap(abt.tree, n);
     }
 }
 
@@ -153,10 +153,10 @@ class MinHeapView extends HeapView {
     }
 
     void sink(int n) {
-        HeapUtil.sinkMin(abt.tree, 0, n);
+        BinaryHeapUtil.sinkMin(abt.tree, 0, n);
     }
 
     void build(int n) {
-        HeapUtil.buildMinHeap(abt.tree, n);
+        BinaryHeapUtil.buildMinHeap(abt.tree, n);
     }
 }
