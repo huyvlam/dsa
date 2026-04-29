@@ -143,7 +143,7 @@ class MaxHeapView extends HeapView {
     }
 
     void build(int n) {
-        BinaryHeapUtil.buildMaxHeap(abt.tree, n);
+        BinaryHeapUtil.buildMax(abt.tree, n);
     }
 }
 
@@ -157,6 +157,6 @@ class MinHeapView extends HeapView {
     }
 
     void build(int n) {
-        BinaryHeapUtil.buildMinHeap(abt.tree, n);
+        BinaryHeapUtil.buildMin(abt.tree, n);
     }
 }

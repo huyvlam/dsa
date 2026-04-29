@@ -263,7 +263,7 @@ public class ArrayBinaryTree {
             throw new IllegalStateException("Cannot create Max Heap while an active Min Heap exists.");
 
         if (activeMaxView == null) {
-            BinaryHeapUtil.buildMaxHeap(tree, size);
+            BinaryHeapUtil.buildMax(tree, size);
             activeMaxView = new MaxHeapView(this);
         }
         return Optional.of(activeMaxView);
@@ -274,7 +274,7 @@ public class ArrayBinaryTree {
             throw new IllegalStateException("Cannot create Min Heap while an active Max Heap exists.");
 
         if (activeMinView == null) {
-            BinaryHeapUtil.buildMinHeap(tree, size);
+            BinaryHeapUtil.buildMin(tree, size);
             activeMinView = new MinHeapView(this);
         }
         return Optional.of(activeMinView);

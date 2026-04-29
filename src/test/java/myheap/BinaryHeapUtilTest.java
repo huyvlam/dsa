@@ -28,7 +28,7 @@ class BinaryHeapUtilTest {
             arr[i] = rand.nextInt(30);
         }
 
-        BinaryHeapUtil.buildMaxHeap(arr, n);
+        BinaryHeapUtil.buildMax(arr, n);
         int i = n - 1;
         while (true) {
             int p = (i - 1) / 2;
@@ -37,7 +37,7 @@ class BinaryHeapUtilTest {
             i = p;
         }
 
-        BinaryHeapUtil.buildMinHeap(arr, n);
+        BinaryHeapUtil.buildMin(arr, n);
         int j = n - 1;
         while (true) {
             int p = (j - 1) / 2;
@@ -80,8 +80,8 @@ class BinaryHeapUtilTest {
             arr2[i] = rand.nextInt();
         }
 
-        int[] mergedMax = BinaryHeapUtil.mergeMaxHeap(arr, arr2);
-        int[] mergedMin = BinaryHeapUtil.mergeMinHeap(arr, arr2);
+        int[] mergedMax = BinaryHeapUtil.mergeMax(arr, arr2);
+        int[] mergedMin = BinaryHeapUtil.mergeMin(arr, arr2);
 
         for (int i = n - 1; i >= 0; i--) {
             int maxChild = mergedMax[i];
@@ -101,7 +101,7 @@ class BinaryHeapUtilTest {
             arr[i] = rand.nextInt();
         }
 
-        BinaryHeapUtil.sortMaxHeap(arr, n);
+        BinaryHeapUtil.sortMax(arr, n);
 
         int prev = arr[0];
         for (int num : arr) {
@@ -109,7 +109,7 @@ class BinaryHeapUtilTest {
             prev = num;
         }
 
-        BinaryHeapUtil.sortMinHeap(arr, n);
+        BinaryHeapUtil.sortMin(arr, n);
 
         prev = arr[0];
         for (int num : arr) {

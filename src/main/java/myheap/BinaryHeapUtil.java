@@ -1,7 +1,7 @@
 package myheap;
 
 public class BinaryHeapUtil {
-    public static void buildMaxHeap(int[] arr, int size) {
+    public static void buildMax(int[] arr, int size) {
         if (size <= 1) return;
 
         for (int i = (size >> 1) - 1; i >= 0; i--) {
@@ -9,22 +9,22 @@ public class BinaryHeapUtil {
         }
     }
 
-    public static int[] mergeMaxHeap(int[] a, int[] b) {
+    public static int[] mergeMax(int[] a, int[] b) {
         int n = a.length;
         int m = b.length;
         int[] combined = new int[n + m];
 
         System.arraycopy(a, 0, combined, 0, n);
         System.arraycopy(b, 0, combined, n, m);
-        buildMaxHeap(combined, n + m);
+        buildMax(combined, n + m);
 
         return combined;
     }
 
-    public static void sortMaxHeap(int[] arr, int size) {
+    public static void sortMax(int[] arr, int size) {
         if (size <= 1) return;
 
-        buildMaxHeap(arr, size);
+        buildMax(arr, size);
 
         for (int i = size - 1; i > 0; i--) {
             int temp = arr[0];
@@ -74,7 +74,7 @@ public class BinaryHeapUtil {
         arr[cur] = target;
     }
 
-    public static void buildMinHeap(int[] arr, int size) {
+    public static void buildMin(int[] arr, int size) {
         if (size <= 1) return;
 
         for (int i = (size >> 1) - 1; i >= 0; i--) {
@@ -82,22 +82,22 @@ public class BinaryHeapUtil {
         }
     }
 
-    public static int[] mergeMinHeap(int[] a, int[] b) {
+    public static int[] mergeMin(int[] a, int[] b) {
         int n = a.length;
         int m = b.length;
         int[] combined = new int[n + m];
 
         System.arraycopy(a, 0, combined, 0, n);
         System.arraycopy(b, 0, combined, n, m);
-        buildMinHeap(combined, n + m);
+        buildMin(combined, n + m);
 
         return combined;
     }
 
-    public static void sortMinHeap(int[] arr, int size) {
+    public static void sortMin(int[] arr, int size) {
         if (size <= 1) return;
 
-        buildMinHeap(arr, size);
+        buildMin(arr, size);
 
         for (int i = size - 1; i > 0; i--) {
             int temp = arr[0];

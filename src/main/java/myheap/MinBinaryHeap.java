@@ -26,7 +26,7 @@ public class MinBinaryHeap extends BinaryHeap {
 
     @Override
     protected void buildHeap(int[] arr, int n) {
-        BinaryHeapUtil.buildMinHeap(arr, n);
+        BinaryHeapUtil.buildMin(arr, n);
     }
 
     @Override

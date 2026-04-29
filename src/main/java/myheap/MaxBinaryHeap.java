@@ -26,7 +26,7 @@ public class MaxBinaryHeap extends BinaryHeap {
 
     @Override
     protected void buildHeap(int[] arr, int n) {
-        BinaryHeapUtil.buildMaxHeap(arr, n);
+        BinaryHeapUtil.buildMax(arr, n);
     }
 
     @Override

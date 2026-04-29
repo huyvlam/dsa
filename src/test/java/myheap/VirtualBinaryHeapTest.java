@@ -51,8 +51,8 @@ class VirtualBinaryHeapTest {
     @DisplayName("Should sort two arrays into one contiguous block of max heap")
     void testMaxSort() {
         VirtualBinaryHeap.sortMax(a, b);
-        int[] expected = BinaryHeapUtil.mergeMaxHeap(a, b);
-        BinaryHeapUtil.sortMaxHeap(expected, expected.length);
+        int[] expected = BinaryHeapUtil.mergeMax(a, b);
+        BinaryHeapUtil.sortMax(expected, expected.length);
 
         for (int i = 0; i < expected.length; i++) {
             assertEquals(expected[i], VirtualBinaryHeap.get(a, b, i));
@@ -63,8 +63,8 @@ class VirtualBinaryHeapTest {
     @DisplayName("Should sort two arrays into one contiguous block of min heap")
     void testMinSort() {
         VirtualBinaryHeap.sortMin(a, b);
-        int[] expected = BinaryHeapUtil.mergeMinHeap(a, b);
-        BinaryHeapUtil.sortMinHeap(expected, expected.length);
+        int[] expected = BinaryHeapUtil.mergeMin(a, b);
+        BinaryHeapUtil.sortMin(expected, expected.length);
 
         for (int i = 0; i < expected.length; i++) {
             assertEquals(expected[i], VirtualBinaryHeap.get(a, b, i));
