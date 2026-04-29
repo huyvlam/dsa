@@ -166,6 +166,6 @@ public abstract class BinaryHeap {
     }
 
     void checkSorted() {
-        if (sorted) throw new IllegalStateException("Heap is sorted. Call build method to enable this task.");
+        if (sorted) throw new IllegalStateException("Heap is sorted. Call rebuild method to enable this task.");
     }
 }
