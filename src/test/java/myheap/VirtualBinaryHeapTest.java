@@ -3,82 +3,71 @@ package myheap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
-import mymodel.Person;
-
-import java.util.Comparator;
+import java.util.Random;
 
 class VirtualBinaryHeapTest {
-    private Person[] personsA;
-    private Person[] personsB;
-    private String[] strA;
-    private String[] strB;
-    private Comparator<Person> comparator;
+    int size = 200;
+    int[] a, b;
 
     @BeforeEach
     void setUp() {
-        comparator = (p1, p2) -> Integer.compare(p1.age, p2.age);
-        personsA = new Person[2];
-        personsA[0] = new Person("Zizi", 23);
-        personsA[1] = new Person("Yan", 31);
-        personsB = new Person[2];
-        personsB[0] = new Person("Herra", 14);
-        personsB[1] = new Person("Tin", 54);
-        strA = new String[2];
-        strA[0] = "Xuan";
-        strA[1] = "Ha";
-        strB = new String[2];
-        strB[0] = "Thu";
-        strB[1] = "Dong";
+        a = new int[size];
+        b = new int[size / 2];
+        Random rand = new Random();
+        for (int i = 0; i < a.length; i++) a[i] = rand.nextInt();
+        for (int j = 0; j < b.length; j++) b[j] = rand.nextInt();
     }
 
     @Test
-    @DisplayName("Should rearrange the two arrays into min-heap")
-    void testMergeMinHeap() {
-        VirtualBinaryHeap.merge(personsA, personsB, VirtualBinaryHeap.HeapOrder.MIN, comparator);
+    @DisplayName("Should rearrange two arrays into one contiguous block of max heap")
+    void testMaxMerge() {
+        VirtualBinaryHeap.mergeMax(a, b);
 
-        assertEquals(14, personsA[0].age);
+        int n = a.length + b.length;
+        for (int i = n / 2 - 1; i >= 0; i--) {
+            int child = VirtualBinaryHeap.get(a, b, i);
+            int par = VirtualBinaryHeap.get(a, b, (i - 1) / 2);
+            assertTrue(par >= child);
+        }
     }
 
     @Test
-    @DisplayName("Should rearrange the two arrays into max-heap")
-    void testMergeMaxHeap() {
-        VirtualBinaryHeap.merge(personsA, personsB, VirtualBinaryHeap.HeapOrder.MAX, comparator);
+    @DisplayName("Should rearrange two arrays into one contiguous block of min heap")
+    void testMinMerge() {
+        VirtualBinaryHeap.mergeMin(a, b);
 
-        assertEquals(54, personsA[0].age);
+        int n = a.length + b.length;
+        for (int i = n / 2 - 1; i >= 0; i--) {
+            int child = VirtualBinaryHeap.get(a, b, i);
+            int par = VirtualBinaryHeap.get(a, b, (i - 1) / 2);
+            assertTrue(par <= child);
+        }
     }
 
     @Test
-    @DisplayName("Should sort the two arrays using natural order of elements")
-    void testSortStandard() {
-        VirtualBinaryHeap.sort(strA, strB);
+    @DisplayName("Should sort two arrays into one contiguous block of max heap")
+    void testMaxSort() {
+        VirtualBinaryHeap.sortMax(a, b);
+        int[] expected = BinaryHeapUtil.mergeMaxHeap(a, b);
+        BinaryHeapUtil.sortMaxHeap(expected, expected.length);
 
-        assertEquals("Dong", strA[0]);
-        assertEquals("Ha", strA[1]);
-        assertEquals("Thu", strB[0]);
-        assertEquals("Xuan", strB[1]);
+        for (int i = 0; i < expected.length; i++) {
+            assertEquals(expected[i], VirtualBinaryHeap.get(a, b, i));
+        }
     }
 
     @Test
-    @DisplayName("Should sort the two arrays in ascending order using custom comparator")
-    void testSortCustomAscending() {
-        VirtualBinaryHeap.sort(personsA, personsB, VirtualBinaryHeap.SortOrder.ASC, comparator);
+    @DisplayName("Should sort two arrays into one contiguous block of min heap")
+    void testMinSort() {
+        VirtualBinaryHeap.sortMin(a, b);
+        int[] expected = BinaryHeapUtil.mergeMinHeap(a, b);
+        BinaryHeapUtil.sortMinHeap(expected, expected.length);
 
-        assertEquals(14, personsA[0].age);
-        assertEquals(23, personsA[1].age);
-        assertEquals(31, personsB[0].age);
-        assertEquals(54, personsB[1].age);
-    }
-
-    @Test
-    @DisplayName("Should sort the two arrays in descending order using custom comparator")
-    void testSortCustomDescending() {
-        VirtualBinaryHeap.sort(personsA, personsB, VirtualBinaryHeap.SortOrder.DESC, comparator);
-
-        assertEquals(54, personsA[0].age);
-        assertEquals(31, personsA[1].age);
-        assertEquals(23, personsB[0].age);
-        assertEquals(14, personsB[1].age);
+        for (int i = 0; i < expected.length; i++) {
+            assertEquals(expected[i], VirtualBinaryHeap.get(a, b, i));
+        }
     }
 }
