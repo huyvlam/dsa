@@ -1,4 +1,4 @@
-package mytree;
+package mytree.bt;
 
 import org.junit.jupiter.api.Disabled;
 import org.openjdk.jmh.annotations.*;
@@ -18,8 +18,8 @@ public class BinaryTreeBenchmark {
     @Param({"32768"})
     private int capacity;
 
-    private ArrayBinaryTree abt;
-    private LinkedBinaryTree lbt;
+    private ArrayBT abt;
+    private LinkedBT lbt;
     private int[] data;
 
     @Setup(Level.Trial)
@@ -34,8 +34,8 @@ public class BinaryTreeBenchmark {
     @Setup(Level.Invocation)
     public void setupTrees() {
         // Start @ 1024 capacity to force grow during insert
-        abt = new ArrayBinaryTree(1024);
-        lbt = new LinkedBinaryTree();
+        abt = new ArrayBT(1024);
+        lbt = new LinkedBT();
     }
 
     @Benchmark
@@ -79,15 +79,15 @@ public class BinaryTreeBenchmark {
         @Param({"32768"})
         public int capacity;
 
-        public ArrayBinaryTree abt;
-        public LinkedBinaryTree lbt;
+        public ArrayBT abt;
+        public LinkedBT lbt;
         public int[] data;
         public int targetVal;
 
         @Setup(Level.Trial)
         public void setup() {
-            abt = new ArrayBinaryTree(capacity);
-            lbt = new LinkedBinaryTree();
+            abt = new ArrayBT(capacity);
+            lbt = new LinkedBT();
             data = new int[capacity];
 
             // Populate with unique data

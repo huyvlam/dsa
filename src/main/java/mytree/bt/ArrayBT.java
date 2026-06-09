@@ -1,10 +1,10 @@
-package mytree;
+package mytree.bt;
 
 import myheap.BinaryHeapUtil;
 
 import java.util.Optional;
 
-public class ArrayBinaryTree {
+public class ArrayBT {
     private final int initCapacity;
     private int maxPathSum;
     private boolean mpsCompute;
@@ -16,7 +16,7 @@ public class ArrayBinaryTree {
     MaxHeapView activeMaxView;
     MinHeapView activeMinView;
 
-    public ArrayBinaryTree(int capacity) {
+    public ArrayBT(int capacity) {
         if (capacity < 2) throw new IllegalArgumentException("Capacity must be 2 or greater");
 
         initCapacity = capacity;

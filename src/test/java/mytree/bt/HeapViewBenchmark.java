@@ -1,4 +1,4 @@
-package mytree;
+package mytree.bt;
 
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
@@ -18,7 +18,7 @@ public class HeapViewBenchmark {
     private int[] primData;
     private Integer[] boxedData;
 
-    private ArrayBinaryTree abt;
+    private ArrayBT abt;
     private PriorityQueue<Integer> pq;
 
     @Setup(Level.Trial)
@@ -35,7 +35,7 @@ public class HeapViewBenchmark {
 
     @Setup(Level.Iteration)
     public void prepare() {
-        abt = new ArrayBinaryTree(capacity);
+        abt = new ArrayBT(capacity);
         pq = new PriorityQueue<>(capacity);
     }
 
@@ -110,11 +110,11 @@ public class HeapViewBenchmark {
         @Param({"1000000", "10000000"})
         public int capacity;
 
-        public ArrayBinaryTree abt;
+        public ArrayBT abt;
 
         @Setup(Level.Trial)
         public void setup() {
-            abt = new ArrayBinaryTree(capacity);
+            abt = new ArrayBT(capacity);
             Random rand = new Random();
 
             for (int i = 0; i < capacity; i++) {

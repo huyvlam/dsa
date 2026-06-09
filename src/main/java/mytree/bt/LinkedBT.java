@@ -1,16 +1,16 @@
-package mytree;
+package mytree.bt;
 
 import myqueue.CircularArrayQueue;
 
 import java.util.function.Predicate;
 
-public class LinkedBinaryTree {
+public class LinkedBT {
     BTNode root;
     private int size;
     private int maxPathSum;
     private boolean mpsCompute;
 
-    public LinkedBinaryTree() {
+    public LinkedBT() {
         root = null;
         size = 0;
         mpsCompute = false;

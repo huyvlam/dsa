@@ -1,14 +1,14 @@
-package mytree;
+package mytree.bt;
 
 import myheap.BinaryHeapUtil;
 
 import java.util.ConcurrentModificationException;
 
 public abstract class HeapView implements AutoCloseable {
-    ArrayBinaryTree abt;
+    ArrayBT abt;
     protected int expectedModCount;
 
-    HeapView(ArrayBinaryTree abt) {
+    HeapView(ArrayBT abt) {
         this.abt = abt;
         expectedModCount = abt.modCount;
     }
@@ -134,7 +134,7 @@ public abstract class HeapView implements AutoCloseable {
 }
 
 class MaxHeapView extends HeapView {
-    MaxHeapView(ArrayBinaryTree abt) {
+    MaxHeapView(ArrayBT abt) {
         super(abt);
     }
 
@@ -148,7 +148,7 @@ class MaxHeapView extends HeapView {
 }
 
 class MinHeapView extends HeapView {
-    MinHeapView(ArrayBinaryTree abt) {
+    MinHeapView(ArrayBT abt) {
         super(abt);
     }
 

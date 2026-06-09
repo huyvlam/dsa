@@ -1,4 +1,4 @@
-package mytree;
+package mytree.bt;
 
 public class BTNode {
     int value;
