@@ -12,8 +12,8 @@ public class BinaryTreeTest {
     @Test
     @DisplayName("Should add/delete data")
     void testAddDelete() {
-        ArrayBT abt = new ArrayBT(8);
-        LinkedBT lbt = new LinkedBT();
+        ArrayBinaryTree abt = new ArrayBinaryTree(8);
+        LinkedBinaryTree lbt = new LinkedBinaryTree();
 
         abt.insert(7);
         lbt.insert(7);
@@ -31,8 +31,8 @@ public class BinaryTreeTest {
     @Test
     @DisplayName("The height of a complete tree should equate to log2 of its size")
     void testTreeHeight() {
-        ArrayBT abt = new ArrayBT(8);
-        LinkedBT lbt = new LinkedBT();
+        ArrayBinaryTree abt = new ArrayBinaryTree(8);
+        LinkedBinaryTree lbt = new LinkedBinaryTree();
 
         Random rand = new Random();
         int[] sizes = {3, 7, 8};
@@ -53,8 +53,8 @@ public class BinaryTreeTest {
     @Test
     @DisplayName("Should compute the max path sum")
     void testMaxPathSum() {
-        ArrayBT abt = new ArrayBT(8);
-        LinkedBT lbt = new LinkedBT();
+        ArrayBinaryTree abt = new ArrayBinaryTree(8);
+        LinkedBinaryTree lbt = new LinkedBinaryTree();
 
         abt.insert(-10);
         abt.insert(5);
@@ -88,8 +88,8 @@ public class BinaryTreeTest {
     @DisplayName("Should find a tree element by its value")
     void testFindByValue() {
         int n = 4;
-        ArrayBT abt = new ArrayBT(n);
-        LinkedBT lbt = new LinkedBT();
+        ArrayBinaryTree abt = new ArrayBinaryTree(n);
+        LinkedBinaryTree lbt = new LinkedBinaryTree();
         int[] data = new int[n];
         Random rand = new Random();
 
@@ -109,8 +109,8 @@ public class BinaryTreeTest {
     @DisplayName("Should compute the depth and height of a given value")
     void testGetDepthHeight() {
         int n = 4;
-        ArrayBT abt = new ArrayBT(n);
-        LinkedBT lbt = new LinkedBT();
+        ArrayBinaryTree abt = new ArrayBinaryTree(n);
+        LinkedBinaryTree lbt = new LinkedBinaryTree();
         int[] data = new int[n];
         Random rand = new Random();
 
@@ -147,8 +147,8 @@ public class BinaryTreeTest {
     @DisplayName("Should compute the minimum depth of a tree")
     void testMinDepth() {
         int n = 13;
-        ArrayBT abt = new ArrayBT(n);
-        LinkedBT lbt = new LinkedBT();
+        ArrayBinaryTree abt = new ArrayBinaryTree(n);
+        LinkedBinaryTree lbt = new LinkedBinaryTree();
         Random rand = new Random();
         for (int i = 0; i < n; i++) {
             int val = rand.nextInt();
@@ -161,8 +161,8 @@ public class BinaryTreeTest {
     @Test
     @DisplayName("Should return the sibling of a given node")
     void testGetSibling() {
-        ArrayBT abt = new ArrayBT(4);
-        LinkedBT lbt = new LinkedBT();
+        ArrayBinaryTree abt = new ArrayBinaryTree(4);
+        LinkedBinaryTree lbt = new LinkedBinaryTree();
 
         abt.insert(-10);
         abt.insert(5);
@@ -185,7 +185,7 @@ public class BinaryTreeTest {
     @DisplayName("Should convert array binary tree into a Max Heap")
     void testMaxHeapView() {
         int n = 16;
-        ArrayBT abt = new ArrayBT(n);
+        ArrayBinaryTree abt = new ArrayBinaryTree(n);
         Random rand = new Random();
 
         for (int i = 0; i < n; i++) {
@@ -225,7 +225,7 @@ public class BinaryTreeTest {
     @DisplayName("Should convert array binary tree into a Min Heap")
     void testMinHeapView() {
         int n = 16;
-        ArrayBT abt = new ArrayBT(n);
+        ArrayBinaryTree abt = new ArrayBinaryTree(n);
         Random rand = new Random();
 
         for (int i = 0; i < n; i++) {

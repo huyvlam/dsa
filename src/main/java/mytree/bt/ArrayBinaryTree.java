@@ -4,7 +4,7 @@ import myheap.BinaryHeapUtil;
 
 import java.util.Optional;
 
-public class ArrayBT {
+public class ArrayBinaryTree {
     private final int initCapacity;
     private int maxPathSum;
     private boolean mpsCompute;
@@ -16,7 +16,7 @@ public class ArrayBT {
     MaxHeapView activeMaxView;
     MinHeapView activeMinView;
 
-    public ArrayBT(int capacity) {
+    public ArrayBinaryTree(int capacity) {
         if (capacity < 2) throw new IllegalArgumentException("Capacity must be 2 or greater");
 
         initCapacity = capacity;

@@ -4,13 +4,13 @@ import myqueue.CircularArrayQueue;
 
 import java.util.function.Predicate;
 
-public class LinkedBT {
+public class LinkedBinaryTree {
     BTNode root;
     private int size;
     private int maxPathSum;
     private boolean mpsCompute;
 
-    public LinkedBT() {
+    public LinkedBinaryTree() {
         root = null;
         size = 0;
         mpsCompute = false;

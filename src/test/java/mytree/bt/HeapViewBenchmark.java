@@ -18,7 +18,7 @@ public class HeapViewBenchmark {
     private int[] primData;
     private Integer[] boxedData;
 
-    private ArrayBT abt;
+    private ArrayBinaryTree abt;
     private PriorityQueue<Integer> pq;
 
     @Setup(Level.Trial)
@@ -35,7 +35,7 @@ public class HeapViewBenchmark {
 
     @Setup(Level.Iteration)
     public void prepare() {
-        abt = new ArrayBT(capacity);
+        abt = new ArrayBinaryTree(capacity);
         pq = new PriorityQueue<>(capacity);
     }
 
@@ -110,11 +110,11 @@ public class HeapViewBenchmark {
         @Param({"1000000", "10000000"})
         public int capacity;
 
-        public ArrayBT abt;
+        public ArrayBinaryTree abt;
 
         @Setup(Level.Trial)
         public void setup() {
-            abt = new ArrayBT(capacity);
+            abt = new ArrayBinaryTree(capacity);
             Random rand = new Random();
 
             for (int i = 0; i < capacity; i++) {
