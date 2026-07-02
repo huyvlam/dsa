@@ -1,5 +1,6 @@
 package mytree.bst;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -7,48 +8,50 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class BinarySearchTreeTest {
-    @Test
-    @DisplayName("Should insert and delete data recursively")
-    void testRecursiveInsertDelete() {
-        BinarySearchTree bst = new BinarySearchTree();
+    BinarySearchTree bst;
 
-        bst.recursiveInsert(23);
-        bst.recursiveInsert(9);
-        bst.recursiveInsert(46);
-        bst.recursiveInsert(15);
-
-        assertEquals(4, bst.size());
-        assertTrue(bst.root.value > bst.root.left.value);
-        assertTrue(bst.root.value < bst.root.right.value);
-        assertEquals(15, bst.root.left.right.value);
-
-        bst.recursiveDelete(9);
-        bst.recursiveDelete(23);
-
-        assertEquals(15, bst.root.left.value);
-        assertEquals(46, bst.root.value);
-        assertEquals(2, bst.size());
+    @BeforeEach
+    void setUp() {
+        bst = new BinarySearchTree();
     }
 
     @Test
-    @DisplayName("Should insert and delete data iteratively")
-    void testIterativeInsertDelete() {
-        BinarySearchTree bst = new BinarySearchTree();
+    @DisplayName("Should insert and delete data")
+    void testInsertDelete() {
+        bst.recursiveInsert(23);
+        bst.recursiveInsert(9);
+        bst.iterativeInsert(46);
+        bst.iterativeInsert(20);
+        bst.iterativeInsert(17);
 
-        bst.iterativeInsert(25);
-        bst.iterativeInsert(48);
-        bst.iterativeInsert(19);
-        bst.iterativeInsert(36);
-
-        assertEquals(4, bst.size());
         assertTrue(bst.root.value > bst.root.left.value);
         assertTrue(bst.root.value < bst.root.right.value);
-        assertEquals(36, bst.root.right.left.value);
+        assertEquals(20, bst.root.left.right.value);
+        assertEquals(5, bst.size());
 
-        bst.iterativeDelete(25);
-        assertEquals(19, bst.root.value);
+        bst.recursiveDelete(9);
+        bst.iterativeDelete(23);
 
-        bst.iterativeDelete(19);
-        assertEquals(48, bst.root.value);
+        assertEquals(17, bst.root.left.value);
+        assertEquals(20, bst.root.value);
+        assertEquals(3, bst.size());
+    }
+
+    @Test
+    @DisplayName("Should compute and return height and depth of a node")
+    void testGetHeightDepth() {
+        bst.recursiveInsert(26);
+        bst.recursiveInsert(40);
+        bst.iterativeInsert(18);
+        bst.iterativeInsert(9);
+        bst.iterativeInsert(3);
+
+        assertEquals(3, bst.getDepth(3));
+        assertEquals(2, BinarySearchTree.getDepth(bst.root.left, 3));
+        assertEquals(1, bst.getDepth(40));
+
+        assertEquals(3, bst.getHeight());
+        assertEquals(1, BinarySearchTree.getHeight(bst.root.left.left));
+        assertEquals(0, BinarySearchTree.getHeight(bst.root.right));
     }
 }
