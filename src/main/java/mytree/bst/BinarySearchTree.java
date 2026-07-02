@@ -1,7 +1,5 @@
 package mytree.bst;
 
-import myqueue.CircularArrayQueue;
-
 public class BinarySearchTree {
     BSTNode root;
     int size;
@@ -199,6 +197,7 @@ public class BinarySearchTree {
 
     public BSTNode findMin(BSTNode node) {
         BSTNode cur = node;
+
         while (cur != null && cur.left != null) {
             cur = cur.left;
         }
@@ -208,10 +207,57 @@ public class BinarySearchTree {
 
     public BSTNode findMax(BSTNode node) {
         BSTNode cur = node;
+
         while (cur != null && cur.right != null) {
             cur = cur.right;
         }
 
         return cur;
+    }
+
+    public int getDepth(int value) {
+        if (root == null) return -1;
+
+        return getDepth(root, value);
+    }
+
+    /**
+     * @return  number of edges from a node down to the descendant w/ given value
+     */
+    public static int getDepth(BSTNode node, int value) {
+        int edges = 0;
+        BSTNode cur = node;
+
+        while (cur != null) {
+            if (value == cur.value) {
+                return edges;
+            }
+
+            if (value < cur.value) {
+                cur = cur.left;
+            } else {
+                cur = cur.right;
+            }
+
+            edges++;
+        }
+
+        return -1;
+    }
+
+    public int getHeight() {
+        return getHeight(root);
+    }
+
+    /**
+     * @return  number of edges from the given node down to a leaf
+     */
+    public static int getHeight(BSTNode node) {
+        if (node == null) return -1;
+
+        int leftHeight = getHeight(node.left);
+        int rightHeight = getHeight(node.right);
+
+        return leftHeight > rightHeight ? leftHeight + 1 : rightHeight + 1;
     }
 }
