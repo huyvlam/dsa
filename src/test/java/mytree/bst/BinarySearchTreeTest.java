@@ -95,4 +95,19 @@ public class BinarySearchTreeTest {
         BSTNode sibling = bst.iterativeFindSibling(18);
         assertEquals(40, sibling.value);
     }
+
+    @Test
+    @DisplayName("Should find and return a node with matched value")
+    void testSearch() {
+        bst.recursiveInsert(26);
+        bst.iterativeInsert(18);
+        bst.recursiveInsert(40);
+        bst.iterativeInsert(9);
+        bst.recursiveInsert(57);
+        bst.iterativeInsert(3);
+
+        assertEquals(bst.root.right, bst.search(40));
+        assertNull(bst.search(90));
+        assertNull(BinarySearchTree.search(bst.root.left, 26));
+    }
 }

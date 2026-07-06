@@ -195,6 +195,27 @@ public class BinarySearchTree {
         return node;
     }
 
+    public BSTNode search(int value) {
+        return search(root, value);
+    }
+
+    public static BSTNode search(BSTNode node, int value) {
+        if (node == null) {
+            return null;
+        }
+
+        BSTNode cur = node;
+        while (cur != null && cur.value != value) {
+            if (value < cur.value) {
+                cur = cur.left;
+            } else {
+                cur = cur.right;
+            }
+        }
+
+        return cur;
+    }
+
     public BSTNode findMin(BSTNode node) {
         BSTNode cur = node;
 
