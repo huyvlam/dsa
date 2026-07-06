@@ -73,11 +73,11 @@ public class BinarySearchTreeTest {
         bst.recursiveInsert(26);
         bst.recursiveInsert(40);
         bst.iterativeInsert(18);
-        bst.iterativeInsert(9);
+        bst.iterativeInsert(-9);
         bst.iterativeInsert(3);
 
-        assertEquals(96, bst.getMaxPathSum());
-        assertEquals(30, BinarySearchTree.getMaxPathSum(bst.root.left));
+        assertEquals(84, bst.getMaxPathSum());
+        assertEquals(18, BinarySearchTree.getMaxPathSum(bst.root.left));
     }
 
     @Test
