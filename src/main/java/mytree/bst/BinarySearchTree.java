@@ -215,6 +215,67 @@ public class BinarySearchTree {
         return cur;
     }
 
+    public BSTNode recursiveFindSibling(int value) {
+        if (root == null || root.value == value) {
+            return null;
+        }
+
+        return recursiveFindSibling(root, value);
+    }
+
+    public static BSTNode recursiveFindSibling(BSTNode node, int value) {
+        if (node == null) {
+            return null;
+        }
+
+        if (node.left != null && node.left.value == value) {
+            return node.right;
+        }
+
+        if (node.right != null && node.right.value == value) {
+            return node.left;
+        }
+
+        if (value < node.value) {
+            return recursiveFindSibling(node.left, value);
+        } else {
+            return recursiveFindSibling(node.right, value);
+        }
+    }
+
+    public BSTNode iterativeFindSibling(int value) {
+        if (root == null || root.value == value) {
+            return null;
+        }
+
+        return iterativeFindSibling(root, value);
+    }
+
+    public static BSTNode iterativeFindSibling(BSTNode node, int value) {
+        BSTNode cur = node;
+        BSTNode parent = null;
+
+        while (cur != null && cur.value != value) {
+            parent = cur;
+
+            if (value < cur.value) {
+                cur = cur.left;
+            } else if (value > cur.value) {
+                cur = cur.right;
+            }
+        }
+
+        if (cur != null && parent != null) {
+            if (cur == parent.left) {
+                return parent.right;
+            } else {
+                return parent.left;
+            }
+        }
+
+        return null;
+    }
+
     public int getDepth(int value) {
         if (root == null) return -1;
 
@@ -222,7 +283,7 @@ public class BinarySearchTree {
     }
 
     /**
-     * @return  number of edges from a node down to the descendant w/ given value
+     * @return  the number of edges from a node down to the matching node
      */
     public static int getDepth(BSTNode node, int value) {
         int edges = 0;
@@ -250,7 +311,7 @@ public class BinarySearchTree {
     }
 
     /**
-     * @return  number of edges from the given node down to a leaf
+     * @return  the number of edges from the given node down to a leaf
      */
     public static int getHeight(BSTNode node) {
         if (node == null) return -1;
@@ -259,5 +320,55 @@ public class BinarySearchTree {
         int rightHeight = getHeight(node.right);
 
         return leftHeight > rightHeight ? leftHeight + 1 : rightHeight + 1;
+    }
+
+    public int getLeafSum() {
+        return getLeafSum(root);
+    }
+
+    /**
+     * @return  the sum of all leaf nodes in a tree
+     */
+    public static int getLeafSum(BSTNode node) {
+        if (node == null) {
+            return 0;
+        }
+
+        if (node.left == null && node.right == null) {
+            return node.value;
+        }
+
+        int leftSum = getLeafSum(node.left);
+        int rightSum = getLeafSum(node.right);
+
+        return leftSum + rightSum;
+    }
+
+    public int getMaxPathSum() {
+        return getMaxPathSum(root);
+    }
+
+    public static int getMaxPathSum(BSTNode node) {
+        int[] maxSum = {Integer.MIN_VALUE};
+        getMaxPathSum(node, maxSum);
+        return maxSum[0];
+    }
+
+    private static int getMaxPathSum(BSTNode node, int[] maxSum) {
+        if (node == null) return 0;
+
+        int leftSum = getMaxPathSum(node.left, maxSum);
+        int rightSum = getMaxPathSum(node.right, maxSum);
+
+        leftSum = leftSum > 0 ? leftSum : 0;
+        rightSum = rightSum > 0 ? rightSum : 0;
+
+        int archSum = leftSum + node.value + rightSum;
+
+        if (archSum > maxSum[0]) {
+            maxSum[0] = archSum;
+        }
+
+        return node.value + (leftSum > rightSum ? leftSum : rightSum);
     }
 }

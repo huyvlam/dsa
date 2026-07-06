@@ -4,8 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class BinarySearchTreeTest {
     BinarySearchTree bst;
@@ -53,5 +52,47 @@ public class BinarySearchTreeTest {
         assertEquals(3, bst.getHeight());
         assertEquals(1, BinarySearchTree.getHeight(bst.root.left.left));
         assertEquals(0, BinarySearchTree.getHeight(bst.root.right));
+    }
+
+    @Test
+    @DisplayName("Should compute and return the sum of all leaf nodes")
+    void testLeafSum() {
+        bst.recursiveInsert(26);
+        bst.recursiveInsert(40);
+        bst.iterativeInsert(18);
+        bst.iterativeInsert(9);
+        bst.iterativeInsert(3);
+
+        assertEquals(43, bst.getLeafSum());
+        assertEquals(3, BinarySearchTree.getLeafSum(bst.root.left));
+    }
+
+    @Test
+    @DisplayName("Should compute and return the max path sum of a node")
+    void testMaxPathSum() {
+        bst.recursiveInsert(26);
+        bst.recursiveInsert(40);
+        bst.iterativeInsert(18);
+        bst.iterativeInsert(9);
+        bst.iterativeInsert(3);
+
+        assertEquals(96, bst.getMaxPathSum());
+        assertEquals(30, BinarySearchTree.getMaxPathSum(bst.root.left));
+    }
+
+    @Test
+    @DisplayName("Should find and return the sibling of a node")
+    void testFindSibling() {
+        bst.recursiveInsert(26);
+        bst.iterativeInsert(18);
+        bst.recursiveInsert(40);
+        bst.iterativeInsert(9);
+        bst.recursiveInsert(57);
+        bst.iterativeInsert(3);
+
+        assertNull(bst.recursiveFindSibling(9));
+
+        BSTNode sibling = bst.iterativeFindSibling(18);
+        assertEquals(40, sibling.value);
     }
 }
