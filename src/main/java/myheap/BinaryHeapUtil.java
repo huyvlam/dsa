@@ -58,6 +58,28 @@ public class BinaryHeapUtil {
         arr[cur] = target;
     }
 
+    public static void sinkMax(int[] arr, int index, int size, IndexComparator indexComp) {
+        int targetElement = arr[index];
+        int curIndex = index;
+
+        while (true) {
+            int leftIndex = (curIndex << 1) + 1;
+            int rightIndex = (curIndex << 1) + 2;
+            if (leftIndex >= size) break;
+
+            int maxIndex = leftIndex;
+            if (rightIndex < size && indexComp.compare(arr[rightIndex], arr[leftIndex]) > 0) {
+                maxIndex = rightIndex;
+            }
+
+            if (indexComp.compare(arr[maxIndex], targetElement) <= 0) break;
+
+            arr[curIndex] = arr[maxIndex];
+            curIndex = maxIndex;
+        }
+        arr[curIndex] = targetElement;
+    }
+
     public static void bubbleMax(int[] arr, int index) {
         if (index < 0 || index >= arr.length) throw new IndexOutOfBoundsException("Index is out of bounds");
 
@@ -72,6 +94,22 @@ public class BinaryHeapUtil {
             cur = parent;
         }
         arr[cur] = target;
+    }
+
+    public static void bubbleMax(int[] arr, int index, IndexComparator indexComp) {
+        if (index < 0 || index >= arr.length) throw new IndexOutOfBoundsException("Index is out of bounds");
+
+        int targetElement = arr[index];
+        int curIndex = index;
+
+        while (curIndex > 0) {
+            int parentIndex = (curIndex - 1) >> 1;
+            if (indexComp.compare(arr[parentIndex], targetElement) >= 0) break;
+
+            arr[curIndex] = arr[parentIndex];
+            curIndex = parentIndex;
+        }
+        arr[curIndex] = targetElement;
     }
 
     public static void buildMin(int[] arr, int size) {
@@ -131,6 +169,30 @@ public class BinaryHeapUtil {
         arr[cur] = target;
     }
 
+    public static void sinkMin(int[] arr, int index, int size, IndexComparator indexComp) {
+        if (size <= 1) return;
+
+        int targetElement = arr[index];
+        int curIndex = index;
+
+        while (true) {
+            int leftIndex = (curIndex << 1) + 1;
+            int rightIndex = (curIndex << 1) + 2;
+            if (leftIndex >= size) break;
+
+            int minIndex = leftIndex;
+            if (rightIndex < size && indexComp.compare(arr[rightIndex], arr[leftIndex]) < 0) {
+                minIndex = rightIndex;
+            }
+
+            if (indexComp.compare(arr[minIndex], targetElement) >= 0) break;
+
+            arr[curIndex] = arr[minIndex];
+            curIndex = minIndex;
+        }
+        arr[curIndex] = targetElement;
+    }
+
     public static void bubbleMin(int[] arr, int index) {
         if (index < 0 || index >= arr.length) throw new IndexOutOfBoundsException("Index is out of bounds");
 
@@ -146,5 +208,22 @@ public class BinaryHeapUtil {
         }
 
         arr[cur] = target;
+    }
+
+    public static void bubbleMin(int[] arr, int index, IndexComparator indexComp) {
+        if (index < 0 || index >= arr.length) throw new IndexOutOfBoundsException("Index is out of bounds");
+
+        int targetElement = arr[index];
+        int curIndex = index;
+
+        while (curIndex > 0) {
+            int parentIndex = (curIndex - 1) >> 1;
+            if (indexComp.compare(arr[parentIndex], targetElement) <= 0) break;
+
+            arr[curIndex] = arr[parentIndex];
+            curIndex = parentIndex;
+        }
+
+        arr[curIndex] = targetElement;
     }
 }
