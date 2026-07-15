@@ -11,8 +11,18 @@ public class MaxBinaryHeap extends BinaryHeap {
     }
 
     @Override
+    protected void bubble(int i, IndexComparator indexComp, PositionTracker posTracker) {
+        BinaryHeapUtil.bubbleMax(root, i, indexComp, posTracker);
+    }
+
+    @Override
     protected void sink(int i, int n) {
         BinaryHeapUtil.sinkMax(root, i, n);
+    }
+
+    @Override
+    protected void sink(int i, int n, IndexComparator indexComp, PositionTracker posTracker) {
+        BinaryHeapUtil.sinkMax(root, i, n, indexComp, posTracker);
     }
 
     @Override

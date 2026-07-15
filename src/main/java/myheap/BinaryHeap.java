@@ -16,7 +16,9 @@ public abstract class BinaryHeap {
     }
 
     protected abstract void bubble(int i);
+    protected abstract void bubble(int i, IndexComparator indexComp, PositionTracker posTracker);
     protected abstract void sink(int i, int n);
+    protected abstract void sink(int i, int n, IndexComparator indexComp, PositionTracker posTracker);
     protected abstract void provision(int i, int n);
     protected abstract void buildHeap(int[] arr, int n);
     protected abstract void sortHeap();
@@ -51,12 +53,30 @@ public abstract class BinaryHeap {
         if (size == 0) return Integer.MIN_VALUE;
 
         int top = root[0];
-        int i = --size;
-        root[0] = root[i];
-        root[i] = 0;
+        root[0] = root[size - 1];
+        size--;
         modCount++;
 
         if (size > 1) sink(0, size);
+
+        return top;
+    }
+
+    public int pop(IndexComparator indexComp, PositionTracker posTracker) {
+        checkSorted();
+        if (size == 0) return Integer.MIN_VALUE;
+
+        int top = root[0];
+        int last = root[size - 1];
+
+        root[0] = last;
+        size--;
+        modCount++;
+
+        // handle edge case where only 1 or 2 elements remain in heap
+        posTracker.update(last, 0);
+
+        if (size > 1) sink(0, size, indexComp, posTracker);
 
         return top;
     }
@@ -68,6 +88,16 @@ public abstract class BinaryHeap {
         modCount++;
 
         bubble(i);
+        return true;
+    }
+
+    public boolean insert(int value, IndexComparator indexComp, PositionTracker posTracker) {
+        checkSorted();
+        int i = size++;
+        root[i] = value;
+        modCount++;
+
+        bubble(i, indexComp, posTracker);
         return true;
     }
 

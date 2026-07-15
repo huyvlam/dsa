@@ -58,7 +58,7 @@ public class BinaryHeapUtil {
         arr[cur] = target;
     }
 
-    public static void sinkMax(int[] arr, int index, int size, IndexComparator indexComp) {
+    public static void sinkMax(int[] arr, int index, int size, IndexComparator indexComp, PositionTracker posTracker) {
         int targetElement = arr[index];
         int curIndex = index;
 
@@ -78,6 +78,7 @@ public class BinaryHeapUtil {
             curIndex = maxIndex;
         }
         arr[curIndex] = targetElement;
+        posTracker.update(targetElement, curIndex);
     }
 
     public static void bubbleMax(int[] arr, int index) {
@@ -96,7 +97,7 @@ public class BinaryHeapUtil {
         arr[cur] = target;
     }
 
-    public static void bubbleMax(int[] arr, int index, IndexComparator indexComp) {
+    public static void bubbleMax(int[] arr, int index, IndexComparator indexComp, PositionTracker posTracker) {
         if (index < 0 || index >= arr.length) throw new IndexOutOfBoundsException("Index is out of bounds");
 
         int targetElement = arr[index];
@@ -110,6 +111,7 @@ public class BinaryHeapUtil {
             curIndex = parentIndex;
         }
         arr[curIndex] = targetElement;
+        posTracker.update(targetElement, curIndex);
     }
 
     public static void buildMin(int[] arr, int size) {
@@ -169,7 +171,7 @@ public class BinaryHeapUtil {
         arr[cur] = target;
     }
 
-    public static void sinkMin(int[] arr, int index, int size, IndexComparator indexComp) {
+    public static void sinkMin(int[] arr, int index, int size, IndexComparator indexComp, PositionTracker posTracker) {
         if (size <= 1) return;
 
         int targetElement = arr[index];
@@ -191,6 +193,7 @@ public class BinaryHeapUtil {
             curIndex = minIndex;
         }
         arr[curIndex] = targetElement;
+        posTracker.update(targetElement, curIndex);
     }
 
     public static void bubbleMin(int[] arr, int index) {
@@ -206,11 +209,10 @@ public class BinaryHeapUtil {
             arr[cur] = arr[parent];
             cur = parent;
         }
-
         arr[cur] = target;
     }
 
-    public static void bubbleMin(int[] arr, int index, IndexComparator indexComp) {
+    public static void bubbleMin(int[] arr, int index, IndexComparator indexComp, PositionTracker posTracker) {
         if (index < 0 || index >= arr.length) throw new IndexOutOfBoundsException("Index is out of bounds");
 
         int targetElement = arr[index];
@@ -223,7 +225,7 @@ public class BinaryHeapUtil {
             arr[curIndex] = arr[parentIndex];
             curIndex = parentIndex;
         }
-
         arr[curIndex] = targetElement;
+        posTracker.update(targetElement, curIndex);
     }
 }

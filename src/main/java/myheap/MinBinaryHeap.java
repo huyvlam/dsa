@@ -11,8 +11,18 @@ public class MinBinaryHeap extends BinaryHeap {
     }
 
     @Override
+    protected void bubble(int i, IndexComparator indexComp, PositionTracker posTracker) {
+        BinaryHeapUtil.bubbleMin(root, i, indexComp, posTracker);
+    }
+
+    @Override
     protected void sink(int i, int n){
         BinaryHeapUtil.sinkMin(root, i, n);
+    }
+
+    @Override
+    protected void sink(int i, int n, IndexComparator indexComp, PositionTracker posTracker) {
+        BinaryHeapUtil.sinkMin(root, i, n, indexComp, posTracker);
     }
 
     @Override
