@@ -20,6 +20,7 @@ public abstract class BinaryHeap {
     protected abstract void sink(int i, int n);
     protected abstract void sink(int i, int n, IndexComparator indexComp, PositionTracker posTracker);
     protected abstract void provision(int i, int n);
+    protected abstract void provision(int i, int n, IndexComparator indexComp, PositionTracker posTracker);
     protected abstract void buildHeap(int[] arr, int n);
     protected abstract void sortHeap();
 
@@ -128,6 +129,23 @@ public abstract class BinaryHeap {
         return deleted;
     }
 
+    public void deleteKey(int i, IndexComparator indexComp, PositionTracker posTracker) {
+        checkSorted();
+        if (size == 0 || i < 0 || i >= size) return;
+
+        int last = root[size - 1];
+
+        size--;
+        modCount++;
+
+        if (i == size) return;
+
+        root[i] = last;
+        posTracker.update(last, i);
+
+        if (i != size || size > 1) provision(i, size, indexComp, posTracker);
+    }
+
     public int changeKey(int i, int value) {
         checkSorted();
         if (size == 0) return Integer.MIN_VALUE;
@@ -136,9 +154,22 @@ public abstract class BinaryHeap {
         root[i] = value;
         modCount++;
 
-        if (size > 1) provision(i, size);
+        if (size > 1) {
+            provision(i, size);
+        }
 
         return changed;
+    }
+
+    public void changeKey(int i, IndexComparator indexComp, PositionTracker posTracker) {
+        checkSorted();
+        if (size == 0 || i < 0 || i >= size) return;
+
+        modCount++;
+
+        if (size > 1) {
+            provision(i, size, indexComp, posTracker);
+        }
     }
 
     /**

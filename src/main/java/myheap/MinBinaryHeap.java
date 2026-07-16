@@ -27,10 +27,21 @@ public class MinBinaryHeap extends BinaryHeap {
 
     @Override
     protected void provision(int i, int n){
-        if (i > 0 && root[i] > root[(i - 1) >> 1]) {
+        if (i > 0 && root[i] < root[(i - 1) >> 1]) {
             bubble(i);
         } else {
             sink(i, n);
+        }
+    }
+
+    @Override
+    protected void provision(int i, int n, IndexComparator indexComp, PositionTracker posTracker) {
+        int parentIndex = (i - 1) >> 1;
+
+        if (i > 0 && indexComp.compare(root[i],  root[parentIndex]) < 0) {
+            bubble(i, indexComp, posTracker);
+        } else {
+            sink(i, n, indexComp, posTracker);
         }
     }
 

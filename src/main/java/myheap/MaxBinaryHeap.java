@@ -35,6 +35,17 @@ public class MaxBinaryHeap extends BinaryHeap {
     }
 
     @Override
+    protected void provision(int i, int n, IndexComparator indexComp, PositionTracker posTracker) {
+        int parentIndex = (i - 1) >> 1;
+
+        if (i > 0 && indexComp.compare(root[i], root[parentIndex]) > 0) {
+            bubble(i, indexComp, posTracker);
+        } else {
+            sink(i, n, indexComp, posTracker);
+        }
+    }
+
+    @Override
     protected void buildHeap(int[] arr, int n) {
         BinaryHeapUtil.buildMax(arr, n);
     }
