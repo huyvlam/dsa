@@ -17,7 +17,7 @@ import java.util.Comparator;
 
 public class MyPriorityQueue<E extends Comparable<? super E>> {
     private final MaxBinaryHeap heap;
-    private final E[] registry;
+    private final Object[] registry;
     private final int[] inverseMap;
     private final int[] freeSlots;
     private final Comparator<? super E> comparator;
@@ -31,13 +31,13 @@ public class MyPriorityQueue<E extends Comparable<? super E>> {
     @SuppressWarnings("unchecked")
     public MyPriorityQueue(int capacity, Comparator<? super E> comparator) {
         heap = new MaxBinaryHeap(capacity);
-        registry = (E[]) new Object[capacity];
+        registry = new Object[capacity];
         inverseMap = new int[capacity];
         freeSlots = new int[capacity];
         size = 0;
         this.comparator = comparator;
 
-        indexComparator = (indexA, indexB) -> this.comparator.compare(registry[indexA], registry[indexB]);
+        indexComparator = (indexA, indexB) -> this.comparator.compare((E) registry[indexA], (E) registry[indexB]);
         positionTracker = ((elementIndex, heapPosition) -> inverseMap[elementIndex] = heapPosition);
 
         Arrays.fill(inverseMap, -1);
@@ -52,8 +52,9 @@ public class MyPriorityQueue<E extends Comparable<? super E>> {
             throw new IllegalStateException("Queue is full");
         }
 
-        int newIndex = (freeSlotIndex >= 0) ? freeSlots[freeSlotIndex--] : size++;
+        int newIndex = (freeSlotIndex >= 0) ? freeSlots[freeSlotIndex--] : size;
         registry[newIndex] = element;
+        size++;
 
         heap.insert(newIndex, indexComparator, positionTracker);
     }
@@ -74,7 +75,7 @@ public class MyPriorityQueue<E extends Comparable<? super E>> {
 
     public void update(int index, E newElement) {
         if (index < 0 || index >= registry.length || inverseMap[index] == -1) {
-            throw new IndexOutOfBoundsException("Element not found at index: " + index);
+            throw new IllegalArgumentException("Element not found at index: " + index);
         }
 
         registry[index] = newElement;
@@ -95,13 +96,12 @@ public class MyPriorityQueue<E extends Comparable<? super E>> {
         size--;
     }
 
+    @SuppressWarnings("unchecked")
     public E peek() {
+        if (size == 0) return null;
+
         int topIndex = heap.peek();
 
-        if (topIndex >= 0) {
-            return (E) registry[topIndex];
-        }
-
-        return null;
+        return (topIndex >= 0) ? (E) registry[topIndex] : null;
     }
 }
