@@ -16,8 +16,9 @@ public class GenericDisjointSetTest {
 
     @BeforeEach
     public void setUp() {
-        List<String> users = Arrays.asList("Aimi", "Blanca", "Chai", "Dong", "Eve");
-        network = new GenericDisjointSet<>(users);
+//        List<String> users = Arrays.asList("Aimi", "Blanca", "Chai", "Dong", "Eve");
+        String[] names = {"Aimi", "Blanca", "Chai", "Dong", "Eve"};
+        network = new GenericDisjointSet<>(Arrays.asList(names));
     }
 
     @Test
