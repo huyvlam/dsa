@@ -75,7 +75,10 @@ public class BinaryHeapUtil {
             if (indexComp.compare(arr[maxIndex], targetElement) <= 0) break;
 
             arr[curIndex] = arr[maxIndex];
+
+            // Every element that get shifted here must be updated elsewhere via functional interface
             posTracker.update(arr[maxIndex], curIndex);
+
             curIndex = maxIndex;
         }
         arr[curIndex] = targetElement;
@@ -109,7 +112,10 @@ public class BinaryHeapUtil {
             if (indexComp.compare(arr[parentIndex], targetElement) >= 0) break;
 
             arr[curIndex] = arr[parentIndex];
+
+            // Every element that get shifted here must be updated elsewhere via functional interface
             posTracker.update(arr[parentIndex], curIndex);
+
             curIndex = parentIndex;
         }
         arr[curIndex] = targetElement;
@@ -192,7 +198,10 @@ public class BinaryHeapUtil {
             if (indexComp.compare(arr[minIndex], targetElement) >= 0) break;
 
             arr[curIndex] = arr[minIndex];
+
+            // Every element that get shifted here must be updated elsewhere via functional interface
             posTracker.update(arr[minIndex], curIndex);
+
             curIndex = minIndex;
         }
         arr[curIndex] = targetElement;
@@ -226,7 +235,10 @@ public class BinaryHeapUtil {
             if (indexComp.compare(arr[parentIndex], targetElement) <= 0) break;
 
             arr[curIndex] = arr[parentIndex];
+
+            // Every element that get shifted here must be updated elsewhere via functional interface
             posTracker.update(arr[parentIndex], curIndex);
+
             curIndex = parentIndex;
         }
         arr[curIndex] = targetElement;
