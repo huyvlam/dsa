@@ -3,7 +3,7 @@ package mydisjoint;
 public class DisjointSet {
     private final int[] parent;
     private final int[] size; // track the size of each set
-    private int count; // track the number of disjoint sets
+    private int count; // count the number of set
 
     public DisjointSet(int n) {
         parent = new int[n];
@@ -21,10 +21,12 @@ public class DisjointSet {
             throw new IllegalArgumentException("Index out of bounds: " + p);
         }
 
+        // 1. Find the parent
         if (p == parent[p]) {
             return p;
         }
 
+        // 2. Path Compression: link children of subtree directly to root
         return parent[p] = find(parent[p]);
     }
 
@@ -33,11 +35,13 @@ public class DisjointSet {
             throw new IllegalArgumentException("Index out of bounds: " + p);
         }
 
+        // 1. Find the root
         int root = p;
         while (root != parent[root]) {
             root = parent[root];
         }
 
+        // 2. Path Compression: link elements of subtree directly to the root
         int cur = p;
         while (cur != root) {
             int next = parent[cur];
@@ -48,6 +52,7 @@ public class DisjointSet {
         return root;
     }
 
+    // Union by size
     public boolean union(int p, int q) {
         int rootP = find(p);
         int rootQ = find(q);
@@ -56,6 +61,7 @@ public class DisjointSet {
             return false;
         }
 
+        // Merge the smaller tree under larger tree
         if (size[rootP] < size[rootQ]) {
             parent[rootP] = rootQ;
             size[rootQ] += size[rootP];

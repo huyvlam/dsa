@@ -3,13 +3,13 @@ package mydisjoint;
 import java.util.*;
 
 public class GenericDisjointSet<T> {
-    private final DisjointSet disjointSet;
+    private final DisjointSet genericSet;
     private final Map<T, Integer> objectToIndex;
     private final List<T> indexToObject;
 
     public GenericDisjointSet(Collection<T> objects) {
         int n = objects.size();
-        this.disjointSet = new DisjointSet(n);
+        this.genericSet = new DisjointSet(n);
         this.objectToIndex = new HashMap<>(n);
         this.indexToObject = new ArrayList<>(n);
 
@@ -29,7 +29,7 @@ public class GenericDisjointSet<T> {
             return false;
         }
 
-        return disjointSet.union(indexA, indexB);
+        return genericSet.union(indexA, indexB);
     }
 
     public T findRoot(T object) {
@@ -39,7 +39,7 @@ public class GenericDisjointSet<T> {
             return null;
         }
 
-        int rootIndex = disjointSet.find(index);
+        int rootIndex = genericSet.find(index);
         return indexToObject.get(rootIndex);
     }
 
@@ -50,7 +50,7 @@ public class GenericDisjointSet<T> {
         Map<T, List<T>> clusters = new HashMap<>();
 
         for (int i = 0; i < indexToObject.size(); i++) {
-            int rootIndex = disjointSet.find(i);
+            int rootIndex = genericSet.find(i);
             T rootObject = indexToObject.get(rootIndex);
             T curObject = indexToObject.get(i);
 
@@ -68,10 +68,10 @@ public class GenericDisjointSet<T> {
             return false;
         }
 
-        return disjointSet.find(indexA) == disjointSet.find(indexB);
+        return genericSet.connected(indexA, indexB);
     }
 
     public int getCount() {
-        return disjointSet.getCount();
+        return genericSet.getCount();
     }
 }
